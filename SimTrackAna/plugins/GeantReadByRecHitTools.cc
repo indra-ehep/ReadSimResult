@@ -361,10 +361,17 @@ GeantReadByRecHitTools::analyze(const edm::Event& iEvent, const edm::EventSetup&
     // 	      << "), Si thickness "<< rhtools_.getSiThickness(id1) 
     // 	      << ", IsSi "<< rhtools_.isSilicon(id1)
     // 	      << ", IsSci "<< rhtools_.isScintillator(id1)
+    // 	      << ", Layer1 "<< rhtools_.getLayer(id1)
+    // 	      << ", Layer2 "<< rhtools_.getLayerWithOffset(id1)
+    // 	      << ", lastLayerEE  "<< rhtools_.lastLayerEE()
+    // 	      << ", lastLayerFH  "<< rhtools_.lastLayerFH()
+    // 	      << ", firstLayerBH  "<< rhtools_.firstLayerBH()
+    // 	      << ", lastLayerBH  "<< rhtools_.lastLayerBH()
+    // 	      << ", lastLayer  "<< rhtools_.lastLayer()
     // 	      << std::endl;
     
     //if((rhtools_.isSilicon(id1) or rhtools_.isScintillator(id1)) and TMath::Abs(global2.x())<20.0){
-    if((rhtools_.isSilicon(id1) or rhtools_.isScintillator(id1))){
+    if(rhtools_.isSilicon(id1) or rhtools_.isScintillator(id1)){
       
       if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),120.,1.e-7))
 	hRHTGlbRZhitsF->Fill(TMath::Abs(global2.z()), RXY);
@@ -420,73 +427,65 @@ GeantReadByRecHitTools::analyze(const edm::Event& iEvent, const edm::EventSetup&
 
       hXYhits->Fill(global1.x(),global1.y());	    	    
       
-      //DetId id1 = static_cast<DetId>(itHit->id());
-      GlobalPoint global2 = rhtools_.getPosition(id1);
-      double RXY = TMath::Sqrt(global2.x()*global2.x() + global2.y()*global2.y());
-
+      /// Using rechit tools
+      //===============================================================================
       if(TMath::Abs(global2.x())<20.0){
 	
-	if(name == "HGCalEESensitive" or name == "HGCalHESiliconSensitive"){
+	if(rhtools_.isSilicon(id1)){
 
-	  HGCSiliconDetId id(itHit->id());
-	  
-	  if(name == "HGCalEESensitive"){
+	  if(rhtools_.getLayerWithOffset(id1) <= rhtools_.lastLayerEE()){
 	    
 	    hRHTYZhitsEE->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));
 	    hRHTRZhitsEE->Fill(TMath::Abs(global2.z()), RXY);
 
-	    //if(id.type()==HGCSiliconDetId::HGCalFine){
 	    if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),120.,1.e-7)){
 	      hRHTYZhitsEEF->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));
 	      hRHTRZhitsEEF->Fill(TMath::Abs(global2.z()), RXY);
 	    }
-	    //if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
 	    if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),200.,1.e-7)){
 	      hRHTYZhitsEECN->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));
 	      hRHTRZhitsEECN->Fill(TMath::Abs(global2.z()), RXY);
 	    }
-	    //if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
 	    if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),300.,1.e-7)){
 	      hRHTYZhitsEECK->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));	    
 	      hRHTRZhitsEECK->Fill(TMath::Abs(global2.z()), RXY);	    
 	    }
-	  }
 
-	  if(name == "HGCalHESiliconSensitive"){
+	  }else{
+	    
 	    hRHTYZhitsHEF->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));
 	    hRHTRZhitsHEF->Fill(TMath::Abs(global2.z()), RXY);
 
-	    //if(id.type()==HGCSiliconDetId::HGCalFine){
 	    if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),120.,1.e-7)){
 	      hRHTYZhitsHEFF->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));
 	      hRHTRZhitsHEFF->Fill(TMath::Abs(global2.z()), RXY);
 	    }
-	    //if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
 	    if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),200.,1.e-7)){
 	      hRHTYZhitsHEFCN->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));
 	      hRHTRZhitsHEFCN->Fill(TMath::Abs(global2.z()), RXY);
 	    }
-	    //if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
 	    if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),300.,1.e-7)){
 	      hRHTYZhitsHEFCK->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));	    	    
 	      hRHTRZhitsHEFCK->Fill(TMath::Abs(global2.z()), RXY);	    	    
 	    }
 	  }
 	  
-	}
+	}//is Si
 	
-	if(name == "HGCalHEScintillatorSensitive"){
+	if(rhtools_.isScintillator(id1)){
 	  hRHTYZhitsHEB->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));
 	  hRHTRZhitsHEB->Fill(TMath::Abs(global2.z()), RXY);
-	}
-      }
+	}      
 
+      }
+      //===============================================================================
       hRHTXYhits->Fill(global2.x(),global2.y());	    	    
 
-    }
+
 			 
-  }
+    }
     
+  }
   // #ifdef THIS_IS_AN_EVENT_EXAMPLE
   //    Handle<ExampleData> pIn;
   //    iEvent.getByLabel("example",pIn);
