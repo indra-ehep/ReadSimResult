@@ -13,8 +13,8 @@ process = cms.Process('PROD',Phase2C11)
 # process = cms.Process('PROD',Phase2C9)
 
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
-#process.load('Configuration.Geometry.GeometryExtended2026D83Reco_cff')
-process.load('Configuration.Geometry.GeometryExtended2026D86Reco_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D83Reco_cff')
+#process.load('Configuration.Geometry.GeometryExtended2026D86Reco_cff')
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
 
@@ -25,26 +25,14 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        #'file:/home/idas/t3store3/root_files/SingleMuFlatPt2To100_cfi_py_GEN_SIM.root'
-        #'file:/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_1_X_2021-09-08-2300/src/SingleMuFlatPt2To100_cfi_py_GEN_geo_default.root'
-        #'file:/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_1_X_2021-09-08-2300/src/SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D83.root'
-        #'file:/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_1_X_2021-09-08-2300/src/SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D86.root'
-        #'file:/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_1_X_2021-09-08-2300/src/SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D86_higheta.root'
-        #'file:/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_1_X_2021-09-08-2300/src/SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D83_higheta.root'
-        #'file:/home/idas/t3store3/root_files/SingleMuFlatPt2To100_cfi_py_GEN_geo_default.root'
-        #'file:/home/idas/t3store3/root_files/SingleMuFlatPt2To100_cfi_py_GEN_geo_mod.root'
-        'file:/home/idas/test/cmssw/CMSSW_12_1_X_2021-09-13-2300/src/SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D86_higheta.root'
+        #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D86_higheta.root'
+        'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D83_higheta.root'
+        #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/step1_D86.root'
     )
-#     inputCommands=cms.untracked.vstring(
-# #        'keep *',
-#         'drop recoCaloTauDiscriminator_*__RECO',
-#         'drop recoCaloTauTagInfos_*__RECO',
-#         'drop recoCaloTaus_*__RECO'
-#     )
 )
 
 
-process.prodEE = cms.EDAnalyzer('GeantRead',
+process.prodEE = cms.EDAnalyzer('GeantReadByRecHitTools',
                              simtrack = cms.untracked.InputTag("g4SimHits"),
                              simhits = cms.untracked.InputTag("g4SimHits","HGCHitsEE", "SIM"),
                              Detector   = cms.string("HGCalEESensitive"),
@@ -68,4 +56,3 @@ process.TFileService = cms.Service("TFileService",
  )
 
 process.p = cms.Path(process.prodEE*process.prodHEF*process.prodHEB)
-#process.p = cms.Path(process.prodEE)

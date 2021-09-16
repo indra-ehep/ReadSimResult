@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    Demo/GeantRead
-// Class:      GeantRead
+// Package:    Demo/GeantReadByRecHitTools
+// Class:      GeantReadByRecHitTools
 //
-/**\class GeantRead TrackAnalyzer.cc Track/TrackAnalyzer/plugins/TrackAnalyzer.cc
+/**\class GeantReadByRecHitTools TrackAnalyzer.cc Track/TrackAnalyzer/plugins/TrackAnalyzer.cc
 
  Description: [one line class summary]
 
@@ -22,6 +22,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
@@ -68,6 +69,10 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "DataFormats/ForwardDetId/interface/HGCalDetId.h"
 
+#include "RecoLocalCalo/HGCalRecAlgos/interface/RecHitTools.h"
+#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
+#include "Geometry/Records/interface/CaloGeometryRecord.h"
+
 #include <TH1.h>
 #include <TH2.h>
 #include <TMath.h>
@@ -83,10 +88,10 @@
 
 using reco::TrackCollection;
 
-class GeantRead : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
+class GeantReadByRecHitTools : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 public:
-  explicit GeantRead(const edm::ParameterSet&);
-  ~GeantRead();
+  explicit GeantReadByRecHitTools(const edm::ParameterSet&);
+  ~GeantReadByRecHitTools();
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -128,6 +133,36 @@ private:
   TH2D *hYZhitsHEFF;
   TH2D *hYZhitsHEFCN;
   TH2D *hYZhitsHEFCK;
+  
+  TH2D *hRHTXYhits;
+  TH2D *hRHTYZhitsEE;
+  TH2D *hRHTYZhitsHEF;
+  TH2D *hRHTYZhitsHEB;
+  TH2D *hRHTYZhitsEEF;
+  TH2D *hRHTYZhitsEECN;
+  TH2D *hRHTYZhitsEECK;
+  TH2D *hRHTYZhitsHEFF;
+  TH2D *hRHTYZhitsHEFCN;
+  TH2D *hRHTYZhitsHEFCK;
+
+  TH2D *hRHTRZhitsEE;
+  TH2D *hRHTRZhitsHEF;
+  TH2D *hRHTRZhitsHEB;
+  TH2D *hRHTRZhitsEEF;
+  TH2D *hRHTRZhitsEECN;
+  TH2D *hRHTRZhitsEECK;
+  TH2D *hRHTRZhitsHEFF;
+  TH2D *hRHTRZhitsHEFCN;
+  TH2D *hRHTRZhitsHEFCK;
+
+  TH2D *hRHTGlbRZhitsF ;
+  TH2D *hRHTGlbRZhitsCN ;
+  TH2D *hRHTGlbRZhitsCK ;
+  TH2D *hRHTGlbRZhitsSci ;
+  
+  edm::ESGetToken<CaloGeometry, CaloGeometryRecord> caloGeomToken_; 
+  hgcal::RecHitTools rhtools_;
+  //edm::ConsumesCollector iC;
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   edm::ESGetToken<SetupData, SetupRecord> setupToken_;
@@ -146,7 +181,7 @@ private:
 //
 // constructors and destructor
 //
-GeantRead::GeantRead(const edm::ParameterSet& iConfig)
+GeantReadByRecHitTools::GeantReadByRecHitTools(const edm::ParameterSet& iConfig)
   :
   //tracksToken_(consumes<TrackCollection>(iConfig.getUntrackedParameter<edm::InputTag>("simhits"))),
   tSimTrackContainer(consumes<edm::SimTrackContainer>(iConfig.getUntrackedParameter<edm::InputTag>("simtrack"))),
@@ -175,21 +210,50 @@ GeantRead::GeantRead(const edm::ParameterSet& iConfig)
   //hYZhits = fs->make<TH2D>("hYZhits","hYZhits", 1200, -600., 600., 1200, -600., 600.);
   hXYhits = fs->make<TH2D>("hXYhits","Hits in XY", 600, -300., 300., 600, -300., 300.);
 
-  hYZhitsEE = fs->make<TH2D>("hYZhitsEE","Hits in YZ plane for |X| < 10 cm", 250, 300., 550., 300, 0., 300.);
-  hYZhitsHEF = fs->make<TH2D>("hYZhitsHEF","Hits in YZ plane for |X| < 10 cm", 250, 300., 550., 300, 0., 300.);
-  hYZhitsHEB = fs->make<TH2D>("hYZhitsHEB","Hits in YZ plane for |X| < 10 cm", 250, 300., 550., 300, 0., 300.);
+  hYZhitsEE = fs->make<TH2D>("hYZhitsEE","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hYZhitsHEF = fs->make<TH2D>("hYZhitsHEF","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hYZhitsHEB = fs->make<TH2D>("hYZhitsHEB","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
   
-  hYZhitsEEF = fs->make<TH2D>("hYZhitsEEF","Hits in YZ plane for |X| < 10 cm", 250, 300., 550., 300, 0., 300.);
-  hYZhitsEECN = fs->make<TH2D>("hYZhitsEECN","Hits in YZ plane for |X| < 10 cm", 250, 300., 550., 300, 0., 300.);
-  hYZhitsEECK = fs->make<TH2D>("hYZhitsEECK","Hits in YZ plane for |X| < 10 cm", 250, 300., 550., 300, 0., 300.);
+  hYZhitsEEF = fs->make<TH2D>("hYZhitsEEF","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hYZhitsEECN = fs->make<TH2D>("hYZhitsEECN","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hYZhitsEECK = fs->make<TH2D>("hYZhitsEECK","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
 
-  hYZhitsHEFF = fs->make<TH2D>("hYZhitsHEFF","Hits in YZ plane for |X| < 10 cm", 250, 300., 550., 300, 0., 300.);
-  hYZhitsHEFCN = fs->make<TH2D>("hYZhitsHEFCN","Hits in YZ plane for |X| < 10 cm", 250, 300., 550., 300, 0., 300.);
-  hYZhitsHEFCK = fs->make<TH2D>("hYZhitsHEFCK","Hits in YZ plane for |X| < 10 cm", 250, 300., 550., 300, 0., 300.);
+  hYZhitsHEFF = fs->make<TH2D>("hYZhitsHEFF","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hYZhitsHEFCN = fs->make<TH2D>("hYZhitsHEFCN","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hYZhitsHEFCK = fs->make<TH2D>("hYZhitsHEFCK","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+
+  hRHTXYhits = fs->make<TH2D>("hRHTXYhits","Hits in XY", 600, -300., 300., 600, -300., 300.);
+  hRHTYZhitsEE = fs->make<TH2D>("hRHTYZhitsEE","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTYZhitsHEF = fs->make<TH2D>("hRHTYZhitsHEF","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTYZhitsHEB = fs->make<TH2D>("hRHTYZhitsHEB","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTYZhitsEEF = fs->make<TH2D>("hRHTYZhitsEEF","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTYZhitsEECN = fs->make<TH2D>("hRHTYZhitsEECN","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTYZhitsEECK = fs->make<TH2D>("hRHTYZhitsEECK","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTYZhitsHEFF = fs->make<TH2D>("hRHTYZhitsHEFF","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTYZhitsHEFCN = fs->make<TH2D>("hRHTYZhitsHEFCN","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTYZhitsHEFCK = fs->make<TH2D>("hRHTYZhitsHEFCK","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  
+  hRHTRZhitsEE = fs->make<TH2D>("hRHTRZhitsEE","Hits for R_{xy} vs z-axis for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTRZhitsHEF = fs->make<TH2D>("hRHTRZhitsHEF","Hits for R_{xy} vs z-axis for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTRZhitsHEB = fs->make<TH2D>("hRHTRZhitsHEB","Hits for R_{xy} vs z-axis for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTRZhitsEEF = fs->make<TH2D>("hRHTRZhitsEEF","Hits for R_{xy} vs z-axis for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTRZhitsEECN = fs->make<TH2D>("hRHTRZhitsEECN","Hits for R_{xy} vs z-axis for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTRZhitsEECK = fs->make<TH2D>("hRHTRZhitsEECK","Hits for R_{xy} vs z-axis for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTRZhitsHEFF = fs->make<TH2D>("hRHTRZhitsHEFF","Hits for R_{xy} vs z-axis for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTRZhitsHEFCN = fs->make<TH2D>("hRHTRZhitsHEFCN","Hits for R_{xy} vs z-axis for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  hRHTRZhitsHEFCK = fs->make<TH2D>("hRHTRZhitsHEFCK","Hits for R_{xy} vs z-axis for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
+  
+  hRHTGlbRZhitsF = fs->make<TH2D>("hRHTGlbRZhitsF","Hits for R_{xy} vs z-axis", 250, 300., 550., 300, 0., 300.);
+  hRHTGlbRZhitsCN = fs->make<TH2D>("hRHTGlbRZhitsCN","Hits for R_{xy} vs z-axis", 250, 300., 550., 300, 0., 300.);
+  hRHTGlbRZhitsCK = fs->make<TH2D>("hRHTGlbRZhitsCK","Hits for R_{xy} vs z-axis", 250, 300., 550., 300, 0., 300.);
+  hRHTGlbRZhitsSci = fs->make<TH2D>("hRHTGlbRZhitsSci","Hits for R_{xy} vs z-axis", 250, 300., 550., 300, 0., 300.);
 
   name = iConfig.getParameter<std::string>("Detector");
   //name = iConfig.getUntrackedParameter<string>("Detector", "");
   geomToken_ = esConsumes<HGCalGeometry, IdealGeometryRecord>(edm::ESInputTag{"", name});
+  
+  
+  caloGeomToken_ = esConsumes<CaloGeometry, CaloGeometryRecord>();
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   setupDataToken_ = esConsumes<SetupData, SetupRecord>();
@@ -197,7 +261,7 @@ GeantRead::GeantRead(const edm::ParameterSet& iConfig)
 }
 
 
-GeantRead::~GeantRead()
+GeantReadByRecHitTools::~GeantReadByRecHitTools()
 {
 
   // do anything here that needs to be done at desctruction time
@@ -212,7 +276,7 @@ GeantRead::~GeantRead()
 
 // ------------ method called for each event  ------------
 void
-GeantRead::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+GeantReadByRecHitTools::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
 
@@ -228,7 +292,10 @@ GeantRead::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     if(itTrack->noGenpart())
       hPt->Fill(itTrack->momentum().pt());
   }
-
+  
+  const CaloGeometry &geomCalo = iSetup.getData(caloGeomToken_);
+  rhtools_.setGeometry(geomCalo);
+  
   const auto& geomR = iSetup.getData(geomToken_);
   const HGCalGeometry* geom = &geomR;
   DetId::Detector det;
@@ -261,7 +328,7 @@ GeantRead::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     if(name == "HGCalEESensitive" or name == "HGCalHESiliconSensitive"){
       
       HGCSiliconDetId id(itHit->id());
-
+      
       if(name == "HGCalEESensitive"){
 	hELossEE->Fill(itHit->energy()*1000000.);
 	if(id.type()==HGCSiliconDetId::HGCalFine)
@@ -285,16 +352,42 @@ GeantRead::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     if (name == "HGCalHEScintillatorSensitive")
       hELossHEB->Fill(itHit->energy()*1000000.);
-
-
+    
     DetId id1 = static_cast<DetId>(itHit->id());
+    GlobalPoint global2 = rhtools_.getPosition(id1);
+    double RXY = TMath::Sqrt(global2.x()*global2.x() + global2.y()*global2.y());
+    
+    // std::cout << "DetId (" << det << ": position ("<< global2.x() << ", " << global2.y() << ", " << global2.z() 
+    // 	      << "), Si thickness "<< rhtools_.getSiThickness(id1) 
+    // 	      << ", IsSi "<< rhtools_.isSilicon(id1)
+    // 	      << ", IsSci "<< rhtools_.isScintillator(id1)
+    // 	      << std::endl;
+    
+    //if((rhtools_.isSilicon(id1) or rhtools_.isScintillator(id1)) and TMath::Abs(global2.x())<20.0){
+    if((rhtools_.isSilicon(id1) or rhtools_.isScintillator(id1))){
+      
+      if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),120.,1.e-7))
+	hRHTGlbRZhitsF->Fill(TMath::Abs(global2.z()), RXY);
+      else if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),200.,1.e-7))
+	hRHTGlbRZhitsCN->Fill(TMath::Abs(global2.z()), RXY);
+      else if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),300.,1.e-7))
+	hRHTGlbRZhitsCK->Fill(TMath::Abs(global2.z()), RXY);	    
+      else
+	hRHTGlbRZhitsSci->Fill(TMath::Abs(global2.z()), RXY);
+      
+      //if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),0.,1.e-7))
+	
+
+    }
+
     if (geom->topology().valid(id1)) {
 
       GlobalPoint global1 = geom->getPosition(id1);
+      
       //std::cout << "DetId (" << det << ": position ("<< global1.x() << ", " << global1.y() << ", " << global1.z() << ") " << std::endl;
       
       //hYZhits->Fill(global1.z(),global1.y());
-      if(TMath::Abs(global1.x())<10.0){
+      if(TMath::Abs(global1.x())<20.0){
 
 	if(name == "HGCalEESensitive" or name == "HGCalHESiliconSensitive"){
 	  HGCSiliconDetId id(itHit->id());
@@ -326,6 +419,69 @@ GeantRead::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
 
       hXYhits->Fill(global1.x(),global1.y());	    	    
+      
+      //DetId id1 = static_cast<DetId>(itHit->id());
+      GlobalPoint global2 = rhtools_.getPosition(id1);
+      double RXY = TMath::Sqrt(global2.x()*global2.x() + global2.y()*global2.y());
+
+      if(TMath::Abs(global2.x())<20.0){
+	
+	if(name == "HGCalEESensitive" or name == "HGCalHESiliconSensitive"){
+
+	  HGCSiliconDetId id(itHit->id());
+	  
+	  if(name == "HGCalEESensitive"){
+	    
+	    hRHTYZhitsEE->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));
+	    hRHTRZhitsEE->Fill(TMath::Abs(global2.z()), RXY);
+
+	    //if(id.type()==HGCSiliconDetId::HGCalFine){
+	    if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),120.,1.e-7)){
+	      hRHTYZhitsEEF->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));
+	      hRHTRZhitsEEF->Fill(TMath::Abs(global2.z()), RXY);
+	    }
+	    //if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
+	    if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),200.,1.e-7)){
+	      hRHTYZhitsEECN->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));
+	      hRHTRZhitsEECN->Fill(TMath::Abs(global2.z()), RXY);
+	    }
+	    //if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
+	    if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),300.,1.e-7)){
+	      hRHTYZhitsEECK->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));	    
+	      hRHTRZhitsEECK->Fill(TMath::Abs(global2.z()), RXY);	    
+	    }
+	  }
+
+	  if(name == "HGCalHESiliconSensitive"){
+	    hRHTYZhitsHEF->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));
+	    hRHTRZhitsHEF->Fill(TMath::Abs(global2.z()), RXY);
+
+	    //if(id.type()==HGCSiliconDetId::HGCalFine){
+	    if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),120.,1.e-7)){
+	      hRHTYZhitsHEFF->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));
+	      hRHTRZhitsHEFF->Fill(TMath::Abs(global2.z()), RXY);
+	    }
+	    //if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
+	    if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),200.,1.e-7)){
+	      hRHTYZhitsHEFCN->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));
+	      hRHTRZhitsHEFCN->Fill(TMath::Abs(global2.z()), RXY);
+	    }
+	    //if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
+	    if(TMath::AreEqualAbs(rhtools_.getSiThickness(id1),300.,1.e-7)){
+	      hRHTYZhitsHEFCK->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));	    	    
+	      hRHTRZhitsHEFCK->Fill(TMath::Abs(global2.z()), RXY);	    	    
+	    }
+	  }
+	  
+	}
+	
+	if(name == "HGCalHEScintillatorSensitive"){
+	  hRHTYZhitsHEB->Fill(TMath::Abs(global2.z()),TMath::Abs(global2.y()));
+	  hRHTRZhitsHEB->Fill(TMath::Abs(global2.z()), RXY);
+	}
+      }
+
+      hRHTXYhits->Fill(global2.x(),global2.y());	    	    
 
     }
 			 
@@ -359,19 +515,19 @@ GeantRead::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 // ------------ method called once each job just before starting event loop  ------------
 void
-GeantRead::beginJob()
+GeantReadByRecHitTools::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void
-GeantRead::endJob()
+GeantReadByRecHitTools::endJob()
 {
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-GeantRead::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+GeantReadByRecHitTools::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
@@ -386,4 +542,4 @@ GeantRead::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(GeantRead);
+DEFINE_FWK_MODULE(GeantReadByRecHitTools);
