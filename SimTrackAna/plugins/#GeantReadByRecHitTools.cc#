@@ -436,7 +436,7 @@ GeantReadByRecHitTools::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	if(name == "HGCalHEScintillatorSensitive")
 	  hYZhitsHEB->Fill(TMath::Abs(global1.z()),TMath::Abs(global1.y()));
       }
-
+      
       hXYhits->Fill(global1.x(),global1.y());	    	    
       
       /// Using rechit tools
