@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    Demo/GeantReadByRecHitTools
-// Class:      GeantReadByRecHitTools
+// Package:    Demo/CellHitSum
+// Class:      CellHitSum
 //
-/**\class GeantReadByRecHitTools TrackAnalyzer.cc Track/TrackAnalyzer/plugins/TrackAnalyzer.cc
+/**\class CellHitSum TrackAnalyzer.cc Track/TrackAnalyzer/plugins/TrackAnalyzer.cc
 
  Description: [one line class summary]
 
@@ -88,10 +88,29 @@
 
 using reco::TrackCollection;
 
-class GeantReadByRecHitTools : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
+class CellHitSum : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 public:
-  explicit GeantReadByRecHitTools(const edm::ParameterSet&);
-  ~GeantReadByRecHitTools();
+  //Implemented following Validation/HGCalValidation/plugins/HGCalSimHitValidation.cc
+  struct energysum {
+    energysum() {
+      etotal = 0;
+      for (int i = 0; i < 6; ++i)
+        eTime[i] = 0.;
+    }
+    double eTime[6], etotal;
+  };
+  
+  struct hitsinfo {
+    hitsinfo() {
+      x = y = z = phi = eta = 0.0;
+      cell = cell2 = sector = sector2 = type = layer = 0;
+    }
+    double x, y, z, phi, eta;
+    int cell, cell2, sector, sector2, type, layer;
+  };
+  
+  explicit CellHitSum(const edm::ParameterSet&);
+  ~CellHitSum();
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -185,7 +204,7 @@ private:
 //
 // constructors and destructor
 //
-GeantReadByRecHitTools::GeantReadByRecHitTools(const edm::ParameterSet& iConfig)
+CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   :
   //tracksToken_(consumes<TrackCollection>(iConfig.getUntrackedParameter<edm::InputTag>("simhits"))),
   tSimTrackContainer(consumes<edm::SimTrackContainer>(iConfig.getUntrackedParameter<edm::InputTag>("simtrack"))),
@@ -272,7 +291,7 @@ GeantReadByRecHitTools::GeantReadByRecHitTools(const edm::ParameterSet& iConfig)
 }
 
 
-GeantReadByRecHitTools::~GeantReadByRecHitTools()
+CellHitSum::~CellHitSum()
 {
 
   // do anything here that needs to be done at desctruction time
@@ -287,7 +306,7 @@ GeantReadByRecHitTools::~GeantReadByRecHitTools()
 
 // ------------ method called for each event  ------------
 void
-GeantReadByRecHitTools::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
 
@@ -332,10 +351,13 @@ GeantReadByRecHitTools::analyze(const edm::Event& iEvent, const edm::EventSetup&
               << geom->topology().dddConstants().geomMode() << std::endl;
   }
   
+  std::map<uint32_t, std::pair<hitsinfo, energysum> > map_hits;
+  map_hits.clear();
+  int nofSiHits = 0;
   Handle<PCaloHitContainer> simhit;
   iEvent.getByToken(tSimCaloHitContainer, simhit);
   for(PCaloHitContainer::const_iterator itHit= simhit->begin(); itHit!= simhit->end(); ++itHit) {
-    
+
     if(name == "HGCalEESensitive" or name == "HGCalHESiliconSensitive"){
       
       HGCSiliconDetId id(itHit->id());
@@ -397,6 +419,46 @@ GeantReadByRecHitTools::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	
 
     }
+    
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    if(rhtools_.isSilicon(id1)){
+      uint32_t id_ = itHit->id();
+      
+      energysum esum;
+      hitsinfo hinfo;
+    
+      if (map_hits.count(id_) != 0) {
+	hinfo = map_hits[id_].first;
+	esum = map_hits[id_].second;
+      } else {
+	hinfo.x = global2.x();
+	hinfo.y = global2.y();
+	hinfo.z = global2.z();
+	// hinfo.sector = sector;
+	// hinfo.sector2 = subsector;
+	hinfo.cell = rhtools_.getCell(id1).first ;
+	hinfo.cell2 = rhtools_.getCell(id1).second ;
+	// hinfo.type = type;
+	hinfo.layer = rhtools_.getLayerWithOffset(id1);
+	hinfo.phi = rhtools_.getPhi(id1);
+	hinfo.eta = rhtools_.getEta(id1);
+      }
+      esum.etotal += itHit->energy();
+      // unsigned int nTimes_ = 2;
+      // //printf("ihit : %d, nTimes_ : %u\n", i, nTimes_);
+      // for (unsigned int k = 0; k < nTimes_; ++k) {
+      //   if (time > 0 && time < times_[k])
+      //     esum.eTime[k] += itHit->energy();
+      // }
+
+      // if (verbosity_ > 1)
+      //   edm::LogVerbatim("HGCalValidation") << " -----------------------   gx = " << hinfo.x << " gy = " << hinfo.y
+      //                                       << " gz = " << hinfo.z << " phi = " << hinfo.phi << " eta = " << hinfo.eta;
+      map_hits[id_] = std::pair<hitsinfo, energysum>(hinfo, esum);
+      nofSiHits++;
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
 
     GlobalPoint global1 = geom->getPosition(id1);
     
@@ -436,7 +498,7 @@ GeantReadByRecHitTools::analyze(const edm::Event& iEvent, const edm::EventSetup&
 	if(name == "HGCalHEScintillatorSensitive")
 	  hYZhitsHEB->Fill(TMath::Abs(global1.z()),TMath::Abs(global1.y()));
       }
-      
+
       hXYhits->Fill(global1.x(),global1.y());	    	    
       
       /// Using rechit tools
@@ -503,6 +565,9 @@ GeantReadByRecHitTools::analyze(const edm::Event& iEvent, const edm::EventSetup&
     hDiffZ->Fill(global1.z()-global2.z());
     
   }
+  std::cout << "simhit size : " << simhit->size() << ", nof hits in Si : " << nofSiHits << ", map size : " << map_hits.size() << std::endl;
+  map_hits.clear();
+
   // #ifdef THIS_IS_AN_EVENT_EXAMPLE
   //    Handle<ExampleData> pIn;
   //    iEvent.getByLabel("example",pIn);
@@ -531,19 +596,19 @@ GeantReadByRecHitTools::analyze(const edm::Event& iEvent, const edm::EventSetup&
 
 // ------------ method called once each job just before starting event loop  ------------
 void
-GeantReadByRecHitTools::beginJob()
+CellHitSum::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void
-GeantReadByRecHitTools::endJob()
+CellHitSum::endJob()
 {
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-GeantReadByRecHitTools::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+CellHitSum::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
@@ -558,4 +623,4 @@ GeantReadByRecHitTools::fillDescriptions(edm::ConfigurationDescriptions& descrip
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(GeantReadByRecHitTools);
+DEFINE_FWK_MODULE(CellHitSum);
