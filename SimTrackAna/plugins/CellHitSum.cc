@@ -73,6 +73,12 @@
 #include "Geometry/CaloGeometry/interface/CaloGeometry.h"
 #include "Geometry/Records/interface/CaloGeometryRecord.h"
 
+#include "CLHEP/Geometry/Point3D.h"
+#include "CLHEP/Geometry/Transform3D.h"
+#include "CLHEP/Geometry/Vector3D.h"
+#include "CLHEP/Units/GlobalSystemOfUnits.h"
+#include "CLHEP/Units/GlobalPhysicalConstants.h"
+
 #include <TH1.h>
 #include <TH2.h>
 #include <TMath.h>
@@ -104,9 +110,13 @@ public:
     hitsinfo() {
       x = y = z = phi = eta = 0.0;
       cell = cell2 = sector = sector2 = type = layer = 0;
+      hitid = nhits = 0;
+      isMu = false;
     }
     double x, y, z, phi, eta;
     int cell, cell2, sector, sector2, type, layer;
+    unsigned int hitid, nhits;
+    bool isMu ;
   };
   
   explicit CellHitSum(const edm::ParameterSet&);
@@ -146,6 +156,9 @@ private:
   TH1D *hELossCellSummedHEFF ;
   TH1D *hELossCellSummedHEFCN ;
   TH1D *hELossCellSummedHEFCK ;
+  
+  TH1D **hELossDQMEqV ;
+  TH1D **hELossLayer ;
   
   // TH2D *hYZhits;
   TH2D *hXYhits;
@@ -249,6 +262,13 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   hELossCellSummedHEFCN = fs->make<TH1D>("hELossCellSummedHEFCN","hELossCellSummedHEFCN", 1000, 0., 1000.);
   hELossCellSummedHEFCK = fs->make<TH1D>("hELossCellSummedHEFCK","hELossCellSummedHEFCK", 1000, 0., 1000.);
   
+  hELossDQMEqV = new TH1D*[50]; // for 50 layers in earch +/- z-direction
+  hELossLayer = new TH1D*[50]; // for 50 layers in earch +/- z-direction
+  for(int i=1;i<=50;i++){
+    hELossDQMEqV[i] = fs->make<TH1D>(Form("hELossDQMEqV_layer_%02d",i),Form("hELossDQMEqV_layer_%02d",i), 100, 0, 0.1);
+    hELossLayer[i] = fs->make<TH1D>(Form("hELossLayer_%02d",i),Form("hELossLayer_%02d",i), 1000, 0., 1000.);
+  }
+  
   //hYZhits = fs->make<TH2D>("hYZhits","hYZhits", 1200, -600., 600., 1200, -600., 600.);
   hXYhits = fs->make<TH2D>("hXYhits","Hits in XY", 600, -300., 300., 600, -300., 300.);
 
@@ -332,14 +352,23 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
   Handle<SimTrackContainer> simtrack;
   iEvent.getByToken(tSimTrackContainer, simtrack);
-  for(SimTrackContainer::const_iterator itTrack = simtrack->begin();
-      itTrack != simtrack->end();
-      ++itTrack) {
+  int itrk = 0;
+  for(SimTrackContainer::const_iterator itTrack = simtrack->begin(); itTrack != simtrack->end(); ++itTrack) {
     // int charge = itTrack->charge();
     int charge = itTrack->charge();  
     histo->Fill( charge );
     if(itTrack->noGenpart())
       hPt->Fill(itTrack->momentum().pt());
+
+    // if(abs(itTrack->type())==13){
+    //   printf("index : %d, (id,type,charge) : (%06u,%5d,%04.1f), (vert,genpat) : (%02d, %02d), \n\t\t(pt,eta,phi,e) : (%7.5lf, %7.5lf, %7.5lf,%7.5lf), Surface (x,y,z) : (%7.5lf,%7.5lf,%7.5lf)\n",
+    // 	     itrk,itTrack->trackId(), itTrack->type(), itTrack->charge(),
+    // 	     itTrack->vertIndex(), itTrack->genpartIndex(),
+    // 	     itTrack->momentum().pt(),itTrack->momentum().eta(),itTrack->momentum().phi(),itTrack->momentum().e(),
+    // 	     itTrack->trackerSurfacePosition().x(),itTrack->trackerSurfacePosition().y(),itTrack->trackerSurfacePosition().z()
+    // 	     );
+    // }
+    itrk++;
   }
   
   const CaloGeometry &geomCalo = iSetup.getData(caloGeomToken_);
@@ -372,7 +401,7 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   std::map<uint32_t, std::pair<hitsinfo, energysum> > map_hits;
   map_hits.clear();
-  int nofSiHits = 0;
+  unsigned int nofSiHits = 0;
   Handle<PCaloHitContainer> simhit;
   iEvent.getByToken(tSimCaloHitContainer, simhit);
   for(PCaloHitContainer::const_iterator itHit= simhit->begin(); itHit!= simhit->end(); ++itHit) {
@@ -382,28 +411,28 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       HGCSiliconDetId id(itHit->id());
       
       if(name == "HGCalEESensitive"){
-	hELossEE->Fill(itHit->energy()*1000000.);
+	hELossEE->Fill(itHit->energy()*1.e6);
 	if(id.type()==HGCSiliconDetId::HGCalFine)
-	  hELossEEF->Fill(itHit->energy()*1000000.); //in keV
+	  hELossEEF->Fill(itHit->energy()*1.e6); //in keV
 	if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
-	  hELossEECN->Fill(itHit->energy()*1000000.); //in keV
+	  hELossEECN->Fill(itHit->energy()*1.e6); //in keV
 	if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
-	  hELossEECK->Fill(itHit->energy()*1000000.); //in keV
+	  hELossEECK->Fill(itHit->energy()*1.e6); //in keV
       }
 
       if(name == "HGCalHESiliconSensitive"){
-	hELossHEF->Fill(itHit->energy()*1000000.);
+	hELossHEF->Fill(itHit->energy()*1.e6);
 	if(id.type()==HGCSiliconDetId::HGCalFine)
-	  hELossHEFF->Fill(itHit->energy()*1000000.); //in keV
+	  hELossHEFF->Fill(itHit->energy()*1.e6); //in keV
 	if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
-	  hELossHEFCN->Fill(itHit->energy()*1000000.); //in keV
+	  hELossHEFCN->Fill(itHit->energy()*1.e6); //in keV
 	if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
-	  hELossHEFCK->Fill(itHit->energy()*1000000.); //in keV
+	  hELossHEFCK->Fill(itHit->energy()*1.e6); //in keV
       }
     }
     
     if (name == "HGCalHEScintillatorSensitive")
-      hELossHEB->Fill(itHit->energy()*1000000.);
+      hELossHEB->Fill(itHit->energy()*1.e6);
     
     DetId id1 = static_cast<DetId>(itHit->id());
     GlobalPoint global2 = rhtools_.getPosition(id1);
@@ -450,6 +479,7 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	hinfo = map_hits[id_].first;
 	esum = map_hits[id_].second;
       } else {
+	hinfo.hitid =  nofSiHits;
 	hinfo.x = global2.x();
 	hinfo.y = global2.y();
 	hinfo.z = global2.z();
@@ -463,16 +493,24 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	hinfo.eta = rhtools_.getEta(id1);
       }
       esum.etotal += itHit->energy();
-      // unsigned int nTimes_ = 2;
-      // //printf("ihit : %d, nTimes_ : %u\n", i, nTimes_);
-      // for (unsigned int k = 0; k < nTimes_; ++k) {
-      //   if (time > 0 && time < times_[k])
-      //     esum.eTime[k] += itHit->energy();
-      // }
+      hinfo.nhits++;
 
+      HepGeom::Point3D<float> gcoord = HepGeom::Point3D<float>(global2.x(), global2.y(), global2.z());
+      double tof = (gcoord.mag() * CLHEP::cm) / CLHEP::c_light;
+      double time = itHit->time() ;
+      time -= tof ; 
+      
+      for (unsigned int k = 0; k < 2; ++k) {
+        if (time > 0 && time < 25.)
+          esum.eTime[k] += itHit->energy();
+      }
+      
       // if (verbosity_ > 1)
       //   edm::LogVerbatim("HGCalValidation") << " -----------------------   gx = " << hinfo.x << " gy = " << hinfo.y
       //                                       << " gz = " << hinfo.z << " phi = " << hinfo.phi << " eta = " << hinfo.eta;
+      // printf("Det : %s, trackid : %d, ihit : %d, layer : %d, id : %u, time : %lf, tof : %lf, Eloss : %5.2lf (keV), (x,y,z) : (%lf,%lf,%lf)\n", 
+      // 	     name.c_str(), itHit->geantTrackId(), nofSiHits, hinfo.layer, id_, itHit->time(), tof, itHit->energy()*1.e6, hinfo.x, hinfo.y, hinfo.z);
+      
       map_hits[id_] = std::pair<hitsinfo, energysum>(hinfo, esum);
       nofSiHits++;
     }
@@ -584,39 +622,65 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     hDiffZ->Fill(global1.z()-global2.z());
     
   }
-  std::cout << "simhit size : " << simhit->size() << ", nof hits in Si : " << nofSiHits << ", map size : " << map_hits.size() << std::endl;
-
+  //std::cout << "simhit size : " << simhit->size() << ", nof hits in Si : " << nofSiHits << ", map size : " << map_hits.size() << std::endl;
+  
   std::map<uint32_t, std::pair<hitsinfo, energysum> >::iterator itr;
   for (itr = map_hits.begin(); itr != map_hits.end(); ++itr) {
     //uint32_t id_ = (*itr).first;
-    //hitsinfo hinfo = (*itr).second.first;
+    hitsinfo hinfo = (*itr).second.first;
     energysum esum = (*itr).second.second;
     //int layer = hinfo.layer;
     // DetId id1 = static_cast<DetId>((*itr).first);
     // GlobalPoint pos = rhtools_.getPosition(id1);
     
+    // printf("\tDet : %s, first hit : %d, nhits : %u, id : %u, Edep : %5.2lf (keV), (x,y,z) : (%lf,%lf,%lf)\n", 
+    // 	   name.c_str(), hinfo.hitid, hinfo.nhits, (*itr).first, esum.etotal*1.e6, hinfo.x, hinfo.y, hinfo.z);
+    
+    //Form("hELossLayer_%02d",i)
+    hELossDQMEqV[hinfo.layer]->Fill(esum.eTime[0]);
+    
     HGCSiliconDetId id((*itr).first);
-      
+    
     if(name == "HGCalEESensitive"){
-      hELossCellSummedEE->Fill(esum.etotal*1000000.);
+      hELossCellSummedEE->Fill(esum.etotal*1.e6);
       if(id.type()==HGCSiliconDetId::HGCalFine)
-	hELossCellSummedEEF->Fill(esum.etotal*1000000.); //in keV
+	hELossCellSummedEEF->Fill(esum.etotal*1.e6); //in keV
       if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
-	hELossCellSummedEECN->Fill(esum.etotal*1000000.); //in keV
+	hELossCellSummedEECN->Fill(esum.etotal*1.e6); //in keV
       if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
-	hELossCellSummedEECK->Fill(esum.etotal*1000000.); //in keV
+	hELossCellSummedEECK->Fill(esum.etotal*1.e6); //in keV
     }
     
     if(name == "HGCalHESiliconSensitive"){
-      hELossCellSummedHEF->Fill(esum.etotal*1000000.);
+      hELossCellSummedHEF->Fill(esum.etotal*1.e6);
       if(id.type()==HGCSiliconDetId::HGCalFine)
-	hELossCellSummedHEFF->Fill(esum.etotal*1000000.); //in keV
+	hELossCellSummedHEFF->Fill(esum.etotal*1.e6); //in keV
       if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
-	hELossCellSummedHEFCN->Fill(esum.etotal*1000000.); //in keV
+	hELossCellSummedHEFCN->Fill(esum.etotal*1.e6); //in keV
       if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
-	hELossCellSummedHEFCK->Fill(esum.etotal*1000000.); //in keV
+	hELossCellSummedHEFCK->Fill(esum.etotal*1.e6); //in keV
     }
 
+  }
+
+  for(int il=1 ; il<=50 ; il++){
+    double energy =  0.;
+    for (itr = map_hits.begin(); itr != map_hits.end(); ++itr) {
+      //uint32_t id_ = (*itr).first;
+      hitsinfo hinfo = (*itr).second.first;
+      energysum esum = (*itr).second.second;
+      //int layer = hinfo.layer;
+      // DetId id1 = static_cast<DetId>((*itr).first);
+      // GlobalPoint pos = rhtools_.getPosition(id1);
+    
+      // printf("\tDet : %s, first hit : %d, nhits : %u, id : %u, Edep : %5.2lf (keV), (x,y,z) : (%lf,%lf,%lf)\n", 
+      // 	   name.c_str(), hinfo.hitid, hinfo.nhits, (*itr).first, esum.etotal*1.e6, hinfo.x, hinfo.y, hinfo.z);
+    
+      if(hinfo.layer==il and hinfo.z > 0.)
+	energy += esum.eTime[0];
+    }
+    if(energy > 0.)
+      hELossLayer[il]->Fill(energy*1.e6); //in keV
   }
   map_hits.clear();
 
