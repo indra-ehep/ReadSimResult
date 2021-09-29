@@ -161,7 +161,7 @@ private:
   TH1D **hELossLayer ;
   
   // TH2D *hYZhits;
-  TH2D *hXYhits;
+  TH2D **hXYhits;
 
   TH2D *hYZhitsEE;
   TH2D *hYZhitsHEF;
@@ -264,13 +264,17 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   
   hELossDQMEqV = new TH1D*[50]; // for 50 layers in earch +/- z-direction
   hELossLayer = new TH1D*[50]; // for 50 layers in earch +/- z-direction
-  for(int i=1;i<=50;i++){
+  hXYhits = = new TH2D*[50]; // for 50 layers in earch +/- z-direction
+  for(int i=1;i<=50;i++)
     hELossDQMEqV[i] = fs->make<TH1D>(Form("hELossDQMEqV_layer_%02d",i),Form("hELossDQMEqV_layer_%02d",i), 100, 0, 0.1);
+  for(int i=1;i<=50;i++)
     hELossLayer[i] = fs->make<TH1D>(Form("hELossLayer_%02d",i),Form("hELossLayer_%02d",i), 1000, 0., 1000.);
-  }
+  for(int i=1;i<=50;i++)
+    hXYhits[i] = fs->make<TH2D>(Form("hXYhits_layer_%02d",i),Form("Hits in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  
   
   //hYZhits = fs->make<TH2D>("hYZhits","hYZhits", 1200, -600., 600., 1200, -600., 600.);
-  hXYhits = fs->make<TH2D>("hXYhits","Hits in XY", 600, -300., 300., 600, -300., 300.);
+  //hXYhits = fs->make<TH2D>("hXYhits","Hits in XY", 600, -300., 300., 600, -300., 300.);
 
   hYZhitsEE = fs->make<TH2D>("hYZhitsEE","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
   hYZhitsHEF = fs->make<TH2D>("hYZhitsHEF","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
@@ -503,6 +507,8 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (unsigned int k = 0; k < 2; ++k) {
         if (time > 0 && time < 25.)
           esum.eTime[k] += itHit->energy();
+	else
+	  esum.eTime[k+2] += itHit->energy();
       }
       
       // if (verbosity_ > 1)
@@ -556,7 +562,7 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  hYZhitsHEB->Fill(TMath::Abs(global1.z()),TMath::Abs(global1.y()));
       }
 
-      hXYhits->Fill(global1.x(),global1.y());	    	    
+
       
       /// Using rechit tools
       //===============================================================================
@@ -612,7 +618,7 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       //===============================================================================
       hRHTXYhits->Fill(global2.x(),global2.y());	    	    
 
-
+      hXYhits[rhtools_.getLayerWithOffset(id1)]->Fill(global1.x(),global1.y());
 			 
     }
     
@@ -623,6 +629,7 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
   }
   //std::cout << "simhit size : " << simhit->size() << ", nof hits in Si : " << nofSiHits << ", map size : " << map_hits.size() << std::endl;
+  
   
   std::map<uint32_t, std::pair<hitsinfo, energysum> >::iterator itr;
   for (itr = map_hits.begin(); itr != map_hits.end(); ++itr) {
@@ -641,30 +648,15 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     HGCSiliconDetId id((*itr).first);
     
-    if(name == "HGCalEESensitive"){
-      hELossCellSummedEE->Fill(esum.etotal*1.e6);
-      if(id.type()==HGCSiliconDetId::HGCalFine)
-	hELossCellSummedEEF->Fill(esum.etotal*1.e6); //in keV
-      if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
-	hELossCellSummedEECN->Fill(esum.etotal*1.e6); //in keV
-      if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
-	hELossCellSummedEECK->Fill(esum.etotal*1.e6); //in keV
-    }
-    
-    if(name == "HGCalHESiliconSensitive"){
-      hELossCellSummedHEF->Fill(esum.etotal*1.e6);
-      if(id.type()==HGCSiliconDetId::HGCalFine)
-	hELossCellSummedHEFF->Fill(esum.etotal*1.e6); //in keV
-      if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
-	hELossCellSummedHEFCN->Fill(esum.etotal*1.e6); //in keV
-      if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
-	hELossCellSummedHEFCK->Fill(esum.etotal*1.e6); //in keV
-    }
 
   }
 
+  vector<uint32_t> cellMaxEdep;
+  cellMaxEdep.clear();
   for(int il=1 ; il<=50 ; il++){
     double energy =  0.;
+    uint32_t maxid = 0;
+    double prevEsum = 0.0 ;
     for (itr = map_hits.begin(); itr != map_hits.end(); ++itr) {
       //uint32_t id_ = (*itr).first;
       hitsinfo hinfo = (*itr).second.first;
@@ -676,12 +668,49 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       // printf("\tDet : %s, first hit : %d, nhits : %u, id : %u, Edep : %5.2lf (keV), (x,y,z) : (%lf,%lf,%lf)\n", 
       // 	   name.c_str(), hinfo.hitid, hinfo.nhits, (*itr).first, esum.etotal*1.e6, hinfo.x, hinfo.y, hinfo.z);
     
-      if(hinfo.layer==il and hinfo.z > 0.)
+      if(hinfo.layer==il and hinfo.z > 0.){
 	energy += esum.eTime[0];
-    }
+
+	if(esum.eTime[0] > prevEsum){
+	  prevEsum = esum.eTime[0] ; 
+	  maxid = (*itr).first ; 
+	}
+      }
+
+    }//map loop
+    cellMaxEdep.push_back(maxid);
     if(energy > 0.)
       hELossLayer[il]->Fill(energy*1.e6); //in keV
   }
+
+  for ( unsigned int ic = 0 ; ic < cellMaxEdep.size() ; ic++ ){
+    uint32_t id_ = cellMaxEdep[ic];
+    energysum esum = map_hits[id_].second;
+    HGCSiliconDetId id(id_);
+    
+    if(name == "HGCalEESensitive"){
+      hELossCellSummedEE->Fill(esum.eTime[0]*1.e6);
+      if(id.type()==HGCSiliconDetId::HGCalFine)
+	hELossCellSummedEEF->Fill(esum.eTime[0]*1.e6); //in keV
+      if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
+	hELossCellSummedEECN->Fill(esum.eTime[0]*1.e6); //in keV
+      if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
+	hELossCellSummedEECK->Fill(esum.eTime[0]*1.e6); //in keV
+    }
+    
+    if(name == "HGCalHESiliconSensitive"){
+      hELossCellSummedHEF->Fill(esum.eTime[0]*1.e6);
+      if(id.type()==HGCSiliconDetId::HGCalFine)
+	hELossCellSummedHEFF->Fill(esum.eTime[0]*1.e6); //in keV
+      if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
+	hELossCellSummedHEFCN->Fill(esum.eTime[0]*1.e6); //in keV
+      if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
+	hELossCellSummedHEFCK->Fill(esum.eTime[0]*1.e6); //in keV
+    }
+    
+  }
+
+  cellMaxEdep.clear();
   map_hits.clear();
 
   // #ifdef THIS_IS_AN_EVENT_EXAMPLE
