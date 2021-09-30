@@ -32,9 +32,11 @@ process.source = cms.Source("PoolSource",
         #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D83_higheta.root'
         #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D86_higheta.root'
         #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/step1_D86.root'
-        'file:/home/idas/t3store3/root_files/HGCAL_Geometry/D83/SingleMuFlatPt2To100_D83_step1.root'
+        #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/D83/SingleMuFlatPt2To100_D83_step1.root'
         #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/D86/SingleMuFlatPt2To100_D86_step1.root'
         #'file:/home/idas/test/cmssw/CMSSW_12_1_X_2021-09-26-2300/src/38693.0_CloseByParticleGun+2026D86+CloseByParticle_Photon_ERZRanges_GenSimHLBeamSpotHGCALCloseBy+DigiTrigger+RecoGlobal+HARVESTGlobal/step2.root'
+        #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/38693.D83/step1.root'
+        'file:/home/idas/t3store3/root_files/HGCAL_Geometry/38693.D86/step1.root'
     )
 )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))

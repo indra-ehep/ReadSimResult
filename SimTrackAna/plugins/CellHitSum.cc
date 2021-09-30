@@ -109,13 +109,13 @@ public:
   
   struct hitsinfo {
     hitsinfo() {
-      x = y = z = phi = eta = 0.0;
-      cell = cell2 = sector = sector2 = type = layer = 0;
+      x = y = z = phi = eta = trkpt = trketa = trkphi = 0.0;
+      cell = cell2 = sector = sector2 = type = layer = pdg = charge = 0;
       hitid = nhits = 0;
       isMu = false;
     }
-    double x, y, z, phi, eta;
-    int cell, cell2, sector, sector2, type, layer;
+    double x, y, z, phi, eta, trkpt, trketa, trkphi;
+    int cell, cell2, sector, sector2, type, layer, pdg, charge;
     unsigned int hitid, nhits;
     bool isMu ;
   };
@@ -138,7 +138,24 @@ private:
   std::string name;
   edm::ESGetToken<HGCalGeometry, IdealGeometryRecord> geomToken_;
   
-  TH1D *histo, *hPt; 
+  TH1D *hCharge;
+  TH1D *hChargeLowELoss;
+
+  TH1D *hPt; 
+  TH1D *hPtNoGen;
+  TH1D *hPtLowELoss;
+
+  TH1D *hEta; 
+  TH1D *hEtaNoGen;
+  TH1D *hEtaLowELoss;
+
+  TH1D *hPhi; 
+  TH1D *hPhiNoGen;
+  TH1D *hPhiLowELoss;
+
+  TH1D *hPDG;
+  TH1D *hPDGLowELoss;
+  
   TH1D *hELossEE;
   TH1D *hELossEEF ;
   TH1D *hELossEECN ;
@@ -186,6 +203,7 @@ private:
   TH2D *hXYLowELosshitsHEFCN;
   TH2D *hXYmissedhits;
   TH2D *hYZLowELosshitsHEFCN;
+  TH2D *hYZLLowELosshitsHEFCN;
   TH2D *hYZmissedhits;
   TH1D *hXLowELosshitsHEFCN;
   TH1D *hYLowELosshitsHEFCN;
@@ -265,8 +283,24 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   //now do what ever initialization is needed
   usesResource("TFileService");
   edm::Service<TFileService> fs;
-  histo = fs->make<TH1D>("charge" , "Charges" , 200 , -20 , 20 );
+  
+  hCharge = fs->make<TH1D>("charge" , "Charges" , 200 , -20 , 20 );
+  hChargeLowELoss = fs->make<TH1D>("charge LowELoss" , "Charges LowELoss" , 200 , -20 , 20 );
+
+  hPDG = fs->make<TH1D>("hPDG" , "hPDG" , 10000 , -5000 , 5000 );
+  hPDGLowELoss = fs->make<TH1D>("hPDGLowELoss" , "hPDGLowELoss" ,10000,-5000,5000);  
+
   hPt = fs->make<TH1D>("hPt" , "hPt" , 1000 , 0. , 1000. );
+  hPtNoGen = fs->make<TH1D>("hPtNoGen" , "hPtNoGen" , 1000 , 0. , 1000. );
+  hPtLowELoss = fs->make<TH1D>("hPtLowELoss" , "hPtLowELoss" , 1000 , 0. , 1000. );
+
+  hEta = fs->make<TH1D>("hEta" , "hEta" , 100 , -5. , 5. );
+  hEtaNoGen = fs->make<TH1D>("hEtaNoGen" , "hEtaNoGen" , 100 , -5. , 5.  );
+  hEtaLowELoss = fs->make<TH1D>("hEtaLowELoss" , "hEtaLowELoss" , 100 , -5. , 5. );
+
+  hPhi = fs->make<TH1D>("hPhi" , "hPhi" , 100 , -5. , 5.  );
+  hPhiNoGen = fs->make<TH1D>("hPhiNoGen" , "hPhiNoGen" , 100 , -5. , 5.  );
+  hPhiLowELoss = fs->make<TH1D>("hPhiLowELoss" , "hPhiLowELoss" , 100 , -5. , 5.  );
 
   hELossEE = fs->make<TH1D>("hELossEE","hELossEE", 1000, 0., 1000.);
   hELossEEF = fs->make<TH1D>("hELossEEF","hELossEEF", 1000, 0., 1000.);
@@ -321,7 +355,8 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   hXYLowELosshitsHEFCN = fs->make<TH2D>("hXYLowELosshitsHEFCN","hXYLowELosshitsHEFCN", 600, -300., 300., 600, -300., 300.);
   hXYmissedhits = fs->make<TH2D>("hXYmissedhits","hXYmissedhits", 600, -300., 300., 600, -300., 300.);
   
-  hYZLowELosshitsHEFCN = fs->make<TH2D>("hYZLowELosshitsHEFCN","hYZLowELosshitsHEFCN", 250, 300., 550., 600, -300., 300.);
+  hYZLowELosshitsHEFCN = fs->make<TH2D>("hYZLowELosshitsHEFCN","hYZLowELosshitsHEFCN", 250, 300., 550., 300, 0., 300.);
+  hYZLLowELosshitsHEFCN = fs->make<TH2D>("hYZLLowELosshitsHEFCN","hYZLLowELosshitsHEFCN", 600, -50., 550., 350, -50., 300.);
   hYZmissedhits = fs->make<TH2D>("hYZmissedhits","hYZmissedhits", 250, 300., 550., 300, 0., 300.);
   
   hXLowELosshitsHEFCN = fs->make<TH1D>("hXLowELosshitsHEFCN","hXLowELosshitsHEFCN", 600, -300., 300.);
@@ -412,14 +447,23 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   Handle<SimTrackContainer> simtrack;
   iEvent.getByToken(tSimTrackContainer, simtrack);
   int itrk = 0;
-  for(SimTrackContainer::const_iterator itTrack = simtrack->begin(); itTrack != simtrack->end(); ++itTrack) {
+  //double muonpt = 0.0;
+  SimTrackContainer::const_iterator itTrack;
+  for(itTrack = simtrack->begin(); itTrack != simtrack->end(); ++itTrack) {
     // int charge = itTrack->charge();
     int charge = itTrack->charge();  
-    histo->Fill( charge );
-    if(itTrack->noGenpart())
+    hCharge->Fill( charge );
+    if(!itTrack->noGenpart()){
       hPt->Fill(itTrack->momentum().pt());
+      hEta->Fill(itTrack->momentum().eta());
+      hPhi->Fill(itTrack->momentum().phi());
+    }
+    hPDG->Fill(itTrack->type());
 
-    // if(abs(itTrack->type())==13){
+    if(itTrack->noGenpart())
+      hPtNoGen->Fill(itTrack->momentum().pt());
+    
+    // if(itTrack->charge()==0){
     //   printf("index : %d, (id,type,charge) : (%06u,%5d,%04.1f), (vert,genpat) : (%02d, %02d), \n\t\t(pt,eta,phi,e) : (%7.5lf, %7.5lf, %7.5lf,%7.5lf), Surface (x,y,z) : (%7.5lf,%7.5lf,%7.5lf)\n",
     // 	     itrk,itTrack->trackId(), itTrack->type(), itTrack->charge(),
     // 	     itTrack->vertIndex(), itTrack->genpartIndex(),
@@ -430,6 +474,7 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     itrk++;
   }
   
+
   const CaloGeometry &geomCalo = iSetup.getData(caloGeomToken_);
   rhtools_.setGeometry(geomCalo);
   
@@ -550,6 +595,15 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	hinfo.layer = rhtools_.getLayerWithOffset(id1);
 	hinfo.phi = rhtools_.getPhi(id1);
 	hinfo.eta = rhtools_.getEta(id1);
+	for(itTrack = simtrack->begin(); itTrack != simtrack->end(); ++itTrack) {
+	  if(itTrack->trackId() == UInt_t(itHit->geantTrackId())){
+	    hinfo.trkpt = itTrack->momentum().pt();
+	    hinfo.trketa = itTrack->momentum().eta();
+	    hinfo.trkphi = itTrack->momentum().phi();
+	    hinfo.charge = itTrack->charge();
+	    hinfo.pdg = itTrack->type();
+	  }
+	}
       }
       esum.etotal += itHit->energy();
       hinfo.nhits++;
@@ -711,12 +765,17 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  hELossCSinBunchHEFF->Fill(esum.eTime[0]*1.e6); //in keV
 	if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
 	  hELossCSinBunchHEFCN->Fill(esum.eTime[0]*1.e6); //in keV
-	  // if(!TMath::AreEqualAbs(hinfo.z,0.0,1.e-5))
-	  //   hELossCSinBunchHEFCNFiltered->Fill(esum.eTime[0]*1.e6); //in keV
+	  if(TMath::Abs(hinfo.z)>300. and TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y) > 20.0)
+	    hELossCSinBunchHEFCNFiltered->Fill(esum.eTime[0]*1.e6); //in keV
 	  if(esum.eTime[0]*1.e6 < 35.){
+	    hPtLowELoss->Fill(hinfo.trkpt);
+	    hEtaLowELoss->Fill(hinfo.trketa);
+	    hPhiLowELoss->Fill(hinfo.trkphi);
+	    hChargeLowELoss->Fill(hinfo.charge);
+	    hPDGLowELoss->Fill(hinfo.pdg);
 	    hXYLowELosshitsHEFCN->Fill(hinfo.x,hinfo.y);
-	    if(TMath::Abs(hinfo.x)<20.0)
-	      hYZLowELosshitsHEFCN->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.y*hinfo.y));
+	    hYZLowELosshitsHEFCN->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y));
+	    hYZLLowELosshitsHEFCN->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y));
 	    hXLowELosshitsHEFCN->Fill(hinfo.x);
 	    hYLowELosshitsHEFCN->Fill(hinfo.y);
 	    if(TMath::Abs(hinfo.x)<20.0 && TMath::Abs(hinfo.y)<20.0)
