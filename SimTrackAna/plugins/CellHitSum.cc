@@ -157,6 +157,8 @@ private:
   TH1D *hELossCSinBunchHEFF ;
   TH1D *hELossCSinBunchHEFCN ;
   TH1D *hELossCSinBunchHEFCK ;
+  TH1D *hELossCSinBunchHEFCNFiltered ;
+
 
   TH1D *hELossCSmissedEE;
   TH1D *hELossCSmissedEEF ;
@@ -181,7 +183,14 @@ private:
   
   // TH2D *hYZhits;
   TH2D **hXYhits;
-
+  TH2D *hXYLowELosshitsHEFCN;
+  TH2D *hXYmissedhits;
+  TH2D *hYZLowELosshitsHEFCN;
+  TH2D *hYZmissedhits;
+  TH1D *hXLowELosshitsHEFCN;
+  TH1D *hYLowELosshitsHEFCN;
+  TH1D *hZLowELosshitsHEFCN;
+  
   TH2D *hYZhitsEE;
   TH2D *hYZhitsHEF;
   TH2D *hYZhitsHEB;
@@ -279,7 +288,8 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   hELossCSinBunchHEFF = fs->make<TH1D>("hELossCSinBunchHEFF","hELossCSinBunchHEFF", 1000, 0., 1000.);
   hELossCSinBunchHEFCN = fs->make<TH1D>("hELossCSinBunchHEFCN","hELossCSinBunchHEFCN", 1000, 0., 1000.);
   hELossCSinBunchHEFCK = fs->make<TH1D>("hELossCSinBunchHEFCK","hELossCSinBunchHEFCK", 1000, 0., 1000.);
-
+  hELossCSinBunchHEFCNFiltered = fs->make<TH1D>("hELossCSinBunchHEFCNFiltered","hELossCSinBunchHEFCNFiltered", 1000, 0., 1000.);
+  
   hELossCSmissedEE = fs->make<TH1D>("hELossCSmissedEE","hELossCSmissedEE", 1000, 0., 1000.);
   hELossCSmissedEEF = fs->make<TH1D>("hELossCSmissedEEF","hELossCSmissedEEF", 1000, 0., 1000.);
   hELossCSmissedEECN = fs->make<TH1D>("hELossCSmissedEECN","hELossCSmissedEECN", 1000, 0., 1000.);
@@ -308,6 +318,15 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   for(int i=1;i<=50;i++)
     hXYhits[i] = fs->make<TH2D>(Form("hXYhits_layer_%02d",i),Form("Hits in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
   
+  hXYLowELosshitsHEFCN = fs->make<TH2D>("hXYLowELosshitsHEFCN","hXYLowELosshitsHEFCN", 600, -300., 300., 600, -300., 300.);
+  hXYmissedhits = fs->make<TH2D>("hXYmissedhits","hXYmissedhits", 600, -300., 300., 600, -300., 300.);
+  
+  hYZLowELosshitsHEFCN = fs->make<TH2D>("hYZLowELosshitsHEFCN","hYZLowELosshitsHEFCN", 250, 300., 550., 600, -300., 300.);
+  hYZmissedhits = fs->make<TH2D>("hYZmissedhits","hYZmissedhits", 250, 300., 550., 300, 0., 300.);
+  
+  hXLowELosshitsHEFCN = fs->make<TH1D>("hXLowELosshitsHEFCN","hXLowELosshitsHEFCN", 600, -300., 300.);
+  hYLowELosshitsHEFCN = fs->make<TH1D>("hYLowELosshitsHEFCN","hYLowELosshitsHEFCN", 600, -300., 300.);
+  hZLowELosshitsHEFCN = fs->make<TH1D>("hZLowELosshitsHEFCN","hZLowELosshitsHEFCN", 2400, -1200., 1200.);
   
   //hYZhits = fs->make<TH2D>("hYZhits","hYZhits", 1200, -600., 600., 1200, -600., 600.);
   //hXYhits = fs->make<TH2D>("hXYhits","Hits in XY", 600, -300., 300., 600, -300., 300.);
@@ -666,7 +685,6 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
   //std::cout << "simhit size : " << simhit->size() << ", nof hits in Si : " << nofSiHits << ", map size : " << map_hits.size() << std::endl;
   
-  
   std::map<uint32_t, std::pair<hitsinfo, energysum> >::iterator itr;
   for (itr = map_hits.begin(); itr != map_hits.end(); ++itr) {
     //uint32_t id_ = (*itr).first;
@@ -691,8 +709,20 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	hELossCSinBunchHEF->Fill(esum.eTime[0]*1.e6);
 	if(id.type()==HGCSiliconDetId::HGCalFine)
 	  hELossCSinBunchHEFF->Fill(esum.eTime[0]*1.e6); //in keV
-	if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
+	if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
 	  hELossCSinBunchHEFCN->Fill(esum.eTime[0]*1.e6); //in keV
+	  // if(!TMath::AreEqualAbs(hinfo.z,0.0,1.e-5))
+	  //   hELossCSinBunchHEFCNFiltered->Fill(esum.eTime[0]*1.e6); //in keV
+	  if(esum.eTime[0]*1.e6 < 35.){
+	    hXYLowELosshitsHEFCN->Fill(hinfo.x,hinfo.y);
+	    if(TMath::Abs(hinfo.x)<20.0)
+	      hYZLowELosshitsHEFCN->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.y*hinfo.y));
+	    hXLowELosshitsHEFCN->Fill(hinfo.x);
+	    hYLowELosshitsHEFCN->Fill(hinfo.y);
+	    if(TMath::Abs(hinfo.x)<20.0 && TMath::Abs(hinfo.y)<20.0)
+	      hZLowELosshitsHEFCN->Fill(hinfo.z);
+	  }
+	}
 	if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
 	  hELossCSinBunchHEFCK->Fill(esum.eTime[0]*1.e6); //in keV
       }
@@ -707,8 +737,10 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  hELossCSmissedEECN->Fill(esum.eTime[2]*1.e6); //in keV
 	if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
 	  hELossCSmissedEECK->Fill(esum.eTime[2]*1.e6); //in keV
+	hXYmissedhits->Fill(hinfo.x,hinfo.y);
+	hYZmissedhits->Fill(TMath::Abs(hinfo.z),TMath::Abs(hinfo.y));
       }
-    
+      
       if(name == "HGCalHESiliconSensitive"){
 	hELossCSmissedHEF->Fill(esum.eTime[2]*1.e6);
 	if(id.type()==HGCSiliconDetId::HGCalFine)
@@ -717,6 +749,8 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  hELossCSmissedHEFCN->Fill(esum.eTime[2]*1.e6); //in keV
 	if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
 	  hELossCSmissedHEFCK->Fill(esum.eTime[2]*1.e6); //in keV
+	hXYmissedhits->Fill(hinfo.x,hinfo.y);
+	hYZmissedhits->Fill(TMath::Abs(hinfo.z),TMath::Abs(hinfo.y));
       }
     }
   }
