@@ -149,14 +149,14 @@ private:
   TH1D *hELossHEFCK ;
   TH1D *hELossHEB ;
 
-  TH1D *hELossCellSummedEE;
-  TH1D *hELossCellSummedEEF ;
-  TH1D *hELossCellSummedEECN ;
-  TH1D *hELossCellSummedEECK ;
-  TH1D *hELossCellSummedHEF ;
-  TH1D *hELossCellSummedHEFF ;
-  TH1D *hELossCellSummedHEFCN ;
-  TH1D *hELossCellSummedHEFCK ;
+  TH1D *hELossCSinBunchEE;
+  TH1D *hELossCSinBunchEEF ;
+  TH1D *hELossCSinBunchEECN ;
+  TH1D *hELossCSinBunchEECK ;
+  TH1D *hELossCSinBunchHEF ;
+  TH1D *hELossCSinBunchHEFF ;
+  TH1D *hELossCSinBunchHEFCN ;
+  TH1D *hELossCSinBunchHEFCK ;
 
   TH1D *hELossCSmissedEE;
   TH1D *hELossCSmissedEEF ;
@@ -166,6 +166,15 @@ private:
   TH1D *hELossCSmissedHEFF ;
   TH1D *hELossCSmissedHEFCN ;
   TH1D *hELossCSmissedHEFCK ;
+
+  TH1D *hELossCSMaxEE;
+  TH1D *hELossCSMaxEEF ;
+  TH1D *hELossCSMaxEECN ;
+  TH1D *hELossCSMaxEECK ;
+  TH1D *hELossCSMaxHEF ;
+  TH1D *hELossCSMaxHEFF ;
+  TH1D *hELossCSMaxHEFCN ;
+  TH1D *hELossCSMaxHEFCK ;
   
   TH1D **hELossDQMEqV ;
   TH1D **hELossLayer ;
@@ -262,25 +271,32 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   
   hELossHEB = fs->make<TH1D>("hELossHEB","hELossHEB", 1000, 0., 1000.);
 
-  hELossCellSummedEE = fs->make<TH1D>("hELossCellSummedEE","hELossCellSummedEE", 1000, 0., 1000.);
-  hELossCellSummedEEF = fs->make<TH1D>("hELossCellSummedEEF","hELossCellSummedEEF", 1000, 0., 1000.);
-  hELossCellSummedEECN = fs->make<TH1D>("hELossCellSummedEECN","hELossCellSummedEECN", 1000, 0., 1000.);
-  hELossCellSummedEECK = fs->make<TH1D>("hELossCellSummedEECK","hELossCellSummedEECK", 1000, 0., 1000.);
-
-  hELossCellSummedHEF = fs->make<TH1D>("hELossCellSummedHEF","hELossCellSummedHEF", 1000, 0., 1000.);
-  hELossCellSummedHEFF = fs->make<TH1D>("hELossCellSummedHEFF","hELossCellSummedHEFF", 1000, 0., 1000.);
-  hELossCellSummedHEFCN = fs->make<TH1D>("hELossCellSummedHEFCN","hELossCellSummedHEFCN", 1000, 0., 1000.);
-  hELossCellSummedHEFCK = fs->make<TH1D>("hELossCellSummedHEFCK","hELossCellSummedHEFCK", 1000, 0., 1000.);
+  hELossCSinBunchEE = fs->make<TH1D>("hELossCSinBunchEE","hELossCSinBunchEE", 1000, 0., 1000.);
+  hELossCSinBunchEEF = fs->make<TH1D>("hELossCSinBunchEEF","hELossCSinBunchEEF", 1000, 0., 1000.);
+  hELossCSinBunchEECN = fs->make<TH1D>("hELossCSinBunchEECN","hELossCSinBunchEECN", 1000, 0., 1000.);
+  hELossCSinBunchEECK = fs->make<TH1D>("hELossCSinBunchEECK","hELossCSinBunchEECK", 1000, 0., 1000.);
+  hELossCSinBunchHEF = fs->make<TH1D>("hELossCSinBunchHEF","hELossCSinBunchHEF", 1000, 0., 1000.);
+  hELossCSinBunchHEFF = fs->make<TH1D>("hELossCSinBunchHEFF","hELossCSinBunchHEFF", 1000, 0., 1000.);
+  hELossCSinBunchHEFCN = fs->make<TH1D>("hELossCSinBunchHEFCN","hELossCSinBunchHEFCN", 1000, 0., 1000.);
+  hELossCSinBunchHEFCK = fs->make<TH1D>("hELossCSinBunchHEFCK","hELossCSinBunchHEFCK", 1000, 0., 1000.);
 
   hELossCSmissedEE = fs->make<TH1D>("hELossCSmissedEE","hELossCSmissedEE", 1000, 0., 1000.);
   hELossCSmissedEEF = fs->make<TH1D>("hELossCSmissedEEF","hELossCSmissedEEF", 1000, 0., 1000.);
   hELossCSmissedEECN = fs->make<TH1D>("hELossCSmissedEECN","hELossCSmissedEECN", 1000, 0., 1000.);
   hELossCSmissedEECK = fs->make<TH1D>("hELossCSmissedEECK","hELossCSmissedEECK", 1000, 0., 1000.);
-
   hELossCSmissedHEF = fs->make<TH1D>("hELossCSmissedHEF","hELossCSmissedHEF", 1000, 0., 1000.);
   hELossCSmissedHEFF = fs->make<TH1D>("hELossCSmissedHEFF","hELossCSmissedHEFF", 1000, 0., 1000.);
   hELossCSmissedHEFCN = fs->make<TH1D>("hELossCSmissedHEFCN","hELossCSmissedHEFCN", 1000, 0., 1000.);
   hELossCSmissedHEFCK = fs->make<TH1D>("hELossCSmissedHEFCK","hELossCSmissedHEFCK", 1000, 0., 1000.);
+
+  hELossCSMaxEE = fs->make<TH1D>("hELossCSMaxEE","hELossCSMaxEE", 1000, 0., 1000.);
+  hELossCSMaxEEF = fs->make<TH1D>("hELossCSMaxEEF","hELossCSMaxEEF", 1000, 0., 1000.);
+  hELossCSMaxEECN = fs->make<TH1D>("hELossCSMaxEECN","hELossCSMaxEECN", 1000, 0., 1000.);
+  hELossCSMaxEECK = fs->make<TH1D>("hELossCSMaxEECK","hELossCSMaxEECK", 1000, 0., 1000.);
+  hELossCSMaxHEF = fs->make<TH1D>("hELossCSMaxHEF","hELossCSMaxHEF", 1000, 0., 1000.);
+  hELossCSMaxHEFF = fs->make<TH1D>("hELossCSMaxHEFF","hELossCSMaxHEFF", 1000, 0., 1000.);
+  hELossCSMaxHEFCN = fs->make<TH1D>("hELossCSMaxHEFCN","hELossCSMaxHEFCN", 1000, 0., 1000.);
+  hELossCSMaxHEFCK = fs->make<TH1D>("hELossCSMaxHEFCK","hELossCSMaxHEFCK", 1000, 0., 1000.);
   
   hELossDQMEqV = new TH1D*[50]; // for 50 layers in earch +/- z-direction
   hELossLayer = new TH1D*[50]; // for 50 layers in earch +/- z-direction
@@ -660,24 +676,48 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     HGCSiliconDetId id((*itr).first);
     
-    if(name == "HGCalEESensitive"){
-      hELossCSmissedEE->Fill(esum.eTime[2]*1.e6);
-      if(id.type()==HGCSiliconDetId::HGCalFine)
-	hELossCSmissedEEF->Fill(esum.eTime[2]*1.e6); //in keV
-      if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
-	hELossCSmissedEECN->Fill(esum.eTime[2]*1.e6); //in keV
-      if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
-	hELossCSmissedEECK->Fill(esum.eTime[2]*1.e6); //in keV
+    if(!TMath::AreEqualAbs(esum.eTime[0]*1.e6,0.0,1.e-5)){
+      if(name == "HGCalEESensitive"){
+	hELossCSinBunchEE->Fill(esum.eTime[0]*1.e6);
+	if(id.type()==HGCSiliconDetId::HGCalFine)
+	  hELossCSinBunchEEF->Fill(esum.eTime[0]*1.e6); //in keV
+	if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
+	  hELossCSinBunchEECN->Fill(esum.eTime[0]*1.e6); //in keV
+	if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
+	  hELossCSinBunchEECK->Fill(esum.eTime[0]*1.e6); //in keV
+      }
+    
+      if(name == "HGCalHESiliconSensitive"){
+	hELossCSinBunchHEF->Fill(esum.eTime[0]*1.e6);
+	if(id.type()==HGCSiliconDetId::HGCalFine)
+	  hELossCSinBunchHEFF->Fill(esum.eTime[0]*1.e6); //in keV
+	if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
+	  hELossCSinBunchHEFCN->Fill(esum.eTime[0]*1.e6); //in keV
+	if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
+	  hELossCSinBunchHEFCK->Fill(esum.eTime[0]*1.e6); //in keV
+      }
     }
     
-    if(name == "HGCalHESiliconSensitive"){
-      hELossCSmissedHEF->Fill(esum.eTime[2]*1.e6);
-      if(id.type()==HGCSiliconDetId::HGCalFine)
-	hELossCSmissedHEFF->Fill(esum.eTime[2]*1.e6); //in keV
-      if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
-	hELossCSmissedHEFCN->Fill(esum.eTime[2]*1.e6); //in keV
-      if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
-	hELossCSmissedHEFCK->Fill(esum.eTime[2]*1.e6); //in keV
+    if(!TMath::AreEqualAbs(esum.eTime[2]*1.e6,0.0,1.e-5)){
+      if(name == "HGCalEESensitive"){
+	hELossCSmissedEE->Fill(esum.eTime[2]*1.e6);
+	if(id.type()==HGCSiliconDetId::HGCalFine)
+	  hELossCSmissedEEF->Fill(esum.eTime[2]*1.e6); //in keV
+	if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
+	  hELossCSmissedEECN->Fill(esum.eTime[2]*1.e6); //in keV
+	if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
+	  hELossCSmissedEECK->Fill(esum.eTime[2]*1.e6); //in keV
+      }
+    
+      if(name == "HGCalHESiliconSensitive"){
+	hELossCSmissedHEF->Fill(esum.eTime[2]*1.e6);
+	if(id.type()==HGCSiliconDetId::HGCalFine)
+	  hELossCSmissedHEFF->Fill(esum.eTime[2]*1.e6); //in keV
+	if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
+	  hELossCSmissedHEFCN->Fill(esum.eTime[2]*1.e6); //in keV
+	if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
+	  hELossCSmissedHEFCK->Fill(esum.eTime[2]*1.e6); //in keV
+      }
     }
   }
   
@@ -706,9 +746,9 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     }//map loop
     
-    if(maxEsum > 0.)
+    if(maxEsum*1.e6 > 0.)
       cellMaxEdep.push_back(maxid);
-    if(energy > 0.)
+    if(energy*1.e6 > 0.)
       hELossLayer[il]->Fill(energy*1.e6); //in keV
   }
 
@@ -718,23 +758,23 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     HGCSiliconDetId id(id_);
     
     if(name == "HGCalEESensitive"){
-      hELossCellSummedEE->Fill(esum.eTime[0]*1.e6);
+      hELossCSMaxEE->Fill(esum.eTime[0]*1.e6);
       if(id.type()==HGCSiliconDetId::HGCalFine)
-	hELossCellSummedEEF->Fill(esum.eTime[0]*1.e6); //in keV
+	hELossCSMaxEEF->Fill(esum.eTime[0]*1.e6); //in keV
       if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
-	hELossCellSummedEECN->Fill(esum.eTime[0]*1.e6); //in keV
+	hELossCSMaxEECN->Fill(esum.eTime[0]*1.e6); //in keV
       if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
-	hELossCellSummedEECK->Fill(esum.eTime[0]*1.e6); //in keV
+	hELossCSMaxEECK->Fill(esum.eTime[0]*1.e6); //in keV
     }
     
     if(name == "HGCalHESiliconSensitive"){
-      hELossCellSummedHEF->Fill(esum.eTime[0]*1.e6);
+      hELossCSMaxHEF->Fill(esum.eTime[0]*1.e6);
       if(id.type()==HGCSiliconDetId::HGCalFine)
-	hELossCellSummedHEFF->Fill(esum.eTime[0]*1.e6); //in keV
+	hELossCSMaxHEFF->Fill(esum.eTime[0]*1.e6); //in keV
       if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
-	hELossCellSummedHEFCN->Fill(esum.eTime[0]*1.e6); //in keV
+	hELossCSMaxHEFCN->Fill(esum.eTime[0]*1.e6); //in keV
       if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
-	hELossCellSummedHEFCK->Fill(esum.eTime[0]*1.e6); //in keV
+	hELossCSMaxHEFCK->Fill(esum.eTime[0]*1.e6); //in keV
     }
     
   }
