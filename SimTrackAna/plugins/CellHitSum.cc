@@ -157,6 +157,15 @@ private:
   TH1D *hELossCellSummedHEFF ;
   TH1D *hELossCellSummedHEFCN ;
   TH1D *hELossCellSummedHEFCK ;
+
+  TH1D *hELossCSmissedEE;
+  TH1D *hELossCSmissedEEF ;
+  TH1D *hELossCSmissedEECN ;
+  TH1D *hELossCSmissedEECK ;
+  TH1D *hELossCSmissedHEF ;
+  TH1D *hELossCSmissedHEFF ;
+  TH1D *hELossCSmissedHEFCN ;
+  TH1D *hELossCSmissedHEFCK ;
   
   TH1D **hELossDQMEqV ;
   TH1D **hELossLayer ;
@@ -262,6 +271,16 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   hELossCellSummedHEFF = fs->make<TH1D>("hELossCellSummedHEFF","hELossCellSummedHEFF", 1000, 0., 1000.);
   hELossCellSummedHEFCN = fs->make<TH1D>("hELossCellSummedHEFCN","hELossCellSummedHEFCN", 1000, 0., 1000.);
   hELossCellSummedHEFCK = fs->make<TH1D>("hELossCellSummedHEFCK","hELossCellSummedHEFCK", 1000, 0., 1000.);
+
+  hELossCSmissedEE = fs->make<TH1D>("hELossCSmissedEE","hELossCSmissedEE", 1000, 0., 1000.);
+  hELossCSmissedEEF = fs->make<TH1D>("hELossCSmissedEEF","hELossCSmissedEEF", 1000, 0., 1000.);
+  hELossCSmissedEECN = fs->make<TH1D>("hELossCSmissedEECN","hELossCSmissedEECN", 1000, 0., 1000.);
+  hELossCSmissedEECK = fs->make<TH1D>("hELossCSmissedEECK","hELossCSmissedEECK", 1000, 0., 1000.);
+
+  hELossCSmissedHEF = fs->make<TH1D>("hELossCSmissedHEF","hELossCSmissedHEF", 1000, 0., 1000.);
+  hELossCSmissedHEFF = fs->make<TH1D>("hELossCSmissedHEFF","hELossCSmissedHEFF", 1000, 0., 1000.);
+  hELossCSmissedHEFCN = fs->make<TH1D>("hELossCSmissedHEFCN","hELossCSmissedHEFCN", 1000, 0., 1000.);
+  hELossCSmissedHEFCK = fs->make<TH1D>("hELossCSmissedHEFCK","hELossCSmissedHEFCK", 1000, 0., 1000.);
   
   hELossDQMEqV = new TH1D*[50]; // for 50 layers in earch +/- z-direction
   hELossLayer = new TH1D*[50]; // for 50 layers in earch +/- z-direction
@@ -638,6 +657,28 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     hitsinfo hinfo = (*itr).second.first;
     energysum esum = (*itr).second.second;
     hELossDQMEqV[hinfo.layer]->Fill(esum.eTime[0]);
+
+    HGCSiliconDetId id((*itr).first);
+    
+    if(name == "HGCalEESensitive"){
+      hELossCSmissedEE->Fill(esum.eTime[2]*1.e6);
+      if(id.type()==HGCSiliconDetId::HGCalFine)
+	hELossCSmissedEEF->Fill(esum.eTime[2]*1.e6); //in keV
+      if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
+	hELossCSmissedEECN->Fill(esum.eTime[2]*1.e6); //in keV
+      if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
+	hELossCSmissedEECK->Fill(esum.eTime[2]*1.e6); //in keV
+    }
+    
+    if(name == "HGCalHESiliconSensitive"){
+      hELossCSmissedHEF->Fill(esum.eTime[2]*1.e6);
+      if(id.type()==HGCSiliconDetId::HGCalFine)
+	hELossCSmissedHEFF->Fill(esum.eTime[2]*1.e6); //in keV
+      if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
+	hELossCSmissedHEFCN->Fill(esum.eTime[2]*1.e6); //in keV
+      if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
+	hELossCSmissedHEFCK->Fill(esum.eTime[2]*1.e6); //in keV
+    }
   }
   
   std::vector<uint32_t> cellMaxEdep;
