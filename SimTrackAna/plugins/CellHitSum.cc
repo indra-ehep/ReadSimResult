@@ -19,6 +19,7 @@
 
 // system include files
 #include <memory>
+#include <vector>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -264,7 +265,7 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   
   hELossDQMEqV = new TH1D*[50]; // for 50 layers in earch +/- z-direction
   hELossLayer = new TH1D*[50]; // for 50 layers in earch +/- z-direction
-  hXYhits = = new TH2D*[50]; // for 50 layers in earch +/- z-direction
+  hXYhits =  new TH2D*[50]; // for 50 layers in earch +/- z-direction
   for(int i=1;i<=50;i++)
     hELossDQMEqV[i] = fs->make<TH1D>(Form("hELossDQMEqV_layer_%02d",i),Form("hELossDQMEqV_layer_%02d",i), 100, 0, 0.1);
   for(int i=1;i<=50;i++)
@@ -636,49 +637,36 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     //uint32_t id_ = (*itr).first;
     hitsinfo hinfo = (*itr).second.first;
     energysum esum = (*itr).second.second;
-    //int layer = hinfo.layer;
-    // DetId id1 = static_cast<DetId>((*itr).first);
-    // GlobalPoint pos = rhtools_.getPosition(id1);
-    
-    // printf("\tDet : %s, first hit : %d, nhits : %u, id : %u, Edep : %5.2lf (keV), (x,y,z) : (%lf,%lf,%lf)\n", 
-    // 	   name.c_str(), hinfo.hitid, hinfo.nhits, (*itr).first, esum.etotal*1.e6, hinfo.x, hinfo.y, hinfo.z);
-    
-    //Form("hELossLayer_%02d",i)
     hELossDQMEqV[hinfo.layer]->Fill(esum.eTime[0]);
-    
-    HGCSiliconDetId id((*itr).first);
-    
-
   }
-
-  vector<uint32_t> cellMaxEdep;
+  
+  std::vector<uint32_t> cellMaxEdep;
   cellMaxEdep.clear();
   for(int il=1 ; il<=50 ; il++){
     double energy =  0.;
     uint32_t maxid = 0;
-    double prevEsum = 0.0 ;
+    double maxEsum = 0.0 ;
     for (itr = map_hits.begin(); itr != map_hits.end(); ++itr) {
       //uint32_t id_ = (*itr).first;
       hitsinfo hinfo = (*itr).second.first;
       energysum esum = (*itr).second.second;
-      //int layer = hinfo.layer;
-      // DetId id1 = static_cast<DetId>((*itr).first);
-      // GlobalPoint pos = rhtools_.getPosition(id1);
-    
       // printf("\tDet : %s, first hit : %d, nhits : %u, id : %u, Edep : %5.2lf (keV), (x,y,z) : (%lf,%lf,%lf)\n", 
       // 	   name.c_str(), hinfo.hitid, hinfo.nhits, (*itr).first, esum.etotal*1.e6, hinfo.x, hinfo.y, hinfo.z);
     
       if(hinfo.layer==il and hinfo.z > 0.){
 	energy += esum.eTime[0];
 
-	if(esum.eTime[0] > prevEsum){
-	  prevEsum = esum.eTime[0] ; 
+	if(esum.eTime[0] > maxEsum){
+	  maxEsum = esum.eTime[0] ; 
 	  maxid = (*itr).first ; 
 	}
-      }
+
+      }//match layer and z-direction
 
     }//map loop
-    cellMaxEdep.push_back(maxid);
+    
+    if(maxEsum > 0.)
+      cellMaxEdep.push_back(maxid);
     if(energy > 0.)
       hELossLayer[il]->Fill(energy*1.e6); //in keV
   }
