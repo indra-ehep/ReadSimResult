@@ -200,11 +200,21 @@ private:
   
   // TH2D *hYZhits;
   TH2D **hXYhits;
-  TH2D *hXYLowELosshitsHEFCN;
+  TH2D **hXYhitsF;
+  TH2D **hXYhitsCN;
+  TH2D **hXYhitsCK;
+  TH2D **hXYhitsB;
+
+  TH2D *hXYLowELosshitsF;
+  TH2D *hXYLowELosshitsCN;
+  TH2D *hXYLowELosshitsCK;
   TH2D *hXYmissedhits;
-  TH2D *hYZLowELosshitsHEFCN;
+  TH2D *hYZLowELosshitsF;
+  TH2D *hYZLowELosshitsCN;
+  TH2D *hYZLowELosshitsCK;
   TH2D *hYZLLowELosshitsHEFCN;
   TH2D *hYZmissedhits;
+
   TH1D *hXLowELosshitsHEFCN;
   TH1D *hYLowELosshitsHEFCN;
   TH1D *hZLowELosshitsHEFCN;
@@ -352,13 +362,26 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
     hELossLayer[i] = fs->make<TH1D>(Form("hELossLayer_%02d",i),Form("hELossLayer_%02d",i), 1000, 0., 1000.);
   for(int i=1;i<=50;i++)
     hXYhits[i] = fs->make<TH2D>(Form("hXYhits_layer_%02d",i),Form("Hits in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
-  
-  hXYLowELosshitsHEFCN = fs->make<TH2D>("hXYLowELosshitsHEFCN","hXYLowELosshitsHEFCN", 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hXYhitsF[i] = fs->make<TH2D>(Form("hXYhitsF_layer_%02d",i),Form("HitsF in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hXYhitsCN[i] = fs->make<TH2D>(Form("hXYhitsCN_layer_%02d",i),Form("HitsCN in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hXYhitsCK[i] = fs->make<TH2D>(Form("hXYhitsCK_layer_%02d",i),Form("HitsCK in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hXYhitsB[i] = fs->make<TH2D>(Form("hXYhitsB_layer_%02d",i),Form("HitsB in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+
   hXYmissedhits = fs->make<TH2D>("hXYmissedhits","hXYmissedhits", 600, -300., 300., 600, -300., 300.);
-  
-  hYZLowELosshitsHEFCN = fs->make<TH2D>("hYZLowELosshitsHEFCN","hYZLowELosshitsHEFCN", 250, 300., 550., 300, 0., 300.);
-  hYZLLowELosshitsHEFCN = fs->make<TH2D>("hYZLLowELosshitsHEFCN","hYZLLowELosshitsHEFCN", 600, -50., 550., 350, -50., 300.);
+  hXYLowELosshitsF = fs->make<TH2D>("hXYLowELosshitsF","hXYLowELosshitsF", 600, -300., 300., 600, -300., 300.);
+  hXYLowELosshitsCN = fs->make<TH2D>("hXYLowELosshitsCN","hXYLowELosshitsCN", 600, -300., 300., 600, -300., 300.);
+  hXYLowELosshitsCK = fs->make<TH2D>("hXYLowELosshitsCK","hXYLowELosshitsCK", 600, -300., 300., 600, -300., 300.);
+
   hYZmissedhits = fs->make<TH2D>("hYZmissedhits","hYZmissedhits", 250, 300., 550., 300, 0., 300.);
+  hYZLowELosshitsF = fs->make<TH2D>("hYZLowELosshitsF","hYZLowELosshitsF", 250, 300., 550., 300, 0., 300.);
+  hYZLowELosshitsCN = fs->make<TH2D>("hYZLowELosshitsCN","hYZLowELosshitsCN", 250, 300., 550., 300, 0., 300.);
+  hYZLowELosshitsCK = fs->make<TH2D>("hYZLowELosshitsCK","hYZLowELosshitsCK", 250, 300., 550., 300, 0., 300.);
+  hYZLLowELosshitsHEFCN = fs->make<TH2D>("hYZLLowELosshitsHEFCN","hYZLLowELosshitsHEFCN", 600, -50., 550., 350, -50., 300.);
+
   
   hXLowELosshitsHEFCN = fs->make<TH1D>("hXLowELosshitsHEFCN","hXLowELosshitsHEFCN", 600, -300., 300.);
   hYLowELosshitsHEFCN = fs->make<TH1D>("hYLowELosshitsHEFCN","hYLowELosshitsHEFCN", 600, -300., 300.);
@@ -460,7 +483,7 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hPhi->Fill(itTrack->momentum().phi());
     }
     hPDG->Fill(itTrack->type());
-
+    
     if(itTrack->noGenpart())
       hPtNoGen->Fill(itTrack->momentum().pt());
     
@@ -574,7 +597,7 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
     
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    if(rhtools_.isSilicon(id1)){
+    if(rhtools_.isSilicon(id1) or rhtools_.isScintillator(id1)){
       uint32_t id_ = itHit->id();
       
       energysum esum;
@@ -769,8 +792,14 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
       if(name == "HGCalHESiliconSensitive"){
 	hELossCSinBunchHEF->Fill(esum.eTime[0]*1.e6);
-	if(id.type()==HGCSiliconDetId::HGCalFine)
+	if(id.type()==HGCSiliconDetId::HGCalFine){
 	  hELossCSinBunchHEFF->Fill(esum.eTime[0]*1.e6); //in keV
+	  if(esum.eTime[0]*1.e6 < 35.){
+	    hXYLowELosshitsF->Fill(hinfo.x,hinfo.y);
+	    hYZLowELosshitsF->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y));
+	  }
+
+	}
 	if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
 	  hELossCSinBunchHEFCN->Fill(esum.eTime[0]*1.e6); //in keV
 	  if(TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y) > 45.0 and TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y) < 60.0 and hinfo.layer >= 38)
@@ -783,8 +812,8 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    hPhiLowELoss->Fill(hinfo.trkphi);
 	    hChargeLowELoss->Fill(hinfo.charge);
 	    hPDGLowELoss->Fill(hinfo.pdg);
-	    // hXYLowELosshitsHEFCN->Fill(hinfo.x,hinfo.y);
-	    // hYZLowELosshitsHEFCN->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y));
+	    hXYLowELosshitsCN->Fill(hinfo.x,hinfo.y);
+	    hYZLowELosshitsCN->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y));
 	    hYZLLowELosshitsHEFCN->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y));
 	    hXLowELosshitsHEFCN->Fill(hinfo.x);
 	    hYLowELosshitsHEFCN->Fill(hinfo.y);
@@ -795,8 +824,8 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
 	  hELossCSinBunchHEFCK->Fill(esum.eTime[0]*1.e6); //in keV
 	  if(esum.eTime[0]*1.e6 < 10.){
-	    hXYLowELosshitsHEFCN->Fill(hinfo.x,hinfo.y);
-	    hYZLowELosshitsHEFCN->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y));
+	    hXYLowELosshitsCK->Fill(hinfo.x,hinfo.y);
+	    hYZLowELosshitsCK->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y));
 	  }
 	}
       }
@@ -863,6 +892,8 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   for ( unsigned int ic = 0 ; ic < cellMaxEdep.size() ; ic++ ){
     uint32_t id_ = cellMaxEdep[ic];
     energysum esum = map_hits[id_].second;
+    DetId id1 = static_cast<DetId>(id_);
+    if(!rhtools_.isSilicon(id1))
     HGCSiliconDetId id(id_);
     
     if(name == "HGCalEESensitive"){
