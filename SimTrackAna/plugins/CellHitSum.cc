@@ -175,7 +175,7 @@ private:
   TH1D *hELossCSinBunchHEFCN ;
   TH1D *hELossCSinBunchHEFCK ;
   TH1D *hELossCSinBunchHEFCNFiltered ;
-
+  TH1D *hELossCSinBunchHEFCNNoise ;
 
   TH1D *hELossCSmissedEE;
   TH1D *hELossCSmissedEEF ;
@@ -323,7 +323,8 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   hELossCSinBunchHEFCN = fs->make<TH1D>("hELossCSinBunchHEFCN","hELossCSinBunchHEFCN", 1000, 0., 1000.);
   hELossCSinBunchHEFCK = fs->make<TH1D>("hELossCSinBunchHEFCK","hELossCSinBunchHEFCK", 1000, 0., 1000.);
   hELossCSinBunchHEFCNFiltered = fs->make<TH1D>("hELossCSinBunchHEFCNFiltered","hELossCSinBunchHEFCNFiltered", 1000, 0., 1000.);
-  
+  hELossCSinBunchHEFCNNoise = fs->make<TH1D>("hELossCSinBunchHEFCNNoise","hELossCSinBunchHEFCNNoise", 1000, 0., 1000.);
+
   hELossCSmissedEE = fs->make<TH1D>("hELossCSmissedEE","hELossCSmissedEE", 1000, 0., 1000.);
   hELossCSmissedEEF = fs->make<TH1D>("hELossCSmissedEEF","hELossCSmissedEEF", 1000, 0., 1000.);
   hELossCSmissedEECN = fs->make<TH1D>("hELossCSmissedEECN","hELossCSmissedEECN", 1000, 0., 1000.);
@@ -616,15 +617,19 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       for (unsigned int k = 0; k < 2; ++k) {
         if (time > 0 && time < 25.)
           esum.eTime[k] += itHit->energy();
-	else
+	else{
 	  esum.eTime[k+2] += itHit->energy();
+	  // printf("Failed Det : %s, trackid : %d, ihit : %d, layer : %d, id : %u, time-tof : %lf, Eloss : %5.2lf (keV), (x,y,z) : (%lf,%lf,%lf)\n", 
+	  // 	 name.c_str(), itHit->geantTrackId(), nofSiHits, hinfo.layer, id_, time, itHit->energy()*1.e6, hinfo.x, hinfo.y, hinfo.z);
+	}
       }
       
       // if (verbosity_ > 1)
       //   edm::LogVerbatim("HGCalValidation") << " -----------------------   gx = " << hinfo.x << " gy = " << hinfo.y
       //                                       << " gz = " << hinfo.z << " phi = " << hinfo.phi << " eta = " << hinfo.eta;
-      // printf("Det : %s, trackid : %d, ihit : %d, layer : %d, id : %u, time : %lf, tof : %lf, Eloss : %5.2lf (keV), (x,y,z) : (%lf,%lf,%lf)\n", 
-      // 	     name.c_str(), itHit->geantTrackId(), nofSiHits, hinfo.layer, id_, itHit->time(), tof, itHit->energy()*1.e6, hinfo.x, hinfo.y, hinfo.z);
+      
+      // printf("Det : %s, ihit:%d, layer:%d, id:%u, time : %5.3lf, tof : %5.3lf, ti-to : %5.3lf, Eloss : %5.2lf (keV), (x,y,z) : (%5.2lf,%5.2lf,%5.2lf)\n", 
+      // 	     name.c_str(), nofSiHits, hinfo.layer, id_, itHit->time(), tof, time, itHit->energy()*1.e6, hinfo.x, hinfo.y, hinfo.z);
       
       map_hits[id_] = std::pair<hitsinfo, energysum>(hinfo, esum);
       nofSiHits++;
@@ -745,7 +750,10 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     hitsinfo hinfo = (*itr).second.first;
     energysum esum = (*itr).second.second;
     hELossDQMEqV[hinfo.layer]->Fill(esum.eTime[0]);
-
+    
+    // printf("\tCellSummed : Det : %s, first hit : %d, nhits : %u, id : %u, Edep : %5.2lf (keV), (x,y,z) : (%5.2lf,%5.2lf,%5.2lf)\n", 
+    //  	   name.c_str(), hinfo.hitid, hinfo.nhits, (*itr).first, esum.eTime[0]*1.e6, hinfo.x, hinfo.y, hinfo.z);
+    
     HGCSiliconDetId id((*itr).first);
     
     if(!TMath::AreEqualAbs(esum.eTime[0]*1.e6,0.0,1.e-5)){
@@ -765,7 +773,9 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  hELossCSinBunchHEFF->Fill(esum.eTime[0]*1.e6); //in keV
 	if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
 	  hELossCSinBunchHEFCN->Fill(esum.eTime[0]*1.e6); //in keV
-	  if(TMath::Abs(hinfo.z)>300. and TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y) > 20.0)
+	  if(TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y) > 45.0 and TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y) < 60.0 and hinfo.layer >= 38)
+	    hELossCSinBunchHEFCNNoise->Fill(esum.eTime[0]*1.e6); //in keV
+	  else
 	    hELossCSinBunchHEFCNFiltered->Fill(esum.eTime[0]*1.e6); //in keV
 	  if(esum.eTime[0]*1.e6 < 35.){
 	    hPtLowELoss->Fill(hinfo.trkpt);
@@ -773,8 +783,8 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    hPhiLowELoss->Fill(hinfo.trkphi);
 	    hChargeLowELoss->Fill(hinfo.charge);
 	    hPDGLowELoss->Fill(hinfo.pdg);
-	    hXYLowELosshitsHEFCN->Fill(hinfo.x,hinfo.y);
-	    hYZLowELosshitsHEFCN->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y));
+	    // hXYLowELosshitsHEFCN->Fill(hinfo.x,hinfo.y);
+	    // hYZLowELosshitsHEFCN->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y));
 	    hYZLLowELosshitsHEFCN->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y));
 	    hXLowELosshitsHEFCN->Fill(hinfo.x);
 	    hYLowELosshitsHEFCN->Fill(hinfo.y);
@@ -782,8 +792,13 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      hZLowELosshitsHEFCN->Fill(hinfo.z);
 	  }
 	}
-	if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
+	if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
 	  hELossCSinBunchHEFCK->Fill(esum.eTime[0]*1.e6); //in keV
+	  if(esum.eTime[0]*1.e6 < 10.){
+	    hXYLowELosshitsHEFCN->Fill(hinfo.x,hinfo.y);
+	    hYZLowELosshitsHEFCN->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y));
+	  }
+	}
       }
     }
     

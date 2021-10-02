@@ -17,8 +17,8 @@ from Configuration.Eras.Era_Phase2C11I13M9_cff import Phase2C11I13M9
 process = cms.Process('PROD',Phase2C11I13M9)
 
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
-#process.load('Configuration.Geometry.GeometryExtended2026D83Reco_cff')
-process.load('Configuration.Geometry.GeometryExtended2026D86Reco_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D83Reco_cff')
+#process.load('Configuration.Geometry.GeometryExtended2026D86Reco_cff')
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
 
@@ -32,11 +32,11 @@ process.source = cms.Source("PoolSource",
         #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D83_higheta.root'
         #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D86_higheta.root'
         #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/step1_D86.root'
-        #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/D83/SingleMuFlatPt2To100_D83_step1.root'
+        'file:/home/idas/t3store3/root_files/HGCAL_Geometry/D83/SingleMuFlatPt2To100_D83_step1.root'
         #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/D86/SingleMuFlatPt2To100_D86_step1.root'
         #'file:/home/idas/test/cmssw/CMSSW_12_1_X_2021-09-26-2300/src/38693.0_CloseByParticleGun+2026D86+CloseByParticle_Photon_ERZRanges_GenSimHLBeamSpotHGCALCloseBy+DigiTrigger+RecoGlobal+HARVESTGlobal/step2.root'
         #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/38693.D83/step1.root'
-        'file:/home/idas/t3store3/root_files/HGCAL_Geometry/38693.D86/step1.root'
+        #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/38693.D86/step1.root'
     )
 )
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
