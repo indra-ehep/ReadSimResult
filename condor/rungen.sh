@@ -19,6 +19,7 @@ else
     eval `scramv1 runtime -sh`
     #git cms-addpkg Configuration/Generator
     #cd ../..
+    cp ../../generator.tar.gz .
 fi
 
 pwd
