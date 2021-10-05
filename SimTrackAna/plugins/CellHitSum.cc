@@ -689,8 +689,8 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       //   edm::LogVerbatim("HGCalValidation") << " -----------------------   gx = " << hinfo.x << " gy = " << hinfo.y
       //                                       << " gz = " << hinfo.z << " phi = " << hinfo.phi << " eta = " << hinfo.eta;
       
-      // printf("Det : %s, ihit:%d, layer:%d, id:%u, time : %5.3lf, tof : %5.3lf, ti-to : %5.3lf, Eloss : %5.2lf (keV), (x,y,z) : (%5.2lf,%5.2lf,%5.2lf)\n", 
-      // 	     name.c_str(), nofSiHits, hinfo.layer, id_, itHit->time(), tof, time, itHit->energy()*1.e6, hinfo.x, hinfo.y, hinfo.z);
+      printf("Det : %s, ihit:%d, layer:%d, id:%u, time : %5.3lf, tof : %5.3lf, ti-to : %5.3lf, Eloss : %5.2lf (keV), (x,y,z) : (%5.2lf,%5.2lf,%5.2lf)\n", 
+      	     name.c_str(), nofSiHits, hinfo.layer, id_, itHit->time(), tof, time, itHit->energy()*1.e6, hinfo.x, hinfo.y, hinfo.z);
       
       map_hits[id_] = std::pair<hitsinfo, energysum>(hinfo, esum);
       nofSiHits++;
@@ -951,7 +951,11 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     if(!rhtools_.isSilicon(id1)) continue;
     
     HGCSiliconDetId id(id_);
-    
+    HGCalDetId hid(id);
+
+    printf("\tDet : %s, wafertype : %d, ishalf : %d, first hit : %d, nhits : %u, id : %u, Edep : %5.2lf (keV), (x,y,z) : (%lf,%lf,%lf)\n", 
+       	   name.c_str(), hid.waferType(), bool isHalfCell(const DetId&), hinfo.hitid, hinfo.nhits, (*itr).first, esum.etotal*1.e6, hinfo.x, hinfo.y, hinfo.z);
+
     if(name == "HGCalEESensitive"){
       hELossCSMaxEE->Fill(esum.eTime[0]*1.e6);
       if(id.type()==HGCSiliconDetId::HGCalFine){
