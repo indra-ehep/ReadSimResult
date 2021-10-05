@@ -22,6 +22,7 @@ else
     
 fi
 
+ls -la
 tar --strip-components=1 -zxvf generator.tar.gz
 cp GenConfig/SingleMuPt100_hgcal_cfi.py CMSSW_12_0_2/src/Configuration/Generator/python/SingleMuPt100_hgcal_cfi.py
 
