@@ -46,9 +46,9 @@ jdlFile.write("X=$(step)\n")
 for sample in sampleList:
     condorOutDir1="/eos/user/i/idas/SimOut/DeltaPt"
     os.system("eos root://eosuser.cern.ch mkdir -p %s/%s"%(condorOutDir1, sample))
-    condorOutDir="/cms/store/user/idas/SimOut/DeltaPt"
+    #condorOutDir="/cms/store/user/idas/SimOut/DeltaPt"
     #os.system("xrdfs root://se01.indiacms.res.in/ mkdir -p %s/%s"%(condorOutDir, sample))
-    #run_command =  'Arguments  = %s $INT(X) \nQueue 10\n\n' %(sample)
+    run_command =  'Arguments  = %s $INT(X) \nQueue 10\n\n' %(sample)
     jdlFile.write(run_command)
     #print "condor_submit jdl/%s"%jdlFile
 jdlFile.close() 
