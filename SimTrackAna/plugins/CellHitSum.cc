@@ -204,6 +204,12 @@ private:
   TH2D **hXYhitsCN;
   TH2D **hXYhitsCK;
   TH2D **hXYhitsB;
+  TH2D **hXYhitsLELCN;
+  TH2D **hXYhitsHELCN;
+  TH2D **hXYhitsLELCK;
+  TH2D **hXYhitsHELCK;
+
+
   TH1D **hELCSMaxF ;
   TH1D **hELCSMaxCN ;
   TH1D **hELCSMaxCK ;
@@ -373,6 +379,10 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   hXYhitsCN =  new TH2D*[50]; // for 50 layers in earch +/- z-direction
   hXYhitsCK =  new TH2D*[50]; // for 50 layers in earch +/- z-direction
   hXYhitsB =  new TH2D*[50]; // for 50 layers in earch +/- z-direction
+  hXYhitsLELCN =  new TH2D*[50]; 
+  hXYhitsHELCN =  new TH2D*[50]; 
+  hXYhitsLELCK =  new TH2D*[50]; 
+  hXYhitsHELCK =  new TH2D*[50]; 
 
   for(int i=1;i<=50;i++)
     hELossDQMEqV[i] = fs->make<TH1D>(Form("hELossDQMEqV_layer_%02d",i),Form("hELossDQMEqV_layer_%02d",i), 100, 0, 0.1);
@@ -388,7 +398,16 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
     hXYhitsCK[i] = fs->make<TH2D>(Form("hXYhitsCK_layer_%02d",i),Form("HitsCK in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
   for(int i=1;i<=50;i++)
     hXYhitsB[i] = fs->make<TH2D>(Form("hXYhitsB_layer_%02d",i),Form("HitsB in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
-
+  
+  for(int i=1;i<=50;i++)
+    hXYhitsLELCN[i] = fs->make<TH2D>(Form("hXYhitsLELCN_layer_%02d",i),Form("LELCN in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hXYhitsHELCN[i] = fs->make<TH2D>(Form("hXYhitsHELCN_layer_%02d",i),Form("HELCN in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hXYhitsLELCK[i] = fs->make<TH2D>(Form("hXYhitsLELCK_layer_%02d",i),Form("LELCK in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hXYhitsHELCK[i] = fs->make<TH2D>(Form("hXYhitsHELCK_layer_%02d",i),Form("HELCK in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  
 
   hXYmissedhits = fs->make<TH2D>("hXYmissedhits","hXYmissedhits", 600, -300., 300., 600, -300., 300.);
   hXYLowELosshitsF = fs->make<TH2D>("hXYLowELosshitsF","hXYLowELosshitsF", 600, -300., 300., 600, -300., 300.);
@@ -958,10 +977,18 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
   	hELossCSMaxHEFCN->Fill(esum.eTime[0]*1.e6); //in keV
 	hELCSMaxCN[hinfo.layer]->Fill(esum.eTime[0]*1.e6); //in keV
+	if(esum.eTime[0]*1.e6 < 30.)
+	  hXYhitsLELCN[hinfo.layer]->Fill(hinfo.x,hinfo.y); 
+	else
+	  hXYhitsHELCN[hinfo.layer]->Fill(hinfo.x,hinfo.y); 
       }
       if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
   	hELossCSMaxHEFCK->Fill(esum.eTime[0]*1.e6); //in keV
 	hELCSMaxCK[hinfo.layer]->Fill(esum.eTime[0]*1.e6); //in keV
+	if(esum.eTime[0]*1.e6 < 20.)
+	  hXYhitsLELCK[hinfo.layer]->Fill(hinfo.x,hinfo.y); 
+	else if(esum.eTime[0]*1.e6 > 50.)
+	  hXYhitsHELCK[hinfo.layer]->Fill(hinfo.x,hinfo.y); 
       }
     }
     
