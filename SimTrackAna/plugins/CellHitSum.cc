@@ -953,8 +953,8 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     HGCSiliconDetId id(id_);
     HGCalDetId hid(id);
 
-    printf("\tDet : %s, wafertype : %d, ishalf : %d, first hit : %d, nhits : %u, id : %u, Edep : %5.2lf (keV), (x,y,z) : (%lf,%lf,%lf)\n", 
-       	   name.c_str(), hid.waferType(), bool isHalfCell(const DetId&), hinfo.hitid, hinfo.nhits, (*itr).first, esum.etotal*1.e6, hinfo.x, hinfo.y, hinfo.z);
+    printf("\tDet : %s, wafertype : %d, first hit : %d, nhits : %u, id : %u, Edep : %5.2lf (keV), (x,y,z) : (%lf,%lf,%lf)\n", 
+       	   name.c_str(), hid.waferType(), hinfo.hitid, hinfo.nhits, (*itr).first, esum.etotal*1.e6, hinfo.x, hinfo.y, hinfo.z);
 
     if(name == "HGCalEESensitive"){
       hELossCSMaxEE->Fill(esum.eTime[0]*1.e6);
