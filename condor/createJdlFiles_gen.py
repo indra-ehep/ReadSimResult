@@ -16,7 +16,7 @@ condorLogDir = "log"
 tarFile = "tmpSub/generator.tar.gz"
 if os.path.exists(tarFile):
     os.system("rm %s"%tarFile)
-os.system("tar -zcvf %s ../../ReadSimResult --exclude condor"%tarFile)
+os.system("tar -zcvf %s ../../Configuration ../../ReadSimResult --exclude condor"%tarFile)
 os.system("cp rungen.sh tmpSub/")
 common_command = \
 'Universe   = vanilla\n\

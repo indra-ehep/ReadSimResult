@@ -13,23 +13,26 @@ else
     echo "Running In Batch"
     echo ${_CONDOR_SCRATCH_DIR}
     source /cvmfs/cms.cern.ch/cmsset_default.sh
-    export SCRAM_ARCH=slc7_amd64_gcc900
+    SCRAM_ARCH=slc7_amd64_gcc900
     scramv1 project CMSSW CMSSW_12_0_2
     cd CMSSW_12_0_2/src
     eval `scramv1 runtime -sh`
-    git cms-addpkg Configuration/Generator
+    #git cms-addpkg Configuration/Generator
     cd ../..
     
 fi
 
+pwd
 ls -la
-tar --strip-components=1 -zxvf generator.tar.gz
-cp GenConfig/SingleMuPt100_hgcal_cfi.py CMSSW_12_0_2/src/Configuration/Generator/python/SingleMuPt100_hgcal_cfi.py
+tar --strip-components=0 -zxvf generator.tar.gz
+cp ReadSimResult/GenConfig/SingleMuPt100_hgcal_cfi.py Configuration/Generator/python/SingleMuPt100_hgcal_cfi.py
+cp -r Configuration CMSSW_12_0_2/src/
 
 if [ -z ${_CONDOR_SCRATCH_DIR} ] ; then 
     echo "Running Interactively" ; 
 else
     cd CMSSW_12_0_2/src
+    pwd
     scram b -j 4
 fi
 #Run for Base, Signal region
