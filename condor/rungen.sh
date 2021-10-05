@@ -47,6 +47,9 @@ cmsDriver.py SingleMuPt100_hgcal_cfi -s GEN,SIM -n 10 --conditions auto:phase2_r
 grep -n "process.RandomNumberGeneratorService.generator.initialSeed" SingleMuPt100_hgcal_cfi_GEN_SIM.py
 cmsRun SingleMuPt100_hgcal_cfi_GEN_SIM.py
 
+ls -ltr
+
+pwd
 
 printf "Simulation completed at ";/bin/date
 #---------------------------------------------
@@ -58,7 +61,7 @@ if [ -z ${_CONDOR_SCRATCH_DIR} ] ; then
     echo "Running Interactively" ;
 else
     #xrdcp -f ${sample}_tree_*.root root://se01.indiacms.res.in:1094/${condorOutDir}/${year} 
-    xrdcp -f step1_${index}.root root://eosuser.cern.ch/${condorOutDir1}/${geom}
+    xrdcp -f step1_${index}.root root://eosuser.cern.ch/${condorOutDir1}
     echo "Cleanup"
     rm -rf CMSSW_10_2_14
     rm *.root
