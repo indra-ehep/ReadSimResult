@@ -18,15 +18,17 @@ else
     cd CMSSW_12_0_2/src
     eval `scramv1 runtime -sh`
     git cms-addpkg Configuration/Generator
-    #cd ../..
+    cd ../..
     
 fi
-tar -zxvf generator.tar.gz
+
+tar --strip-components=1 -zxvf generator.tar.gz
+cp GenConfig/SingleMuPt100_hgcal_cfi.py CMSSW_12_0_2/src/Configuration/Generator/python/SingleMuPt100_hgcal_cfi.py
+
 if [ -z ${_CONDOR_SCRATCH_DIR} ] ; then 
     echo "Running Interactively" ; 
 else
-    cp ReadSimResult/GenConfig/SingleMuPt100_hgcal_cfi.py Configuration/Generator/python/
-    cp ReadSimResult/GenConfig/SingleMuPt100_hgcal_cfi.py
+    cd CMSSW_12_0_2/src
     scram b -j 4
 fi
 #Run for Base, Signal region
