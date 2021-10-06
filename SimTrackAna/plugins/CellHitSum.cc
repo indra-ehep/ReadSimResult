@@ -578,7 +578,7 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   using namespace edm;
   
   if(evt == 0){
-    std::ifstream fin("/home/idas/test/cmssw/CMSSW_12_1_X_2021-10-02-1100/src/ReadSimResult/wafertype/wafer_v15.csv");
+    std::ifstream fin("/home/idas/test/cmssw/CMSSW_12_1_X_2021-10-02-1100/src/ReadSimResult/wafertype/wafer.csv");
     std::string s;
     waferinfo wafer;
     //std::cout << "evt : " << evt << std::endl;
