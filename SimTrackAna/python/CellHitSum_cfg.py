@@ -40,7 +40,8 @@ process.source = cms.Source("PoolSource",
         #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/MuDeltaPt/D86/step1.root'
     )
 )
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10))
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
 
 
 process.prodEE = cms.EDAnalyzer('CellHitSum',

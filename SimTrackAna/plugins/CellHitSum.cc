@@ -20,6 +20,8 @@
 // system include files
 #include <memory>
 #include <vector>
+#include <fstream>
+#include <string>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -107,6 +109,13 @@ public:
     double eTime[6], etotal;
   };
   
+  struct waferinfo {
+    waferinfo() {      
+      layer = u = v = type = -999;
+    }
+    int layer, u, v, type;
+  };
+  
   struct hitsinfo {
     hitsinfo() {
       x = y = z = phi = eta = trkpt = trketa = trkphi = 0.0;
@@ -119,6 +128,7 @@ public:
     unsigned int hitid, nhits;
     bool isMu ;
   };
+  
   
   explicit CellHitSum(const edm::ParameterSet&);
   ~CellHitSum();
@@ -176,7 +186,7 @@ private:
   TH1D *hELossCSinBunchHEFCK ;
   TH1D *hELossCSinBunchHEFCNFiltered ;
   TH1D *hELossCSinBunchHEFCNNoise ;
-
+  
   TH1D *hELossCSmissedEE;
   TH1D *hELossCSmissedEEF ;
   TH1D *hELossCSmissedEECN ;
@@ -195,6 +205,13 @@ private:
   TH1D *hELossCSMaxHEFCN ;
   TH1D *hELossCSMaxHEFCK ;
   
+  TH1D *hHxELossCSMaxF ;
+  TH1D *hHxELossCSMaxCN ;
+  TH1D *hHxELossCSMaxCK ;
+  TH1D *hNHxELossCSMaxF ;
+  TH1D *hNHxELossCSMaxCN ;
+  TH1D *hNHxELossCSMaxCK ;
+  
   TH1D **hELossDQMEqV ;
   TH1D **hELossLayer ;
   
@@ -208,11 +225,21 @@ private:
   TH2D **hXYhitsHELCN;
   TH2D **hXYhitsLELCK;
   TH2D **hXYhitsHELCK;
+  TH2D **hNHxXYhitsF;
+  TH2D **hNHxXYhitsCN;
+  TH2D **hNHxXYhitsCK;
 
 
   TH1D **hELCSMaxF ;
   TH1D **hELCSMaxCN ;
   TH1D **hELCSMaxCK ;
+
+  TH1D **hHxELCSMaxF ;
+  TH1D **hHxELCSMaxCN ;
+  TH1D **hHxELCSMaxCK ;
+  TH1D **hNHxELCSMaxF ;
+  TH1D **hNHxELCSMaxCN ;
+  TH1D **hNHxELCSMaxCK ;
 
   TH2D *hXYLowELosshitsF;
   TH2D *hXYLowELosshitsCN;
@@ -270,6 +297,9 @@ private:
   TH1D *hDiffY ;
   TH1D *hDiffZ ;
   
+  std::vector<waferinfo> winfo;
+  int evt = 0;
+
   edm::ESGetToken<CaloGeometry, CaloGeometryRecord> caloGeomToken_; 
   hgcal::RecHitTools rhtools_;
   //edm::ConsumesCollector iC;
@@ -361,6 +391,15 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   hELossCSMaxHEFF = fs->make<TH1D>("hELossCSMaxHEFF","hELossCSMaxHEFF", 1000, 0., 1000.);
   hELossCSMaxHEFCN = fs->make<TH1D>("hELossCSMaxHEFCN","hELossCSMaxHEFCN", 1000, 0., 1000.);
   hELossCSMaxHEFCK = fs->make<TH1D>("hELossCSMaxHEFCK","hELossCSMaxHEFCK", 1000, 0., 1000.);
+  
+  hHxELossCSMaxF = fs->make<TH1D>("hHxELossCSMaxF","hHxELossCSMaxF", 1000, 0., 1000.);
+  hHxELossCSMaxCN = fs->make<TH1D>("hHxELossCSMaxCN","hHxELossCSMaxCN", 1000, 0., 1000.);
+  hHxELossCSMaxCK = fs->make<TH1D>("hHxELossCSMaxCK","hHxELossCSMaxCK", 1000, 0., 1000.);
+  
+  hNHxELossCSMaxF = fs->make<TH1D>("hNHxELossCSMaxF","hNHxELossCSMaxF", 1000, 0., 1000.);
+  hNHxELossCSMaxCN = fs->make<TH1D>("hNHxELossCSMaxCN","hNHxELossCSMaxCN", 1000, 0., 1000.);
+  hNHxELossCSMaxCK = fs->make<TH1D>("hNHxELossCSMaxCK","hNHxELossCSMaxCK", 1000, 0., 1000.);
+
 
   hELCSMaxF =  new TH1D*[50]; 
   hELCSMaxCN =  new TH1D*[50]; 
@@ -371,6 +410,26 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
     hELCSMaxCN[i] = fs->make<TH1D>(Form("hELCSMaxCN_layer_%02d",i),Form("Energy for layer %d",i), 500, 0., 500.);
   for(int i=1;i<=50;i++)
     hELCSMaxCK[i] = fs->make<TH1D>(Form("hELCSMaxCK_layer_%02d",i),Form("Energy for layer %d",i), 500, 0., 500.);
+  
+  hHxELCSMaxF =  new TH1D*[50]; 
+  hHxELCSMaxCN =  new TH1D*[50]; 
+  hHxELCSMaxCK =  new TH1D*[50]; 
+  for(int i=1;i<=50;i++)
+    hHxELCSMaxF[i] = fs->make<TH1D>(Form("hHxELCSMaxF_layer_%02d",i),Form("Energy for layer %d",i), 500, 0., 500.);
+  for(int i=1;i<=50;i++)
+    hHxELCSMaxCN[i] = fs->make<TH1D>(Form("hHxELCSMaxCN_layer_%02d",i),Form("Energy for layer %d",i), 500, 0., 500.);
+  for(int i=1;i<=50;i++)
+    hHxELCSMaxCK[i] = fs->make<TH1D>(Form("hHxELCSMaxCK_layer_%02d",i),Form("Energy for layer %d",i), 500, 0., 500.);
+  
+  hNHxELCSMaxF =  new TH1D*[50]; 
+  hNHxELCSMaxCN =  new TH1D*[50]; 
+  hNHxELCSMaxCK =  new TH1D*[50]; 
+  for(int i=1;i<=50;i++)
+    hNHxELCSMaxF[i] = fs->make<TH1D>(Form("hNHxELCSMaxF_layer_%02d",i),Form("Energy for layer %d",i), 500, 0., 500.);
+  for(int i=1;i<=50;i++)
+    hNHxELCSMaxCN[i] = fs->make<TH1D>(Form("hNHxELCSMaxCN_layer_%02d",i),Form("Energy for layer %d",i), 500, 0., 500.);
+  for(int i=1;i<=50;i++)
+    hNHxELCSMaxCK[i] = fs->make<TH1D>(Form("hNHxELCSMaxCK_layer_%02d",i),Form("Energy for layer %d",i), 500, 0., 500.);
   
   hELossDQMEqV = new TH1D*[50]; // for 50 layers in earch +/- z-direction
   hELossLayer = new TH1D*[50]; // for 50 layers in earch +/- z-direction
@@ -383,6 +442,11 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   hXYhitsHELCN =  new TH2D*[50]; 
   hXYhitsLELCK =  new TH2D*[50]; 
   hXYhitsHELCK =  new TH2D*[50]; 
+  
+  hNHxXYhitsF =  new TH2D*[50]; 
+  hNHxXYhitsCN =  new TH2D*[50]; 
+  hNHxXYhitsCK =  new TH2D*[50]; 
+
 
   for(int i=1;i<=50;i++)
     hELossDQMEqV[i] = fs->make<TH1D>(Form("hELossDQMEqV_layer_%02d",i),Form("hELossDQMEqV_layer_%02d",i), 100, 0, 0.1);
@@ -408,6 +472,12 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   for(int i=1;i<=50;i++)
     hXYhitsHELCK[i] = fs->make<TH2D>(Form("hXYhitsHELCK_layer_%02d",i),Form("HELCK in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
   
+  for(int i=1;i<=50;i++)
+    hNHxXYhitsF[i] = fs->make<TH2D>(Form("hNHxXYhitsF_layer_%02d",i),Form("NHx HitsF in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hNHxXYhitsCN[i] = fs->make<TH2D>(Form("hNHxXYhitsCN_layer_%02d",i),Form("NHx HitsCN in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hNHxXYhitsCK[i] = fs->make<TH2D>(Form("hNHxXYhitsCK_layer_%02d",i),Form("NHx HitsCK in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
 
   hXYmissedhits = fs->make<TH2D>("hXYmissedhits","hXYmissedhits", 600, -300., 300., 600, -300., 300.);
   hXYLowELosshitsF = fs->make<TH2D>("hXYLowELosshitsF","hXYLowELosshitsF", 600, -300., 300., 600, -300., 300.);
@@ -472,6 +542,8 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   hDiffY->GetXaxis()->SetTitle("y-axis (cm)");
   hDiffZ = fs->make<TH1D>("hDiffZ" , "Difference of z-position (testHGCalGeometry - RecHitTools)" , 200 , -20 , 20 );
   hDiffZ->GetXaxis()->SetTitle("z-axis (cm)");
+  evt = 0;
+  winfo.clear();
 
   name = iConfig.getParameter<std::string>("Detector");
   //name = iConfig.getUntrackedParameter<string>("Detector", "");
@@ -504,8 +576,23 @@ void
 CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
-
-    
+  
+  if(evt == 0){
+    std::ifstream fin("/home/idas/test/cmssw/CMSSW_12_1_X_2021-10-02-1100/src/ReadSimResult/wafertype/wafer_v15.csv");
+    std::string s;
+    waferinfo wafer;
+    //std::cout << "evt : " << evt << std::endl;
+    while(std::getline(fin,s)){
+      //std::cout << "line " << s.data() << std::endl;
+      sscanf(s.c_str(),"%d,%d,%d,%d",&wafer.layer,&wafer.u,&wafer.v,&wafer.type);
+      //printf("%d | %d | %d | %d\n",wafer.layer,wafer.u,wafer.v,wafer.type);
+      //wafer.layer = 
+      winfo.push_back(wafer);
+    }
+    fin.close();
+  }
+  evt++;
+  
   Handle<SimTrackContainer> simtrack;
   iEvent.getByToken(tSimTrackContainer, simtrack);
   int itrk = 0;
@@ -689,8 +776,8 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       //   edm::LogVerbatim("HGCalValidation") << " -----------------------   gx = " << hinfo.x << " gy = " << hinfo.y
       //                                       << " gz = " << hinfo.z << " phi = " << hinfo.phi << " eta = " << hinfo.eta;
       
-      printf("Det : %s, ihit:%d, layer:%d, id:%u, time : %5.3lf, tof : %5.3lf, ti-to : %5.3lf, Eloss : %5.2lf (keV), (x,y,z) : (%5.2lf,%5.2lf,%5.2lf)\n", 
-      	     name.c_str(), nofSiHits, hinfo.layer, id_, itHit->time(), tof, time, itHit->energy()*1.e6, hinfo.x, hinfo.y, hinfo.z);
+      // printf("Det : %s, ihit:%d, layer:%d, id:%u, time : %5.3lf, tof : %5.3lf, ti-to : %5.3lf, Eloss : %5.2lf (keV), (x,y,z) : (%5.2lf,%5.2lf,%5.2lf)\n", 
+      // 	     name.c_str(), nofSiHits, hinfo.layer, id_, itHit->time(), tof, time, itHit->energy()*1.e6, hinfo.x, hinfo.y, hinfo.z);
       
       map_hits[id_] = std::pair<hitsinfo, energysum>(hinfo, esum);
       nofSiHits++;
@@ -940,8 +1027,13 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     if(energy*1.e6 > 0.)
       hELossLayer[il]->Fill(energy*1.e6); //in keV
   }
-
-
+  
+  // waferinfo wafer;
+  // winfo.push_back(wafer);
+  //std::cout<<"size :: "<<winfo.size()<<std::endl;
+  
+  bool isPWafer = false;
+  bool isFWafer = false;
   for ( unsigned int ic = 0 ; ic < cellMaxEdep.size() ; ic++ ){
     uint32_t id_ = cellMaxEdep[ic];
     energysum esum = map_hits[id_].second;
@@ -953,22 +1045,65 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     HGCSiliconDetId id(id_);
     HGCalDetId hid(id);
     
-    printf("\tDet : %s, wafertype : %d, layer : %d, (u,v) : (%d,%d), ishalf : %d, first hit : %d, nhits : %u, Edep : %5.2lf (keV), (x,y,z) : (%lf,%lf,%lf)\n", 
-       	   name.c_str(), hid.waferType(), hinfo.layer, rhtools_.getWafer(id1).first, rhtools_.getWafer(id1).second, rhtools_.isHalfCell(id1), hinfo.hitid, hinfo.nhits, esum.etotal*1.e6, hinfo.x, hinfo.y, hinfo.z);
+    isPWafer = false;
+    isFWafer = false;
+    for(unsigned int iw = 0 ; iw < winfo.size() ; iw++){
+      if(hinfo.layer == winfo[iw].layer and rhtools_.getWafer(id1).first == winfo[iw].u and rhtools_.getWafer(id1).second == winfo[iw].v){
+	if(winfo[iw].type == 0)
+	  isPWafer = true;
+	if(winfo[iw].type == 1)
+	  isFWafer = true;
+      }
+    }
+
+    // printf("\tDet : %s, wafertype : %d, layer : %d, (u,v) : (%d,%d), ishalf : %d, first hit : %d, nhits : %u, Edep : %5.2lf (keV), (x,y,z) : (%lf,%lf,%lf)\n", 
+    // 	   name.c_str(), hid.waferType(), hinfo.layer, rhtools_.getWafer(id1).first, rhtools_.getWafer(id1).second, rhtools_.isHalfCell(id1), hinfo.hitid, hinfo.nhits, esum.etotal*1.e6, hinfo.x, hinfo.y, hinfo.z);
+
+    // printf("\tDet : %s, wafertype : %d, layer : %d, (u,v) : (%d,%d), isPWafer : %d, isFWafer : %d, (x,y,z) : (%lf,%lf,%lf)\n", 
+    // 	   name.c_str(), hid.waferType(), hinfo.layer, rhtools_.getWafer(id1).first, rhtools_.getWafer(id1).second, isPWafer, isFWafer, hinfo.x, hinfo.y, hinfo.z);
+    
+    //for
 
     if(name == "HGCalEESensitive"){
       hELossCSMaxEE->Fill(esum.eTime[0]*1.e6);
       if(id.type()==HGCSiliconDetId::HGCalFine){
   	hELossCSMaxEEF->Fill(esum.eTime[0]*1.e6); //in keV
 	hELCSMaxF[hinfo.layer]->Fill(esum.eTime[0]*1.e6); //in keV
+	if(isPWafer){
+	  hNHxELossCSMaxF->Fill(esum.eTime[0]*1.e6); 
+	  hNHxELCSMaxF[hinfo.layer]->Fill(esum.eTime[0]*1.e6);
+	  hNHxXYhitsF[hinfo.layer]->Fill(hinfo.x,hinfo.y);
+	}
+	if(isFWafer){
+	  hHxELossCSMaxF->Fill(esum.eTime[0]*1.e6); 
+	  hHxELCSMaxF[hinfo.layer]->Fill(esum.eTime[0]*1.e6);
+	}
       }
       if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
   	hELossCSMaxEECN->Fill(esum.eTime[0]*1.e6); //in keV
 	hELCSMaxCN[hinfo.layer]->Fill(esum.eTime[0]*1.e6); //in keV
+	if(isPWafer){
+	  hNHxELossCSMaxCN->Fill(esum.eTime[0]*1.e6); 
+	  hNHxELCSMaxCN[hinfo.layer]->Fill(esum.eTime[0]*1.e6);
+	  hNHxXYhitsCN[hinfo.layer]->Fill(hinfo.x,hinfo.y);
+	}
+	if(isFWafer){
+	  hHxELossCSMaxCN->Fill(esum.eTime[0]*1.e6); 
+	  hHxELCSMaxCN[hinfo.layer]->Fill(esum.eTime[0]*1.e6);
+	}
       }
       if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
   	hELossCSMaxEECK->Fill(esum.eTime[0]*1.e6); //in keV
 	hELCSMaxCK[hinfo.layer]->Fill(esum.eTime[0]*1.e6); //in keV
+	if(isPWafer){
+	  hNHxELossCSMaxCK->Fill(esum.eTime[0]*1.e6); 
+	  hNHxELCSMaxCK[hinfo.layer]->Fill(esum.eTime[0]*1.e6);
+	  hNHxXYhitsCK[hinfo.layer]->Fill(hinfo.x,hinfo.y);
+	}
+	if(isFWafer){
+	  hHxELossCSMaxCK->Fill(esum.eTime[0]*1.e6); 
+	  hHxELCSMaxCK[hinfo.layer]->Fill(esum.eTime[0]*1.e6);
+	}
       }
     }
     
@@ -977,22 +1112,49 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if(id.type()==HGCSiliconDetId::HGCalFine){
   	hELossCSMaxHEFF->Fill(esum.eTime[0]*1.e6); //in keV
 	hELCSMaxF[hinfo.layer]->Fill(esum.eTime[0]*1.e6); //in keV
+    	if(isPWafer){
+	  hNHxELossCSMaxF->Fill(esum.eTime[0]*1.e6); 
+	  hNHxELCSMaxF[hinfo.layer]->Fill(esum.eTime[0]*1.e6);
+	  hNHxXYhitsF[hinfo.layer]->Fill(hinfo.x,hinfo.y);
+	}
+	if(isFWafer){
+	  hHxELossCSMaxF->Fill(esum.eTime[0]*1.e6); 
+	  hHxELCSMaxF[hinfo.layer]->Fill(esum.eTime[0]*1.e6);
+	}
       }
       if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
   	hELossCSMaxHEFCN->Fill(esum.eTime[0]*1.e6); //in keV
 	hELCSMaxCN[hinfo.layer]->Fill(esum.eTime[0]*1.e6); //in keV
-	if(esum.eTime[0]*1.e6 < 30.)
+	if(esum.eTime[0]*1.e6 < 30. and esum.eTime[0]*1.e6 > 10.)
 	  hXYhitsLELCN[hinfo.layer]->Fill(hinfo.x,hinfo.y); 
 	else
 	  hXYhitsHELCN[hinfo.layer]->Fill(hinfo.x,hinfo.y); 
+	if(isPWafer){
+	  hNHxELossCSMaxCN->Fill(esum.eTime[0]*1.e6); 
+	  hNHxELCSMaxCN[hinfo.layer]->Fill(esum.eTime[0]*1.e6);
+	  hNHxXYhitsCN[hinfo.layer]->Fill(hinfo.x,hinfo.y);
+	}
+	if(isFWafer){
+	  hHxELossCSMaxCN->Fill(esum.eTime[0]*1.e6); 
+	  hHxELCSMaxCN[hinfo.layer]->Fill(esum.eTime[0]*1.e6);
+	}
       }
       if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
   	hELossCSMaxHEFCK->Fill(esum.eTime[0]*1.e6); //in keV
 	hELCSMaxCK[hinfo.layer]->Fill(esum.eTime[0]*1.e6); //in keV
-	if(esum.eTime[0]*1.e6 < 20.)
+	if(esum.eTime[0]*1.e6 < 10.)
 	  hXYhitsLELCK[hinfo.layer]->Fill(hinfo.x,hinfo.y); 
 	else if(esum.eTime[0]*1.e6 > 50.)
 	  hXYhitsHELCK[hinfo.layer]->Fill(hinfo.x,hinfo.y); 
+	if(isPWafer){
+	  hNHxELossCSMaxCK->Fill(esum.eTime[0]*1.e6); 
+	  hNHxELCSMaxCK[hinfo.layer]->Fill(esum.eTime[0]*1.e6);
+	  hNHxXYhitsCK[hinfo.layer]->Fill(hinfo.x,hinfo.y);
+	}
+	if(isFWafer){
+	  hHxELossCSMaxCK->Fill(esum.eTime[0]*1.e6); 
+	  hHxELCSMaxCK[hinfo.layer]->Fill(esum.eTime[0]*1.e6);
+	}
       }
     }
     
