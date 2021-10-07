@@ -296,6 +296,8 @@ private:
   TH1D *hDiffX ;
   TH1D *hDiffY ;
   TH1D *hDiffZ ;
+
+  TH1D *hCellThickness ;  
   
   std::vector<waferinfo> winfo;
   int evt = 0;
@@ -542,6 +544,10 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   hDiffY->GetXaxis()->SetTitle("y-axis (cm)");
   hDiffZ = fs->make<TH1D>("hDiffZ" , "Difference of z-position (testHGCalGeometry - RecHitTools)" , 200 , -20 , 20 );
   hDiffZ->GetXaxis()->SetTitle("z-axis (cm)");
+
+  hCellThickness = fs->make<TH1D>("hCellThickness" , "Cell Thickness" , 500 , 0 , 500 );
+  hDiffZ->GetXaxis()->SetTitle("thickness (#mum)");
+
   evt = 0;
   winfo.clear();
 
@@ -629,7 +635,7 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   const auto& geomR = iSetup.getData(geomToken_);
   const HGCalGeometry* geom = &geomR;
-  DetId::Detector det;
+  //DetId::Detector det;
   if (geom->topology().waferHexagon6()) {
     ForwardSubdetector subdet;
     if (name == "HGCalHESiliconSensitive")
@@ -642,14 +648,14 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
               << geom->topology().dddConstants().geomMode() << std::endl;
   }else{
     //DetId::Detector det;
-    if (name == "HGCalHESiliconSensitive")
-      det = DetId::HGCalHSi;
-    else if (name == "HGCalHEScintillatorSensitive")
-      det = DetId::HGCalHSc;
-    else
-      det = DetId::HGCalEE;
-    std::cout << "b) Perform test for " << name << " Detector " << det << " Mode "
-              << geom->topology().dddConstants().geomMode() << std::endl;
+    // if (name == "HGCalHESiliconSensitive")
+    //   det = DetId::HGCalHSi;
+    // else if (name == "HGCalHEScintillatorSensitive")
+    //   det = DetId::HGCalHSc;
+    // else
+    //   det = DetId::HGCalEE;
+    // std::cout << "b) Perform test for " << name << " Detector " << det << " Mode "
+    //           << geom->topology().dddConstants().geomMode() << std::endl;
   }
   
   std::map<uint32_t, std::pair<hitsinfo, energysum> > map_hits;
@@ -905,6 +911,9 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
   }
   //std::cout << "simhit size : " << simhit->size() << ", nof hits in Si : " << nofSiHits << ", map size : " << map_hits.size() << std::endl;
+
+  bool isPWafer = false;
+  bool isFWafer = false;
   
   std::map<uint32_t, std::pair<hitsinfo, energysum> >::iterator itr;
   for (itr = map_hits.begin(); itr != map_hits.end(); ++itr) {
@@ -917,16 +926,34 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     //  	   name.c_str(), hinfo.hitid, hinfo.nhits, (*itr).first, esum.eTime[0]*1.e6, hinfo.x, hinfo.y, hinfo.z);
     
     HGCSiliconDetId id((*itr).first);
+
+    // DetId id1 = static_cast<DetId>((*itr).first);
+    
+    // isPWafer = false;
+    // isFWafer = false;
+    // if(rhtools_.isSilicon(id1)){
+    //   for(unsigned int iw = 0 ; iw < winfo.size() ; iw++){
+    // 	if(hinfo.layer == winfo[iw].layer and rhtools_.getWafer(id1).first == winfo[iw].u and rhtools_.getWafer(id1).second == winfo[iw].v){
+    // 	  if(winfo[iw].type == 0)
+    // 	    isPWafer = true;
+    // 	  if(winfo[iw].type == 1)
+    // 	    isFWafer = true;
+    // 	}
+    //   }
+    // }
     
     if(!TMath::AreEqualAbs(esum.eTime[0]*1.e6,0.0,1.e-5)){
       if(name == "HGCalEESensitive"){
   	hELossCSinBunchEE->Fill(esum.eTime[0]*1.e6);
-  	if(id.type()==HGCSiliconDetId::HGCalFine)
+  	if(id.type()==HGCSiliconDetId::HGCalFine){
   	  hELossCSinBunchEEF->Fill(esum.eTime[0]*1.e6); //in keV
-  	if(id.type()==HGCSiliconDetId::HGCalCoarseThin)
+	}
+  	if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
   	  hELossCSinBunchEECN->Fill(esum.eTime[0]*1.e6); //in keV
-  	if(id.type()==HGCSiliconDetId::HGCalCoarseThick)
+	}
+  	if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
   	  hELossCSinBunchEECK->Fill(esum.eTime[0]*1.e6); //in keV
+	}
       }
     
       if(name == "HGCalHESiliconSensitive"){
@@ -937,7 +964,6 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   	    hXYLowELosshitsF->Fill(hinfo.x,hinfo.y);
   	    hYZLowELosshitsF->Fill(TMath::Abs(hinfo.z),TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y));
   	  }
-
   	}
   	if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
   	  hELossCSinBunchHEFCN->Fill(esum.eTime[0]*1.e6); //in keV
@@ -1032,8 +1058,6 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // winfo.push_back(wafer);
   //std::cout<<"size :: "<<winfo.size()<<std::endl;
   
-  bool isPWafer = false;
-  bool isFWafer = false;
   for ( unsigned int ic = 0 ; ic < cellMaxEdep.size() ; ic++ ){
     uint32_t id_ = cellMaxEdep[ic];
     energysum esum = map_hits[id_].second;
@@ -1049,10 +1073,10 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     isFWafer = false;
     for(unsigned int iw = 0 ; iw < winfo.size() ; iw++){
       if(hinfo.layer == winfo[iw].layer and rhtools_.getWafer(id1).first == winfo[iw].u and rhtools_.getWafer(id1).second == winfo[iw].v){
-	if(winfo[iw].type == 0)
-	  isPWafer = true;
-	if(winfo[iw].type == 1)
-	  isFWafer = true;
+    	if(winfo[iw].type == 0)
+    	  isPWafer = true;
+    	if(winfo[iw].type == 1)
+    	  isFWafer = true;
       }
     }
 
@@ -1063,10 +1087,11 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     // 	   name.c_str(), hid.waferType(), hinfo.layer, rhtools_.getWafer(id1).first, rhtools_.getWafer(id1).second, isPWafer, isFWafer, hinfo.x, hinfo.y, hinfo.z);
     
     //for
-
+    
     if(name == "HGCalEESensitive"){
+      hCellThickness->Fill(rhtools_.getSiThickness(id1));
       hELossCSMaxEE->Fill(esum.eTime[0]*1.e6);
-      if(id.type()==HGCSiliconDetId::HGCalFine){
+      if(id.type()==HGCSiliconDetId::HGCalFine){	
   	hELossCSMaxEEF->Fill(esum.eTime[0]*1.e6); //in keV
 	hELCSMaxF[hinfo.layer]->Fill(esum.eTime[0]*1.e6); //in keV
 	if(isPWafer){
@@ -1108,11 +1133,12 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
     
     if(name == "HGCalHESiliconSensitive"){
+      hCellThickness->Fill(rhtools_.getSiThickness(id1));
       hELossCSMaxHEF->Fill(esum.eTime[0]*1.e6);
       if(id.type()==HGCSiliconDetId::HGCalFine){
   	hELossCSMaxHEFF->Fill(esum.eTime[0]*1.e6); //in keV
 	hELCSMaxF[hinfo.layer]->Fill(esum.eTime[0]*1.e6); //in keV
-    	if(isPWafer){
+	if(isPWafer){
 	  hNHxELossCSMaxF->Fill(esum.eTime[0]*1.e6); 
 	  hNHxELCSMaxF[hinfo.layer]->Fill(esum.eTime[0]*1.e6);
 	  hNHxXYhitsF[hinfo.layer]->Fill(hinfo.x,hinfo.y);
