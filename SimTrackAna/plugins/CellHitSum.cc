@@ -455,36 +455,36 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   for(int i=1;i<=50;i++)
     hELossLayer[i] = fs->make<TH1D>(Form("hELossLayer_%02d",i),Form("hELossLayer_%02d",i), 1000, 0., 1000.);
   for(int i=1;i<=50;i++)
-    hXYhits[i] = fs->make<TH2D>(Form("hXYhits_layer_%02d",i),Form("Hits in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+    hXYhits[i] = fs->make<TH2D>(Form("hXYhits_layer_%02d",i),Form("Hits in XY for layer %d",i), 60000, -300., 300., 60000, -300., 300.);
   for(int i=1;i<=50;i++)
-    hXYhitsF[i] = fs->make<TH2D>(Form("hXYhitsF_layer_%02d",i),Form("HitsF in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+    hXYhitsF[i] = fs->make<TH2D>(Form("hXYhitsF_layer_%02d",i),Form("HitsF in XY for layer %d",i), 60000, -300., 300., 60000, -300., 300.);
   for(int i=1;i<=50;i++)
-    hXYhitsCN[i] = fs->make<TH2D>(Form("hXYhitsCN_layer_%02d",i),Form("HitsCN in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+    hXYhitsCN[i] = fs->make<TH2D>(Form("hXYhitsCN_layer_%02d",i),Form("HitsCN in XY for layer %d",i), 60000, -300., 300., 60000, -300., 300.);
   for(int i=1;i<=50;i++)
-    hXYhitsCK[i] = fs->make<TH2D>(Form("hXYhitsCK_layer_%02d",i),Form("HitsCK in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+    hXYhitsCK[i] = fs->make<TH2D>(Form("hXYhitsCK_layer_%02d",i),Form("HitsCK in XY for layer %d",i), 60000, -300., 300., 60000, -300., 300.);
   for(int i=1;i<=50;i++)
-    hXYhitsB[i] = fs->make<TH2D>(Form("hXYhitsB_layer_%02d",i),Form("HitsB in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+    hXYhitsB[i] = fs->make<TH2D>(Form("hXYhitsB_layer_%02d",i),Form("HitsB in XY for layer %d",i), 60000, -300., 300., 60000, -300., 300.);
   
   for(int i=1;i<=50;i++)
-    hXYhitsLELCN[i] = fs->make<TH2D>(Form("hXYhitsLELCN_layer_%02d",i),Form("LELCN in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+    hXYhitsLELCN[i] = fs->make<TH2D>(Form("hXYhitsLELCN_layer_%02d",i),Form("LELCN in XY for layer %d",i), 60000, -300., 300., 60000, -300., 300.);
   for(int i=1;i<=50;i++)
-    hXYhitsHELCN[i] = fs->make<TH2D>(Form("hXYhitsHELCN_layer_%02d",i),Form("HELCN in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+    hXYhitsHELCN[i] = fs->make<TH2D>(Form("hXYhitsHELCN_layer_%02d",i),Form("HELCN in XY for layer %d",i), 60000, -300., 300., 60000, -300., 300.);
   for(int i=1;i<=50;i++)
-    hXYhitsLELCK[i] = fs->make<TH2D>(Form("hXYhitsLELCK_layer_%02d",i),Form("LELCK in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+    hXYhitsLELCK[i] = fs->make<TH2D>(Form("hXYhitsLELCK_layer_%02d",i),Form("LELCK in XY for layer %d",i), 60000, -300., 300., 60000, -300., 300.);
   for(int i=1;i<=50;i++)
-    hXYhitsHELCK[i] = fs->make<TH2D>(Form("hXYhitsHELCK_layer_%02d",i),Form("HELCK in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+    hXYhitsHELCK[i] = fs->make<TH2D>(Form("hXYhitsHELCK_layer_%02d",i),Form("HELCK in XY for layer %d",i), 60000, -300., 300., 60000, -300., 300.);
   
   for(int i=1;i<=50;i++)
-    hNHxXYhitsF[i] = fs->make<TH2D>(Form("hNHxXYhitsF_layer_%02d",i),Form("NHx HitsF in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+    hNHxXYhitsF[i] = fs->make<TH2D>(Form("hNHxXYhitsF_layer_%02d",i),Form("NHx HitsF in XY for layer %d",i), 60000, -300., 300., 60000, -300., 300.);
   for(int i=1;i<=50;i++)
-    hNHxXYhitsCN[i] = fs->make<TH2D>(Form("hNHxXYhitsCN_layer_%02d",i),Form("NHx HitsCN in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+    hNHxXYhitsCN[i] = fs->make<TH2D>(Form("hNHxXYhitsCN_layer_%02d",i),Form("NHx HitsCN in XY for layer %d",i), 60000, -300., 300., 60000, -300., 300.);
   for(int i=1;i<=50;i++)
-    hNHxXYhitsCK[i] = fs->make<TH2D>(Form("hNHxXYhitsCK_layer_%02d",i),Form("NHx HitsCK in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+    hNHxXYhitsCK[i] = fs->make<TH2D>(Form("hNHxXYhitsCK_layer_%02d",i),Form("NHx HitsCK in XY for layer %d",i), 60000, -300., 300., 60000, -300., 300.);
 
-  hXYmissedhits = fs->make<TH2D>("hXYmissedhits","hXYmissedhits", 600, -300., 300., 600, -300., 300.);
-  hXYLowELosshitsF = fs->make<TH2D>("hXYLowELosshitsF","hXYLowELosshitsF", 600, -300., 300., 600, -300., 300.);
-  hXYLowELosshitsCN = fs->make<TH2D>("hXYLowELosshitsCN","hXYLowELosshitsCN", 600, -300., 300., 600, -300., 300.);
-  hXYLowELosshitsCK = fs->make<TH2D>("hXYLowELosshitsCK","hXYLowELosshitsCK", 600, -300., 300., 600, -300., 300.);
+  hXYmissedhits = fs->make<TH2D>("hXYmissedhits","hXYmissedhits", 60000, -300., 300., 60000, -300., 300.);
+  hXYLowELosshitsF = fs->make<TH2D>("hXYLowELosshitsF","hXYLowELosshitsF", 60000, -300., 300., 60000, -300., 300.);
+  hXYLowELosshitsCN = fs->make<TH2D>("hXYLowELosshitsCN","hXYLowELosshitsCN", 60000, -300., 300., 60000, -300., 300.);
+  hXYLowELosshitsCK = fs->make<TH2D>("hXYLowELosshitsCK","hXYLowELosshitsCK", 60000, -300., 300., 60000, -300., 300.);
 
   hYZmissedhits = fs->make<TH2D>("hYZmissedhits","hYZmissedhits", 250, 300., 550., 300, 0., 300.);
   hYZLowELosshitsF = fs->make<TH2D>("hYZLowELosshitsF","hYZLowELosshitsF", 250, 300., 550., 300, 0., 300.);
@@ -498,7 +498,7 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   hZLowELosshitsHEFCN = fs->make<TH1D>("hZLowELosshitsHEFCN","hZLowELosshitsHEFCN", 2400, -1200., 1200.);
   
   //hYZhits = fs->make<TH2D>("hYZhits","hYZhits", 1200, -600., 600., 1200, -600., 600.);
-  //hXYhits = fs->make<TH2D>("hXYhits","Hits in XY", 600, -300., 300., 600, -300., 300.);
+  //hXYhits = fs->make<TH2D>("hXYhits","Hits in XY", 60000, -300., 300., 60000, -300., 300.);
 
   hYZhitsEE = fs->make<TH2D>("hYZhitsEE","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
   hYZhitsHEF = fs->make<TH2D>("hYZhitsHEF","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
@@ -512,7 +512,7 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   hYZhitsHEFCN = fs->make<TH2D>("hYZhitsHEFCN","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
   hYZhitsHEFCK = fs->make<TH2D>("hYZhitsHEFCK","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
 
-  hRHTXYhits = fs->make<TH2D>("hRHTXYhits","Hits in XY", 600, -300., 300., 600, -300., 300.);
+  hRHTXYhits = fs->make<TH2D>("hRHTXYhits","Hits in XY", 60000, -300., 300., 60000, -300., 300.);
   hRHTYZhitsEE = fs->make<TH2D>("hRHTYZhitsEE","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
   hRHTYZhitsHEF = fs->make<TH2D>("hRHTYZhitsHEF","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
   hRHTYZhitsHEB = fs->make<TH2D>("hRHTYZhitsHEB","Hits in YZ plane for |X| < 20 cm", 250, 300., 550., 300, 0., 300.);
@@ -584,7 +584,7 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   using namespace edm;
   
   if(evt == 0){
-    std::ifstream fin("/home/idas/test/cmssw/CMSSW_12_1_X_2021-10-02-1100/src/ReadSimResult/wafertype/wafer.csv");
+    std::ifstream fin("/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_1_X_2021-10-24-2300/src/ReadSimResult/wafertype/wafer.csv");
     std::string s;
     waferinfo wafer;
     //std::cout << "evt : " << evt << std::endl;
