@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #inputdir=/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D86
-inputdir=/eos/user/i/idas/SimOut/DeltaPt/Extended2026D86
-#inputdir=/eos/user/p/psuryade/SimOut/DeltaPt/Extended2026D86_25
+#inputdir=/eos/user/i/idas/SimOut/DeltaPt/Extended2026D86
+inputdir=/eos/user/p/psuryade/SimOut/DeltaPt/Extended2026D86_25
 pydir=$PWD/ReadSimResult/SimTrackAna/python
 for i in `seq 0 9`
 do
@@ -19,7 +19,7 @@ do
   mv geantoutput.root geantoutput_${i}.root
 done
 
-ls $PWD/geantoutput_*.root > /tmp/fl.txt
-source ~/scripts/addhisto_file.sh /tmp/fl.txt
+ls $PWD/geantoutput_*.root > /tmp/idas/fl.txt
+source ~/scripts/addhisto_file.sh /tmp/idas/fl.txt
 #rm geantoutput_*.root
 mv histo_merged.root geantoutput.root
