@@ -42,7 +42,9 @@ process.source = cms.Source("PoolSource",
                                       #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D83/step1_3.root',
                                       #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D83/step1_4.root'
     #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D86/step1.root')
-    fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_1_X_2021-10-24-2300/src/step1_D86.root')
+    #fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_1_X_2021-10-24-2300/src/step1_D86.root')
+    #fileNames = cms.untracked.vstring('file:/eos/user/i/idas/SimOut/DeltaPt/Extended2026D86/step1.root')
+    fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_1_X_2021-11-09-2300/src/step1.root')
 
 )
 
