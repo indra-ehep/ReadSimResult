@@ -186,12 +186,12 @@ private:
 
   TGraph **grXYhitsPWF0;
   TGraph **grXYhitsPWCN0;
-  TGraph **grXYhitsFECK0;
+  TGraph **grXYhitsFWCK0;
   int ixyPWF0[50], ixyPWCN0[50], ixyPWCK0[50];
 
   TGraph **grXYhitsPWF1;
   TGraph **grXYhitsPWCN1;
-  TGraph **grXYhitsFECK1;
+  TGraph **grXYhitsFWCK1;
   int ixyPWF1[50], ixyPWCN1[50], ixyPWCK1[50];
   /////////////////////////////////
   
@@ -540,7 +540,7 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }//partialType == 0
     
       if(isFWafer){
-	if(hinfo.z<0.0){
+	if(hinfo.z>0.0){
 	  if(id.type()==HGCSiliconDetId::HGCalFine) hXYhitsFWF[ilayer]->Fill(hinfo.x,hinfo.y);
 	  if(id.type()==HGCSiliconDetId::HGCalCoarseThin) hXYhitsFWCN[ilayer]->Fill(hinfo.x,hinfo.y);
 	  if(id.type()==HGCSiliconDetId::HGCalCoarseThick) hXYhitsFWCK[ilayer]->Fill(hinfo.x,hinfo.y);
@@ -572,7 +572,7 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }//partialType > 0
 
       if(isPWafer){
-	if(hinfo.z<0.0){
+	if(hinfo.z>0.0){
 	  if(id.type()==HGCSiliconDetId::HGCalFine) hXYhitsPWF[ilayer]->Fill(hinfo.x,hinfo.y);
 	  if(id.type()==HGCSiliconDetId::HGCalCoarseThin) hXYhitsPWCN[ilayer]->Fill(hinfo.x,hinfo.y);
 	  if(id.type()==HGCSiliconDetId::HGCalCoarseThick) hXYhitsPWCK[ilayer]->Fill(hinfo.x,hinfo.y);
