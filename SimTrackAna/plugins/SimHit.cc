@@ -480,7 +480,7 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   bool isPWafer = false;
   bool isFWafer = false;
-  int partialType = -1;
+  //int partialType = -1;
   
   std::map<uint32_t, std::pair<hitsinfo, energysum> >::iterator itr;
   for (itr = map_hits.begin(); itr != map_hits.end(); ++itr) {
@@ -496,7 +496,7 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     isPWafer = false;
     isFWafer = false;
-    partialType = -1;
+    //partialType = -1;
     if(rhtools_.isSilicon(id1)){
       for(unsigned int iw = 0 ; iw < winfo.size() ; iw++){
     	if(hinfo.layer == winfo[iw].layer and rhtools_.getWafer(id1).first == winfo[iw].u and rhtools_.getWafer(id1).second == winfo[iw].v){
@@ -510,7 +510,7 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       int type, part, orient;
       HGCSiliconDetId detId = HGCSiliconDetId((*itr).first);
       std::tie(type, part, orient) = hgcons.waferType(detId) ;
-      partialType = part ;
+      //partialType = part ;
     }
     
     if(name == "HGCalEESensitive" or name == "HGCalHESiliconSensitive"){
