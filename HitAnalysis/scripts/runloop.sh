@@ -15,7 +15,8 @@ do
       rm $PWD/step1.root
   fi
   ln -s $inputdir/step1_${i}.root $PWD/step1.root 
-  cmsRun $pydir/CellHitSum_cfg.py #-n 4
+  #cmsRun $pydir/CellHitSum_cfg.py #-n 4
+  cmsRun $pydir/SimHit_cfg.py #-n 4
   mv geantoutput.root geantoutput_${i}.root
 done
 
