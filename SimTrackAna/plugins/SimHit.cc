@@ -174,24 +174,24 @@ private:
   // For rechittool z positions. The 0 and 1 are for -ve and +ve, respectively.
   TGraph **grXYhitsFWF0;
   TGraph **grXYhitsFWCN0;
-  TGraph **grXYhitsFECK0;
+  TGraph **grXYhitsFWCK0;
   TGraph **grXYhitsB0;
   int ixyFWF0[50], ixyFWCN0[50], ixyFWCK0[50], ixyB0[50];
 
   TGraph **grXYhitsFWF1;
   TGraph **grXYhitsFWCN1;
-  TGraph **grXYhitsFECK1;
+  TGraph **grXYhitsFWCK1;
   TGraph **grXYhitsB1;
   int ixyFWF1[50], ixyFWCN1[50], ixyFWCK1[50], ixyB1[50];
 
   TGraph **grXYhitsPWF0;
   TGraph **grXYhitsPWCN0;
-  TGraph **grXYhitsFWCK0;
+  TGraph **grXYhitsPWCK0;
   int ixyPWF0[50], ixyPWCN0[50], ixyPWCK0[50];
 
   TGraph **grXYhitsPWF1;
   TGraph **grXYhitsPWCN1;
-  TGraph **grXYhitsFWCK1;
+  TGraph **grXYhitsPWCK1;
   int ixyPWF1[50], ixyPWCN1[50], ixyPWCK1[50];
   /////////////////////////////////
   
