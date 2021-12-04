@@ -515,7 +515,8 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     if(name == "HGCalEESensitive" or name == "HGCalHESiliconSensitive"){
       HGCSiliconDetId id((*itr).first);
-      if(partialType==0){
+      //if(partialType==0){
+      if(hgcons.waferVirtual(id.layer(),id.waferU(),id.waferV())){
 	if(id.type()==HGCSiliconDetId::HGCalFine){
 	  hELCSFWF[ilayer]->Fill(edep);
 	  if(hinfo.z<0.0)
@@ -547,7 +548,8 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
       }//isFWafer
       
-      if(partialType > 0){
+      //if(partialType > 0){
+      if(!hgcons.waferVirtual(id.layer(),id.waferU(),id.waferV())){
 	if(id.type()==HGCSiliconDetId::HGCalFine){
 	  hELCSPWF[ilayer]->Fill(edep);
 	  if(hinfo.z<0.0)
