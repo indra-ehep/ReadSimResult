@@ -508,6 +508,7 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     	}
       }
       
+      int type, part, orient;
       HGCSiliconDetId detId = HGCSiliconDetId((*itr).first);
       std::tie(type, part, orient) = hgcons_->waferType(detId) ;
       partialType = part ;
