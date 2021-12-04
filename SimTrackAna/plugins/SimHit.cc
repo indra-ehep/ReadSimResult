@@ -153,7 +153,7 @@ private:
   std::string name;
   edm::ESGetToken<HGCalGeometry, IdealGeometryRecord> geomToken_;
   const edm::ESGetToken<HGCalDDDConstants, IdealGeometryRecord> tok_hgcal_;
-  const HGCalDDDConstants* hgcons_;
+  
   
   TH1D *hCharge;
   TH1D *hChargeLowELoss;
@@ -637,7 +637,8 @@ SimHit::SimHit(const edm::ParameterSet& iConfig)
     
   caloGeomToken_ = esConsumes<CaloGeometry, CaloGeometryRecord>();
 
-  tok_hgcal_ = esConsumes<HGCalDDDConstants, IdealGeometryRecord, edm::Transition::BeginRun>(edm::ESInputTag{"", name});
+  //tok_hgcal_ = esConsumes<HGCalDDDConstants, IdealGeometryRecord, edm::Transition::BeginRun>(edm::ESInputTag{"", name});
+  tok_hgcal_ = esConsumes<HGCalDDDConstants, IdealGeometryRecord>(edm::ESInputTag{"", name});
   
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   setupDataToken_ = esConsumes<SetupData, SetupRecord>();
@@ -710,7 +711,7 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     itrk++;
   }
   
-  hgcons_ = iSetup.getData(tok_hgcal_);
+  const HGCalDDDConstants& hgcons_ = iSetup.getData(tok_hgcal_);
   
   const CaloGeometry &geomCalo = iSetup.getData(caloGeomToken_);
   rhtools_.setGeometry(geomCalo);
