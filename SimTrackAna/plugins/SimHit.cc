@@ -281,11 +281,11 @@ SimHit::SimHit(const edm::ParameterSet& iConfig)
   grXYhitsB0 =  new TGraph*[50]; 
   for(int i=1;i<=50;i++){
     grXYhitsFWF0[i] = fs->make<TGraph>(0);
-    grXYhitsFWF0[i]->SetNameTitle(Form("grXYhitsF0_layer_%02d",i),Form("HitsF0 in XY for layer %d",i));
+    grXYhitsFWF0[i]->SetNameTitle(Form("grXYhitsFWF0_layer_%02d",i),Form("HitsF0 in XY for layer %d",i));
     grXYhitsFWCN0[i] = fs->make<TGraph>(0);
-    grXYhitsFWCN0[i]->SetNameTitle(Form("grXYhitsCN0_layer_%02d",i),Form("HitsCN0 in XY for layer %d",i));
+    grXYhitsFWCN0[i]->SetNameTitle(Form("grXYhitsFWCN0_layer_%02d",i),Form("HitsCN0 in XY for layer %d",i));
     grXYhitsFWCK0[i] = fs->make<TGraph>(0);
-    grXYhitsFWCK0[i]->SetNameTitle(Form("grXYhitsCK0_layer_%02d",i),Form("HitsCK0 in XY for layer %d",i));
+    grXYhitsFWCK0[i]->SetNameTitle(Form("grXYhitsFWCK0_layer_%02d",i),Form("HitsCK0 in XY for layer %d",i));
     grXYhitsB0[i] = fs->make<TGraph>(0);
     grXYhitsB0[i]->SetNameTitle(Form("grXYhitsB0_layer_%02d",i),Form("HitsB0 in XY for layer %d",i));
     ixyFWF0[i-1] = 0; ixyFWCN0[i-1] = 0; ixyFWCK0[i-1] = 0; ixyB0[i-1] = 0; 
@@ -297,13 +297,13 @@ SimHit::SimHit(const edm::ParameterSet& iConfig)
   grXYhitsB1 =  new TGraph*[50]; 
   for(int i=1;i<=50;i++){
     grXYhitsFWF1[i] = fs->make<TGraph>(0);
-    grXYhitsFWF1[i]->SetNameTitle(Form("grXYhitsF0_layer_%02d",i),Form("HitsF0 in XY for layer %d",i));
+    grXYhitsFWF1[i]->SetNameTitle(Form("grXYhitsFWF1_layer_%02d",i),Form("HitsFWF1 in XY for layer %d",i));
     grXYhitsFWCN1[i] = fs->make<TGraph>(0);
-    grXYhitsFWCN1[i]->SetNameTitle(Form("grXYhitsCN0_layer_%02d",i),Form("HitsCN0 in XY for layer %d",i));
+    grXYhitsFWCN1[i]->SetNameTitle(Form("grXYhitsFWCN1_layer_%02d",i),Form("HitsFWCN1 in XY for layer %d",i));
     grXYhitsFWCK1[i] = fs->make<TGraph>(0);
-    grXYhitsFWCK1[i]->SetNameTitle(Form("grXYhitsCK0_layer_%02d",i),Form("HitsCK0 in XY for layer %d",i));
+    grXYhitsFWCK1[i]->SetNameTitle(Form("grXYhitsFWCK1_layer_%02d",i),Form("HitsFWCK1 in XY for layer %d",i));
     grXYhitsB1[i] = fs->make<TGraph>(0);
-    grXYhitsB1[i]->SetNameTitle(Form("grXYhitsB0_layer_%02d",i),Form("HitsB0 in XY for layer %d",i));
+    grXYhitsB1[i]->SetNameTitle(Form("grXYhitsB1_layer_%02d",i),Form("HitsB1 in XY for layer %d",i));
     ixyFWF1[i-1] = 0; ixyFWCN1[i-1] = 0; ixyFWCK1[i-1] = 0; ixyB1[i-1] = 0; 
   }
 
@@ -312,11 +312,11 @@ SimHit::SimHit(const edm::ParameterSet& iConfig)
   grXYhitsPWCK0 =  new TGraph*[50]; 
   for(int i=1;i<=50;i++){
     grXYhitsPWF0[i] = fs->make<TGraph>(0);
-    grXYhitsPWF0[i]->SetNameTitle(Form("grXYhitsF0_layer_%02d",i),Form("HitsF0 in XY for layer %d",i));
+    grXYhitsPWF0[i]->SetNameTitle(Form("grXYhitsPWF0_layer_%02d",i),Form("HitsPWF0 in XY for layer %d",i));
     grXYhitsPWCN0[i] = fs->make<TGraph>(0);
-    grXYhitsPWCN0[i]->SetNameTitle(Form("grXYhitsCN0_layer_%02d",i),Form("HitsCN0 in XY for layer %d",i));
+    grXYhitsPWCN0[i]->SetNameTitle(Form("grXYhitsPWCN0_layer_%02d",i),Form("HitsPWCN0 in XY for layer %d",i));
     grXYhitsPWCK0[i] = fs->make<TGraph>(0);
-    grXYhitsPWCK0[i]->SetNameTitle(Form("grXYhitsCK0_layer_%02d",i),Form("HitsCK0 in XY for layer %d",i));
+    grXYhitsPWCK0[i]->SetNameTitle(Form("grXYhitsPWCK0_layer_%02d",i),Form("HitsPWCK0 in XY for layer %d",i));
     ixyPWF0[i-1] = 0; ixyPWCN0[i-1] = 0; ixyPWCK0[i-1] = 0; 
   }
 
@@ -325,14 +325,13 @@ SimHit::SimHit(const edm::ParameterSet& iConfig)
   grXYhitsPWCK1 =  new TGraph*[50]; 
   for(int i=1;i<=50;i++){
     grXYhitsPWF1[i] = fs->make<TGraph>(0);
-    grXYhitsPWF1[i]->SetNameTitle(Form("grXYhitsF0_layer_%02d",i),Form("HitsF0 in XY for layer %d",i));
+    grXYhitsPWF1[i]->SetNameTitle(Form("grXYhitsPWF1_layer_%02d",i),Form("HitsPWF1 in XY for layer %d",i));
     grXYhitsPWCN1[i] = fs->make<TGraph>(0);
-    grXYhitsPWCN1[i]->SetNameTitle(Form("grXYhitsCN0_layer_%02d",i),Form("HitsCN0 in XY for layer %d",i));
+    grXYhitsPWCN1[i]->SetNameTitle(Form("grXYhitsPWCN1_layer_%02d",i),Form("HitsPWCN1 in XY for layer %d",i));
     grXYhitsPWCK1[i] = fs->make<TGraph>(0);
-    grXYhitsPWCK1[i]->SetNameTitle(Form("grXYhitsCK0_layer_%02d",i),Form("HitsCK0 in XY for layer %d",i));
+    grXYhitsPWCK1[i]->SetNameTitle(Form("grXYhitsPWCK1_layer_%02d",i),Form("HitsPWCK1 in XY for layer %d",i));
     ixyPWF1[i-1] = 0; ixyPWCN1[i-1] = 0; ixyPWCK1[i-1] = 0; 
   }
-  
   
   evt = 0;
   winfo.clear();
