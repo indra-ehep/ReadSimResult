@@ -390,7 +390,7 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // Handle<SimTrackContainer> simtrack;
   // iEvent.getByToken(tSimTrackContainer, simtrack);
 
-  const HGCalDDDConstants& hgcons_ = iSetup.getData(tok_hgcal_);
+  const HGCalDDDConstants& hgcons = iSetup.getData(tok_hgcal_);
   
   const CaloGeometry &geomCalo = iSetup.getData(caloGeomToken_);
   rhtools_.setGeometry(geomCalo);
@@ -510,7 +510,7 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       
       int type, part, orient;
       HGCSiliconDetId detId = HGCSiliconDetId((*itr).first);
-      std::tie(type, part, orient) = hgcons_->waferType(detId) ;
+      std::tie(type, part, orient) = hgcons.waferType(detId) ;
       partialType = part ;
     }
     
