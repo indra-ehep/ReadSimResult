@@ -152,7 +152,7 @@ private:
   edm::EDGetTokenT<edm::PCaloHitContainer> tSimCaloHitContainer; 
   std::string name;
   edm::ESGetToken<HGCalGeometry, IdealGeometryRecord> geomToken_;
-  const edm::ESGetToken<HGCalDDDConstants, IdealGeometryRecord> tok_hgcal_;
+  edm::ESGetToken<HGCalDDDConstants, IdealGeometryRecord> tok_hgcal_;
   
   
   TH1D *hCharge;
