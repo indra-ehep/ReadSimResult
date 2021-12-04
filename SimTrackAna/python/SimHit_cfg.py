@@ -50,13 +50,11 @@ process.source = cms.Source("PoolSource",
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
 
-
 process.prodEE = cms.EDAnalyzer('SimHit',
                              simtrack = cms.untracked.InputTag("g4SimHits"),
                              simhits = cms.untracked.InputTag("g4SimHits","HGCHitsEE", "SIM"),
                              Detector   = cms.string("HGCalEESensitive"),
                          )
-
 
 process.prodHEF = process.prodEE.clone(
     simhits = cms.untracked.InputTag("g4SimHits","HGCHitsHEfront", "SIM"),
