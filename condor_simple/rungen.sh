@@ -37,7 +37,7 @@ echo "Number of arguements: "$#
 geom=$1
 index=$2
 
-cmsDriver.py SingleMuPt100_hgcal_cfi -s GEN,SIM -n 10000 --conditions auto:phase2_realistic_T21 --beamspot HGCALCloseBy --datatier GEN-SIM --eventcontent FEVTDEBUG --geometry $geom --era Phase2C11I13M9 --relval 9000,100 --fileout file:step1_${index}.root  --customise_commands process.RandomNumberGeneratorService.generator.initialSeed="cms.untracked.uint32($RANDOM)" --no_exec  --nThreads 4
+cmsDriver.py SingleMuPt100_hgcal_cfi -s GEN,SIM -n 10000 --conditions auto:phase2_realistic_T21 --beamspot HGCALCloseBy --datatier GEN-SIM --eventcontent FEVTDEBUG --geometry $geom --era Phase2C11I13M9 --relval 9000,100 --fileout file:step1_${index}.root  --customise_commands process.RandomNumberGeneratorService.generator.initialSeed="cms.untracked.uint32($RANDOM)" --no_exec
 grep -n "process.RandomNumberGeneratorService.generator.initialSeed" SingleMuPt100_hgcal_cfi_GEN_SIM.py
 cmsRun SingleMuPt100_hgcal_cfi_GEN_SIM.py
 
