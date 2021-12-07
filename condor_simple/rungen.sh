@@ -19,6 +19,9 @@ else
     scramv1 project CMSSW $CMSVER
     cd $CMSVER/src
     eval `scramv1 runtime -sh`
+    git config --global user.name 'Indranil Das'
+    git config --global user.email 'indra.ehep@gmail.com'
+    git config --global user.github indra-ehep
     git cms-addpkg Configuration/Generator
     cp ../../SingleMuPt100_hgcal_cfi Configuration/Generator/python/SingleMuPt100_hgcal_cfi.py
 fi
