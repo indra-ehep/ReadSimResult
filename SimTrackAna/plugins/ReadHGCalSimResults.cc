@@ -138,7 +138,8 @@ ReadHGCalSimResults::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     GlobalPoint global = rhtools_.getPosition(id1);
     
     if(rhtools_.isSilicon(id1) or rhtools_.isScintillator(id1))
-      hXYhits->Fill(global.x(),global.y());  
+      if(rhtools_.getLayerWithOffset(id1)==40)
+	hXYhits->Fill(global.x(),global.y());  
     
   }//end of hit loop
   
