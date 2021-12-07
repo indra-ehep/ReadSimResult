@@ -21,7 +21,7 @@ else
     eval `scramv1 runtime -sh`
     mkdir -p Configuration
     cp -r $CMSSW_RELEASE_BASE/src/Configuration/Generator  Configuration/
-    cp ../../SingleMuPt100_hgcal_cfi Configuration/Generator/python/SingleMuPt100_hgcal_cfi.py
+    cp ../../SingleMuPt100_hgcal_cfi.py Configuration/Generator/python/SingleMuPt100_hgcal_cfi.py
 fi
 
 if [ -z ${_CONDOR_SCRATCH_DIR} ] ; then 
