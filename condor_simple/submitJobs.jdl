@@ -5,11 +5,12 @@ when_to_transfer_output = ON_EXIT
 Transfer_Input_Files = SingleMuPt100_hgcal_cfi.py, rungen.sh
 x509userproxy = $ENV(X509_USER_PROXY)
 use_x509userproxy = true
+RequestCpus = 1
 +BenchmarkJob = True
 +MaxRuntime = 36000
-Output = log/log_$(cluster)_$(process).stdout
-Error  = log/log_$(cluster)_$(process).stderr
-Log    = log/log_$(cluster)_$(process).condor
+Output = log_$(cluster)_$(process).stdout
+Error  = log_$(cluster)_$(process).stderr
+Log    = log_$(cluster)_$(process).condor
 
 X=$(step)
 Arguments  = Extended2026D86 $INT(X) 
