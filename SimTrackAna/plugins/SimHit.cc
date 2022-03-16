@@ -294,7 +294,7 @@ SimHit::SimHit(const edm::ParameterSet& iConfig)
 
   hELCSLayer =  new TH1D*[50]; 
   for(int i=1;i<=50;i++){
-    hELCSLayer[i] = fs->make<TH1D>(Form("hELCSLayer_layer_%02d",i),Form("Energy loss for layer %d",i), 2000, 0., 2000.);
+    hELCSLayer[i] = fs->make<TH1D>(Form("hELCSLayer_layer_%02d",i),Form("Energy loss for layer %d",i), 10000, 0., 1.e6);
     hELCSLayer[i]->GetXaxis()->SetTitle("ELoss (keV)");
     hELCSLayer[i]->GetYaxis()->SetTitle("Entries");
   }
@@ -309,21 +309,21 @@ SimHit::SimHit(const edm::ParameterSet& iConfig)
   
   hADCLayer =  new TH1D*[50]; 
   for(int i=1;i<=50;i++){
-    hADCLayer[i] = fs->make<TH1D>(Form("hADCLayer_layer_%02d",i),Form("ADC for layer %d",i), 2000, 0., 2000.);
+    hADCLayer[i] = fs->make<TH1D>(Form("hADCLayer_layer_%02d",i),Form("ADC for layer %d",i), 10000, 0., 10000.);
     hADCLayer[i]->GetXaxis()->SetTitle("ADC");
     hADCLayer[i]->GetYaxis()->SetTitle("Entries");
   }
   
   hELADCLayer =  new TH2D*[50]; 
   for(int i=1;i<=50;i++){
-    hELADCLayer[i] = fs->make<TH2D>(Form("hELADCLayer_layer_%02d",i),Form("Eloss vs ADC for layer %d",i), 2000, 0., 2000., 2000, 0., 2000.);
+    hELADCLayer[i] = fs->make<TH2D>(Form("hELADCLayer_layer_%02d",i),Form("Eloss vs ADC for layer %d",i), 1000, 0., 1.e6, 1000, 0., 10000.);
     hELADCLayer[i]->GetXaxis()->SetTitle("ELoss (keV)");
     hELADCLayer[i]->GetYaxis()->SetTitle("ADC ");
   }
 
   hELADCProfLayer =  new TProfile*[50]; 
   for(int i=1;i<=50;i++){
-    hELADCProfLayer[i] = fs->make<TProfile>(Form("hELADCProfLayer_layer_%02d",i),Form("Eloss vs ADC for layer %d",i), 2000, 0., 2000., 0., 2000.);
+    hELADCProfLayer[i] = fs->make<TProfile>(Form("hELADCProfLayer_layer_%02d",i),Form("Eloss vs ADC for layer %d",i), 1000, 0., 1.e6, 0., 10000.);
     hELADCProfLayer[i]->GetXaxis()->SetTitle("ELoss (keV)");
     hELADCProfLayer[i]->GetYaxis()->SetTitle("ADC ");
   }
