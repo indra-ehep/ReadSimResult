@@ -26,26 +26,12 @@ process.load("IOMC.RandomEngine.IOMC_cff")
 process.RandomNumberGeneratorService.generator.initialSeed = 456789
 
 process.source = cms.Source("PoolSource",
-    #fileNames = cms.untracked.vstring('file:SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D83_higheta.root')
-    #fileNames = cms.untracked.vstring('file:SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D86_higheta.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/step1_D86.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/MuFlatPt/D83/SingleMuFlatPt2To100_D83_step1.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/MuFlatPt/D86/SingleMuFlatPt2To100_D86_step1.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/CloseByPhoton_Official/38693.D83/step1.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/CloseByPhoton_Official/38693.D86/step1.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/MuDeltaPt/D83/step1.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/MuDeltaPt/D86/step1.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D83/step1.root')
-                                      #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D83/step1_0.root'
-                                      #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D83/step1_1.root',
-                                      #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D83/step1_2.root',
-                                      #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D83/step1_3.root',
-                                      #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D83/step1_4.root'
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D86/step1.root')
-    #fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_1_X_2021-10-24-2300/src/step1_D86.root')
-    #fileNames = cms.untracked.vstring('file:/eos/user/i/idas/SimOut/DeltaPt/Extended2026D86/step1.root')
-    fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_2_X_2021-12-02-2300/src/step1.root')
-
+                            #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/test_Photon/23293p0_wf/step1.root')
+                            #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/test_Photon/23293p0_wf/step2.root')
+                            #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/test_Photon/Photon_5K/step2_500.root')
+                            #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/test_Photon/Photon_1K/step1.root')
+                            #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/test_Photon/Photon_1K/step2_500_local.root')
+                            fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/test_Photon/Photon_1K/step2_500_local_nonoise_unitcce.root')
 )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
@@ -54,17 +40,20 @@ process.prodEE = cms.EDAnalyzer('SimHit',
                              simtrack = cms.untracked.InputTag("g4SimHits"),
                              simhits = cms.untracked.InputTag("g4SimHits","HGCHitsEE", "SIM"),
                              Detector   = cms.string("HGCalEESensitive"),
+                             #digihits = cms.untracked.InputTag("hgcalDigis","EE"),
+                             digihits = cms.untracked.InputTag("simHGCalUnsuppressedDigis","EE"),
+                             SampleIndx = cms.untracked.int32(2),
                          )
 
-process.prodHEF = process.prodEE.clone(
-    simhits = cms.untracked.InputTag("g4SimHits","HGCHitsHEfront", "SIM"),
-    Detector   = cms.string("HGCalHESiliconSensitive"),
-)
+# process.prodHEF = process.prodEE.clone(
+#     simhits = cms.untracked.InputTag("g4SimHits","HGCHitsHEfront", "SIM"),
+#     Detector   = cms.string("HGCalHESiliconSensitive"),
+# )
 
-process.prodHEB = process.prodHEF.clone(
-    simhits = cms.untracked.InputTag("g4SimHits","HGCHitsHEback", "SIM"),
-    Detector   = cms.string("HGCalHEScintillatorSensitive"),
-)
+# process.prodHEB = process.prodHEF.clone(
+#     simhits = cms.untracked.InputTag("g4SimHits","HGCHitsHEback", "SIM"),
+#     Detector   = cms.string("HGCalHEScintillatorSensitive"),
+# )
 
 #process.Tracer = cms.Service("Tracer")
 
@@ -72,4 +61,5 @@ process.TFileService = cms.Service("TFileService",
      fileName = cms.string('geantoutput.root')
  )
 
-process.p = cms.Path(process.prodEE*process.prodHEF*process.prodHEB)
+#process.p = cms.Path(process.prodEE*process.prodHEF*process.prodHEB)
+process.p = cms.Path(process.prodEE)
