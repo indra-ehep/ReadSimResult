@@ -1,3 +1,4 @@
+
 import FWCore.ParameterSet.Config as cms
 
 
@@ -32,6 +33,8 @@ process.source = cms.Source("PoolSource",
                             #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/test_Photon/Photon_1K/step1.root')
                             #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/test_Photon/Photon_1K/step2_500_local.root')
                             fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/test_Photon/Photon_1K/step2_500_local_nonoise_unitcce.root')
+                            #fileNames = cms.untracked.vstring('file:/tmp/idas/Muon_10/step2_1.root')
+                            #fileNames = cms.untracked.vstring('file:/tmp/idas/Photon_500/step2_1.root')
 )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
