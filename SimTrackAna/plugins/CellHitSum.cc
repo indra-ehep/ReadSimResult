@@ -234,24 +234,26 @@ private:
   TGraph **grXYhitsF0;
   TGraph **grXYhitsCN0;
   TGraph **grXYhitsCK0;
-  int ixyF0[50], ixyCN0[50], ixyCK0[50];
+  TGraph **grXYhitsAR0;
+  int ixyF0[50], ixyCN0[50], ixyCK0[50], ixyAR0[50];
 
   TGraph **grXYhitsF1;
   TGraph **grXYhitsCN1;
   TGraph **grXYhitsCK1;
-  int ixyF1[50], ixyCN1[50], ixyCK1[50];
+  TGraph **grXYhitsAR1;
+  int ixyF1[50], ixyCN1[50], ixyCK1[50], ixyAR1[50];
   /////////////////////////////////
 
   // For detid zside. The 0 and 1 are for -ve and +ve, respectively.
-  TGraph **gXYhitsF0;
-  TGraph **gXYhitsCN0;
-  TGraph **gXYhitsCK0;
-  int ixydF0[50], ixydCN0[50], ixydCK0[50];
+  //TGraph **gXYhitsF0;
+  //TGraph **gXYhitsCN0;
+  //TGraph **gXYhitsCK0;
+  //int ixydF0[50], ixydCN0[50], ixydCK0[50];
 
-  TGraph **gXYhitsF1;
-  TGraph **gXYhitsCN1;
-  TGraph **gXYhitsCK1;
-  int ixydF1[50], ixydCN1[50], ixydCK1[50];
+  //TGraph **gXYhitsF1;
+  //TGraph **gXYhitsCN1;
+  //TGraph **gXYhitsCK1;
+  //int ixydF1[50], ixydCN1[50], ixydCK1[50];
   //////////////////////////////////////////
 
   TH1D **hELCSMaxF ;
@@ -472,16 +474,18 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   grXYhitsF0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grXYhitsCN0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grXYhitsCK0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
+  grXYhitsAR0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grXYhitsF1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grXYhitsCN1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grXYhitsCK1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
+  grXYhitsAR1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
 
-  gXYhitsF0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
-  gXYhitsCN0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
-  gXYhitsCK0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
-  gXYhitsF1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
-  gXYhitsCN1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
-  gXYhitsCK1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
+  //gXYhitsF0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
+  //gXYhitsCN0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
+  //gXYhitsCK0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
+  //gXYhitsF1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
+  //gXYhitsCN1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
+  //gXYhitsCK1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
 
 
   hNHxXYhitsF =  new TH2D*[50]; 
@@ -520,7 +524,9 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
     grXYhitsCN0[i]->SetNameTitle(Form("grXYhitsCN0_layer_%02d",i),Form("HitsCN0 in XY for layer %d",i));
     grXYhitsCK0[i] = fs->make<TGraph>(0);
     grXYhitsCK0[i]->SetNameTitle(Form("grXYhitsCK0_layer_%02d",i),Form("HitsCK0 in XY for layer %d",i));
-    ixyF0[i-1] = 0; ixyCN0[i-1] = 0; ixyCK0[i-1] = 0;     
+    grXYhitsAR0[i] = fs->make<TGraph>(0);
+    grXYhitsAR0[i]->SetNameTitle(Form("grXYhitsAR0_layer_%02d",i),Form("HitsAr0 in XY for layer %d",i));
+    ixyF0[i-1] = 0; ixyCN0[i-1] = 0; ixyCK0[i-1] = 0; ixyAR0[i-1] = 0; 
 
     grXYhitsF1[i] = fs->make<TGraph>(0);
     grXYhitsF1[i]->SetNameTitle(Form("grXYhitsF1_layer_%02d",i),Form("HitsF1 in XY for layer %d",i));
@@ -528,23 +534,25 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
     grXYhitsCN1[i]->SetNameTitle(Form("grXYhitsCN1_layer_%02d",i),Form("HitsCN1 in XY for layer %d",i));
     grXYhitsCK1[i] = fs->make<TGraph>(0);
     grXYhitsCK1[i]->SetNameTitle(Form("grXYhitsCK1_layer_%02d",i),Form("HitsCK1 in XY for layer %d",i));
-    ixyF1[i-1] = 0; ixyCN1[i-1] = 0; ixyCK1[i-1] = 0;     
+    grXYhitsAR1[i] = fs->make<TGraph>(0);
+    grXYhitsAR1[i]->SetNameTitle(Form("grXYhitsAR1_layer_%02d",i),Form("HitsAr1 in XY for layer %d",i));
+    ixyF1[i-1] = 0; ixyCN1[i-1] = 0; ixyCK1[i-1] = 0; ixyAR1[i-1] = 0;
 
-    gXYhitsF0[i] = fs->make<TGraph>(0);
-    gXYhitsF0[i]->SetNameTitle(Form("gXYhitsF0_layer_%02d",i),Form("HitsF0 in XY for layer %d",i));
-    gXYhitsCN0[i] = fs->make<TGraph>(0);
-    gXYhitsCN0[i]->SetNameTitle(Form("gXYhitsCN0_layer_%02d",i),Form("HitsCN0 in XY for layer %d",i));
-    gXYhitsCK0[i] = fs->make<TGraph>(0);
-    gXYhitsCK0[i]->SetNameTitle(Form("gXYhitsCK0_layer_%02d",i),Form("HitsCK0 in XY for layer %d",i));
-    ixydF0[i-1] = 0; ixydCN0[i-1] = 0; ixydCK0[i-1] = 0;     
+    //gXYhitsF0[i] = fs->make<TGraph>(0);
+    //gXYhitsF0[i]->SetNameTitle(Form("gXYhitsF0_layer_%02d",i),Form("HitsF0 in XY for layer %d",i));
+    //gXYhitsCN0[i] = fs->make<TGraph>(0);
+    //gXYhitsCN0[i]->SetNameTitle(Form("gXYhitsCN0_layer_%02d",i),Form("HitsCN0 in XY for layer %d",i));
+    //gXYhitsCK0[i] = fs->make<TGraph>(0);
+    //gXYhitsCK0[i]->SetNameTitle(Form("gXYhitsCK0_layer_%02d",i),Form("HitsCK0 in XY for layer %d",i));
+    //ixydF0[i-1] = 0; ixydCN0[i-1] = 0; ixydCK0[i-1] = 0;     
 
-    gXYhitsF1[i] = fs->make<TGraph>(0);
-    gXYhitsF1[i]->SetNameTitle(Form("gXYhitsF1_layer_%02d",i),Form("HitsF1 in XY for layer %d",i));
-    gXYhitsCN1[i] = fs->make<TGraph>(0);
-    gXYhitsCN1[i]->SetNameTitle(Form("gXYhitsCN1_layer_%02d",i),Form("HitsCN1 in XY for layer %d",i));
-    gXYhitsCK1[i] = fs->make<TGraph>(0);
-    gXYhitsCK1[i]->SetNameTitle(Form("gXYhitsCK1_layer_%02d",i),Form("HitsCK1 in XY for layer %d",i));
-    ixydF1[i-1] = 0; ixydCN1[i-1] = 0; ixydCK1[i-1] = 0;     
+    //gXYhitsF1[i] = fs->make<TGraph>(0);
+    //gXYhitsF1[i]->SetNameTitle(Form("gXYhitsF1_layer_%02d",i),Form("HitsF1 in XY for layer %d",i));
+    //gXYhitsCN1[i] = fs->make<TGraph>(0);
+    //gXYhitsCN1[i]->SetNameTitle(Form("gXYhitsCN1_layer_%02d",i),Form("HitsCN1 in XY for layer %d",i));
+    //gXYhitsCK1[i] = fs->make<TGraph>(0);
+    //gXYhitsCK1[i]->SetNameTitle(Form("gXYhitsCK1_layer_%02d",i),Form("HitsCK1 in XY for layer %d",i));
+    //ixydF1[i-1] = 0; ixydCN1[i-1] = 0; ixydCK1[i-1] = 0;     
 
   }
 
@@ -972,42 +980,48 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if(id.type()==HGCSiliconDetId::HGCalFine){
 	  hXYhitsF[il]->Fill(global2.x(),global2.y());
 
-	  if(global2.z()<0.0)
-	    grXYhitsF0[il]->SetPoint(ixyF0[il-1]++,global2.x(),global2.y());
+	  if(global1.z()<0.0)
+	    grXYhitsF0[il]->SetPoint(ixyF0[il-1]++,global1.x(),global1.y());
 	  else
-	    grXYhitsF1[il]->SetPoint(ixyF1[il-1]++,global2.x(),global2.y());
-	  if(id.zside() == -1)
-	    gXYhitsF0[il]->SetPoint(ixydF0[il-1]++,global2.x(),global2.y());
-	  else
-	    gXYhitsF1[il]->SetPoint(ixydF1[il-1]++,global2.x(),global2.y());
+	    grXYhitsF1[il]->SetPoint(ixyF1[il-1]++,global1.x(),global1.y());
+	  //if(id.zside() == -1)
+	  //  gXYhitsF0[il]->SetPoint(ixydF0[il-1]++,global2.x(),global2.y());
+	  //else
+	  //  gXYhitsF1[il]->SetPoint(ixydF1[il-1]++,global2.x(),global2.y());
 
 	}
 	if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
 	  hXYhitsCN[il]->Fill(global2.x(),global2.y());
 
-	  if(global2.z()<0.0)
-	    grXYhitsCN0[il]->SetPoint(ixyCN0[il-1]++,global2.x(),global2.y());
+	  if(global1.z()<0.0)
+	    grXYhitsCN0[il]->SetPoint(ixyCN0[il-1]++,global1.x(),global1.y());
 	  else
-	    grXYhitsCN1[il]->SetPoint(ixyCN1[il-1]++,global2.x(),global2.y());
-	  if(id.zside() == -1)
-	    gXYhitsCN0[il]->SetPoint(ixydCN0[il-1]++,global2.x(),global2.y());
-	  else
-	    gXYhitsCN1[il]->SetPoint(ixydCN1[il-1]++,global2.x(),global2.y());
+	    grXYhitsCN1[il]->SetPoint(ixyCN1[il-1]++,global1.x(),global1.y());
+	  //if(id.zside() == -1)
+	  //  gXYhitsCN0[il]->SetPoint(ixydCN0[il-1]++,global2.x(),global2.y());
+	  //else
+	  //  gXYhitsCN1[il]->SetPoint(ixydCN1[il-1]++,global2.x(),global2.y());
 
 	}
 	if(id.type()==HGCSiliconDetId::HGCalCoarseThick){ //case 2 : 
 	  hXYhitsCK[il]->Fill(global2.x(),global2.y());
 
-	  if(global2.z()<0.0)
-	    grXYhitsCK0[il]->SetPoint(ixyCK0[il-1]++,global2.x(),global2.y());
+	  if(global1.z()<0.0)
+	    grXYhitsCK0[il]->SetPoint(ixyCK0[il-1]++,global1.x(),global1.y());
 	  else
-	    grXYhitsCK1[il]->SetPoint(ixyCK1[il-1]++,global2.x(),global2.y());
-	  if(id.zside() == -1)
-	    gXYhitsCK0[il]->SetPoint(ixydCK0[il-1]++,global2.x(),global2.y());
-	  else
-	    gXYhitsCK1[il]->SetPoint(ixydCK1[il-1]++,global2.x(),global2.y());
+	    grXYhitsCK1[il]->SetPoint(ixyCK1[il-1]++,global1.x(),global1.y());
+	  //if(id.zside() == -1)
+	  //  gXYhitsCK0[il]->SetPoint(ixydCK0[il-1]++,global2.x(),global2.y());
+	  //else
+	  //  gXYhitsCK1[il]->SetPoint(ixydCK1[il-1]++,global2.x(),global2.y());
 
 	}
+        if(rhtools_.getCell(id1).first + rhtools_.getCell(id1).second <= 2){
+          if(global1.z()<0.0)
+            grXYhitsAR0[il]->SetPoint(ixyAR0[il-1]++,global1.x(),global1.y());
+          else
+            grXYhitsAR1[il]->SetPoint(ixyAR1[il-1]++,global1.x(),global1.y());
+        }
       }else if(rhtools_.isScintillator(id1)){
 	hXYhitsB[rhtools_.getLayerWithOffset(id1)]->Fill(global2.x(),global2.y());
       }
