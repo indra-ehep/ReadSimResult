@@ -7,6 +7,7 @@ myArray=( "$@" )
 printf "Start Running Histogramming at ";/bin/date
 printf "Worker node hostname ";/bin/hostname
 CMSVER=CMSSW_12_5_0_pre5
+HOME=/afs/cern.ch/user/i/idas
 
 if [ -z ${_CONDOR_SCRATCH_DIR} ] ; then 
     echo "Running Interactively" ; 
