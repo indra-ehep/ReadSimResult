@@ -6,7 +6,7 @@ import time
 
 #IMPORT MODULES FROM OTHER DIR
 
-Geom_1 = ["Extended2026D83", "Extended2026D86"]
+Geom_1 = ["Extended2026D88", "Extended2026D92", "Extended2026D93"]
 #D86 = ["Extended2026D83"]
 
 
@@ -16,7 +16,7 @@ condorLogDir = "log"
 tarFile = "tmpSub/generator.tar.gz"
 if os.path.exists(tarFile):
     os.system("rm %s"%tarFile)
-os.system("tar -zcvf %s ../../Configuration ../../ReadSimResult --exclude condor"%tarFile)
+os.system("tar -zcvf %s ../../ReadSimResult --exclude condor"%tarFile)
 os.system("cp rungen.sh tmpSub/")
 common_command = \
 'Universe   = vanilla\n\
@@ -25,10 +25,11 @@ when_to_transfer_output = ON_EXIT\n\
 Transfer_Input_Files = generator.tar.gz, rungen.sh\n\
 x509userproxy = $ENV(X509_USER_PROXY)\n\
 use_x509userproxy = true\n\
-RequestCpus = 4\n\
+RequestCpus = 8\n\
 +BenchmarkJob = True\n\
 #+JobFlavour = "testmatch"\n\
-+MaxRuntime = 259200\n\
+#+MaxRuntime = 259200\n\
++MaxRuntime = 7200\n\
 Output = %s/log_$(cluster)_$(process).stdout\n\
 Error  = %s/log_$(cluster)_$(process).stderr\n\
 Log    = %s/log_$(cluster)_$(process).condor\n\n'%(condorLogDir, condorLogDir, condorLogDir)
@@ -44,7 +45,8 @@ jdlFile.write('Executable =  rungen.sh \n')
 jdlFile.write(common_command)
 jdlFile.write("X=$(step)\n")
 for sample in sampleList:
-    condorOutDir1="/eos/user/i/idas/SimOut/DeltaPt"
+    #condorOutDir1="/eos/user/i/idas/SimOut/DeltaPt"
+    condorOutDir1="/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/etaphi_debug"
     os.system("eos root://eosuser.cern.ch mkdir -p %s/%s"%(condorOutDir1, sample))
     #condorOutDir="/cms/store/user/idas/SimOut/DeltaPt"
     #os.system("xrdfs root://se01.indiacms.res.in/ mkdir -p %s/%s"%(condorOutDir, sample))
@@ -54,29 +56,3 @@ for sample in sampleList:
 jdlFile.close() 
 
 
-# subFile = open('tmpSub/condorSubmit.sh','w')
-# for year in [2016,2017,2018]:
-#     sampleList = eval("samples_%i"%year)
-#     jdlName = 'submitJobs_%s.jdl'%(year)
-#     jdlFile = open('tmpSub/%s'%jdlName,'w')
-#     jdlFile.write('Executable =  rungen.sh \n')
-#     jdlFile.write(common_command)
-#     condorOutDir1="/eos/user/i/idas/SimOut/DeltaPt"
-#     os.system("eos root://eosuser.cern.ch mkdir -p %s/%s"%(condorOutDir1, year))
-#     condorOutDir="/cms/store/user/idas/SimOut/DeltaPt"
-#     os.system("xrdfs root://se01.indiacms.res.in/ mkdir -p %s/%s"%(condorOutDir, year))
-#     jdlFile.write("X=$(step)\n")
-    
-#     for sample in sampleList:
-#         noflines = subprocess.Popen('wc -l ../input/eos/%i/%s_%i.txt | awk \'{print $1}\''%(year,sample,year),shell=True,stdout=subprocess.PIPE).communicate()[0].split('\n')[0]
-#         nJob = int(noflines)
-#         print "%s %s"%(sample,nJob)
-#         if nJob==1:
-#             run_command =  'Arguments  = %s %s input/eos/%i/%s_%i.txt 0 base \nQueue 1\n\n' %(year, sample, year, sample, year)
-#         else:
-#             run_command =  'Arguments  = %s %s input/eos/%i/%s_%i.txt $INT(X) base \nQueue %i\n\n' %(year, sample, year, sample, year, nJob)
-#         jdlFile.write(run_command)
-# 	#print "condor_submit jdl/%s"%jdlFile
-#     subFile.write("condor_submit %s\n"%jdlName)
-#     jdlFile.close() 
-# subFile.close()
