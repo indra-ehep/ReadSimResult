@@ -235,13 +235,15 @@ private:
   TGraph **grXYhitsCN0;
   TGraph **grXYhitsCK0;
   TGraph **grXYhitsAR0;
-  int ixyF0[50], ixyCN0[50], ixyCK0[50], ixyAR0[50];
+  TGraph **grXYhitsB0;
+  int ixyF0[50], ixyCN0[50], ixyCK0[50], ixyAR0[50], ixyB0[50];
 
   TGraph **grXYhitsF1;
   TGraph **grXYhitsCN1;
   TGraph **grXYhitsCK1;
   TGraph **grXYhitsAR1;
-  int ixyF1[50], ixyCN1[50], ixyCK1[50], ixyAR1[50];
+  TGraph **grXYhitsB1;
+  int ixyF1[50], ixyCN1[50], ixyCK1[50], ixyAR1[50], ixyB1[50];
   /////////////////////////////////
 
   // For detid zside. The 0 and 1 are for -ve and +ve, respectively.
@@ -475,10 +477,12 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
   grXYhitsCN0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grXYhitsCK0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grXYhitsAR0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
+  grXYhitsB0 =  new TGraph*[50];
   grXYhitsF1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grXYhitsCN1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grXYhitsCK1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grXYhitsAR1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
+  grXYhitsB1 =  new TGraph*[50];
 
   //gXYhitsF0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   //gXYhitsCN0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
@@ -526,7 +530,9 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
     grXYhitsCK0[i]->SetNameTitle(Form("grXYhitsCK0_layer_%02d",i),Form("HitsCK0 in XY for layer %d",i));
     grXYhitsAR0[i] = fs->make<TGraph>(0);
     grXYhitsAR0[i]->SetNameTitle(Form("grXYhitsAR0_layer_%02d",i),Form("HitsAr0 in XY for layer %d",i));
-    ixyF0[i-1] = 0; ixyCN0[i-1] = 0; ixyCK0[i-1] = 0; ixyAR0[i-1] = 0; 
+    grXYhitsB0[i] = fs->make<TGraph>(0);
+    grXYhitsB0[i]->SetNameTitle(Form("grXYhitsB0_layer_%02d",i),Form("HitsB0 in XY for layer %d",i));
+    ixyF0[i-1] = 0; ixyCN0[i-1] = 0; ixyCK0[i-1] = 0; ixyAR0[i-1] = 0; ixyB0[i-1] = 0; 
 
     grXYhitsF1[i] = fs->make<TGraph>(0);
     grXYhitsF1[i]->SetNameTitle(Form("grXYhitsF1_layer_%02d",i),Form("HitsF1 in XY for layer %d",i));
@@ -536,7 +542,9 @@ CellHitSum::CellHitSum(const edm::ParameterSet& iConfig)
     grXYhitsCK1[i]->SetNameTitle(Form("grXYhitsCK1_layer_%02d",i),Form("HitsCK1 in XY for layer %d",i));
     grXYhitsAR1[i] = fs->make<TGraph>(0);
     grXYhitsAR1[i]->SetNameTitle(Form("grXYhitsAR1_layer_%02d",i),Form("HitsAr1 in XY for layer %d",i));
-    ixyF1[i-1] = 0; ixyCN1[i-1] = 0; ixyCK1[i-1] = 0; ixyAR1[i-1] = 0;
+    grXYhitsB1[i] = fs->make<TGraph>(0);
+    grXYhitsB1[i]->SetNameTitle(Form("grXYhitsB1_layer_%02d",i),Form("HitsB1 in XY for layer %d",i));
+    ixyF1[i-1] = 0; ixyCN1[i-1] = 0; ixyCK1[i-1] = 0; ixyAR1[i-1] = 0;  ixyB1[i-1] = 0; 
 
     //gXYhitsF0[i] = fs->make<TGraph>(0);
     //gXYhitsF0[i]->SetNameTitle(Form("gXYhitsF0_layer_%02d",i),Form("HitsF0 in XY for layer %d",i));
@@ -1023,7 +1031,23 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             grXYhitsAR1[il]->SetPoint(ixyAR1[il-1]++,global1.x(),global1.y());
         }
       }else if(rhtools_.isScintillator(id1)){
-	hXYhitsB[rhtools_.getLayerWithOffset(id1)]->Fill(global2.x(),global2.y());
+	
+	HGCScintillatorDetId id(itHit->id());
+        int il = rhtools_.getLayerWithOffset(id1) - 1;
+	
+	if (global2.z() < 0.0)
+	  hXYhitsB[rhtools_.getLayerWithOffset(id1)]->Fill(global2.x(),global2.y());
+	if (global2.z() < 0.0)
+          grXYhitsB0[il]->SetPoint(ixyB0[il]++, global2.x(), global2.y());
+        else
+          grXYhitsB1[il]->SetPoint(ixyB1[il]++, global2.x(), global2.y());
+
+        // if (id.zside() == -1)
+        //   gXYhitsB0[il]->SetPoint(ixydB0[il]++, global2.x(), global2.y());
+        // else
+        //   gXYhitsB1[il]->SetPoint(ixydB1[il]++, global2.x(), global2.y());
+
+
       }
     }
     
