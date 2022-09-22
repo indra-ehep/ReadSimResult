@@ -1032,15 +1032,16 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         }
       }else if(rhtools_.isScintillator(id1)){
 	
-	HGCScintillatorDetId id(itHit->id());
-        int il = rhtools_.getLayerWithOffset(id1) - 1;
+	//HGCScintillatorDetId id(itHit->id());
+        int il = rhtools_.getLayerWithOffset(id1);
 	
-	if (global2.z() < 0.0)
-	  hXYhitsB[rhtools_.getLayerWithOffset(id1)]->Fill(global2.x(),global2.y());
-	if (global2.z() < 0.0)
-          grXYhitsB0[il]->SetPoint(ixyB0[il]++, global2.x(), global2.y());
+	if (global1.z() < 0.0)
+	  hXYhitsB[il]->Fill(global1.x(),global1.y());
+
+	if (global1.z() < 0.0)
+          grXYhitsB0[il]->SetPoint(ixyB0[il]++, global1.x(), global1.y());
         else
-          grXYhitsB1[il]->SetPoint(ixyB1[il]++, global2.x(), global2.y());
+          grXYhitsB1[il]->SetPoint(ixyB1[il]++, global1.x(), global1.y());
 
         // if (id.zside() == -1)
         //   gXYhitsB0[il]->SetPoint(ixydB0[il]++, global2.x(), global2.y());
