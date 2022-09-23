@@ -5,6 +5,19 @@ import ROOT as rt
 import csv
 import argparse as arg
 
+def GetCartesian(r, theta):
+  x = r*rt.TMath.Cos(theta*rt.TMath.Pi()/180.)
+  y = r*rt.TMath.Sin(theta*rt.TMath.Pi()/180.)
+  return x,y;
+
+def GetPolar(x, y):
+  r = rt.TMath.Sqrt(x*x + y*y)
+  theta =  180.0*rt.TMath.ATan2(y, x)/rt.TMath.Pi()
+  if theta<0.0:
+    theta = (180. - rt.TMath.Abs(theta))  + 180.    
+  return r,theta;
+
+
 parser = arg.ArgumentParser(description='Train Binary BDT')
 parser.add_argument('-l', '--layer', dest='layer', type=str, default='28', help="layer number")
 parser.add_argument('-v', '--version', dest='version', type=str, default='v17', help="version number")
@@ -22,7 +35,7 @@ elif version == 'v16':
     rootfile = 'geantoutput_v16_2_11.root'
     csvfile = 'wafer_v16.csv'
 elif version == 'v17':
-    rootfile = 'geantoutput_D92_9.root'
+    rootfile = 'geantoutput_D92.root'
     csvfile = 'wafer_v17.csv'
 
 
@@ -57,7 +70,14 @@ for line in data[:47]:
     layer_types[lines[0]] = lines[1]
     cassette_shifts[lines[0]] = [float(shift) for shift in lines[2:]]
 
-
+sci_sensor_file = open('Validation/HGCalValidation/data/scintillatorV0.txt','r')
+sci_data = sci_sensor_file.read().split('\n')
+#print(sci_data)
+for line in sci_data[:14]:
+    lines = line.split()
+    # if len(lines)==10 :
+    #     print(lines)
+    
 s3 = np.sqrt(3)
 points = [[0, -1], [s3/2, -1/2], [s3/2, 1/2], [0, 1], [-s3/2, 1/2], [-s3/2, -1/2], [-s3/4, -3/4], [s3/4, 3/4], [-0.6855, -0.6043], [-0.1806, -0.8937], [0.6855, -0.6043], [0.6855, 0.6043], [0.1806, 0.8957], [-s3/2, 0.2914]]
 partial = {}
@@ -83,17 +103,22 @@ partial['HD5'] = np.array([points[0], points[1], points[2], points[12], points[8
 
 tfile = rt.TFile(rootfile, 'READ')
 
-for lay in range(1,2):
+for lay in range(47,48):
     layer = str(lay)
     if len(layer) == 1:
         layer_name = '0' + layer
     else:
         layer_name = layer
 
+    
     layer_type = layer_types[layer]
     cassette_shift = cassette_shifts[layer]
-    #print(cassette_shift)
-    print(layer_type)
+    
+    for ishift in range(0,len(cassette_shift)) :
+      cassette_shift[ishift] = float(cassette_shift[ishift])/10.0
+    print(cassette_shift, " cm")
+    
+    #print(layer_type)
     
     u = []
     v = []
@@ -143,13 +168,16 @@ for lay in range(1,2):
     print(lay, len(wafer_orient), len(u), len(x), len(y), len(cassette))
     if int(layer) <=26:
         prod = 'prodEE'
+        prod1 = 'prodEE'
     else:
         prod = 'prodHEF'
-
+        prod1 = 'prodHEB'
+        
     if zside == 'n':
         hXYF = tfile.Get(prod + '/grXYhitsF0_layer_' + layer_name)
         hXYC1 = tfile.Get(prod + '/grXYhitsCN0_layer_' + layer_name)
         hXYC2 = tfile.Get(prod + '/grXYhitsCK0_layer_' + layer_name)
+        hXYB1 = tfile.Get(prod1 + '/grXYhitsB0_layer_' + layer_name)
         if version == 'v17':
             hXYAR = tfile.Get(prod + '/grXYhitsAR0_layer_' + layer_name)
             #hXYB = tfile.Get('prodEE/hXYhitsB_layer_' + layer_name)
@@ -157,6 +185,7 @@ for lay in range(1,2):
         hXYF = tfile.Get(prod + '/grXYhitsF1_layer_' + layer_name)
         hXYC1 = tfile.Get(prod + '/grXYhitsCN1_layer_' + layer_name)
         hXYC2 = tfile.Get(prod + '/grXYhitsCK1_layer_' + layer_name)
+        hXYB1 = tfile.Get(prod1 + '/grXYhitsB1_layer_' + layer_name)
         if version == 'v17':
             hXYAR = tfile.Get(prod + '/grXYhitsAR1_layer_' + layer_name)
 
@@ -171,6 +200,7 @@ for lay in range(1,2):
         for i in range(hXYF.GetN()): hXYF.SetPointX(i, -1*hXYF.GetPointX(i))
         for i in range(hXYC1.GetN()): hXYC1.SetPointX(i, -1*hXYC1.GetPointX(i))
         for i in range(hXYC2.GetN()): hXYC2.SetPointX(i, -1*hXYC2.GetPointX(i))
+        for i in range(hXYB1.GetN()): hXYB1.SetPointX(i, -1*hXYB1.GetPointX(i))
         for i in range(hXYAR.GetN()): hXYAR.SetPointX(i, -1*hXYAR.GetPointX(i)) 
     elif zside == 'pp':
         hXYF.GetXaxis().SetTitle('x (cm)')
@@ -180,13 +210,13 @@ for lay in range(1,2):
         #hXYC2.Scale(-1, 'x')
     hXYF.GetYaxis().SetTitle('y (cm)')
     hXYF.GetYaxis().SetTitleOffset(1.4)
-    hXYF.GetXaxis().SetLimits(-200.0, 200.0)
-    hXYF.GetYaxis().SetRangeUser(-200.0, 200.0)
+    hXYF.GetXaxis().SetLimits(-300.0, 300.0)
+    hXYF.GetYaxis().SetRangeUser(-300.0, 300.0)
 
     hXYC2.GetYaxis().SetTitle('y (cm)')
     hXYC2.GetYaxis().SetTitleOffset(1.4)
-    hXYC2.GetXaxis().SetLimits(-200.0, 200.0)
-    hXYC2.GetYaxis().SetRangeUser(-200.0, 200.0)
+    hXYC2.GetXaxis().SetLimits(-300.0, 300.0)
+    hXYC2.GetYaxis().SetRangeUser(-300.0, 300.0)
     
     hXYF.SetLineColor(rt.kRed)
     hXYF.SetMarkerColor(rt.kRed)
@@ -206,6 +236,15 @@ for lay in range(1,2):
     hXYC2.SetMarkerStyle(8)
     hXYC2.SetMarkerSize(0.2)
 
+    if int(layer) >= 34:
+        hXYB1.SetLineColor(rt.kBlue)
+        hXYB1.SetMarkerColor(rt.kBlue)
+        hXYB1.SetFillColor(rt.kBlue)
+        hXYB1.SetMarkerStyle(8)
+        hXYB1.SetMarkerSize(0.1)
+        hXYB1.GetXaxis().SetLimits(-300.0, 300.0)
+        hXYB1.GetYaxis().SetRangeUser(-300.0, 300.0)
+
     if version == 'v17':
         hXYAR.SetLineColor(rt.kBlack)
         hXYAR.SetMarkerColor(rt.kBlack)
@@ -217,12 +256,13 @@ for lay in range(1,2):
     leg.AddEntry(hXYF,"Si width 120 #mum","lf")
     leg.AddEntry(hXYC1,"Si width 200 #mum","lf")
     leg.AddEntry(hXYC2,"Si width 300 #mum","lf")
+    leg.AddEntry(hXYB1,"Scintillator","lf")
     #leg.AddEntry(hXYhitsB[il],"CEH Sci","lf")
 
 
 
     #print(x,y)
-    c1 = rt.TCanvas('c1', 'Layer ' + layer, 800, 800, 800, 800)
+    c1 = rt.TCanvas('c1', 'Layer ' + layer, 600, 600, 600, 600)
     c1.cd()
     graphs = []
     text = []
@@ -235,6 +275,7 @@ for lay in range(1,2):
         hXYC2.Draw('ap')
         hXYC1.Draw('p,SAME')
         hXYF.Draw('p,SAME')
+        hXYB1.Draw('p,SAME')
     if version == 'v17':
         hXYAR.Draw('p,SAME')
         leg.Draw()
@@ -263,9 +304,79 @@ for lay in range(1,2):
         if version == 'v17':
             text[-1].AddText(str(int(wafer_orient[i])))
             text[-1].SetFillColorAlpha(0, 0)
-            text[-1].Draw()
+            text[-1].Draw('SAME')
             #print(np.transpose(np.matmul(rot_mat, np.transpose(partial['c']))))
+            
+    # loop over the lines of scintillator sensor file (aka flatfile of scintillator)
+    for line in sci_data[2:437]:
+        lines = line.split()
+        if len(lines)==10 :
+            sc_layer, ring, rmin, rmax = lines[0], int(lines[1]), float(lines[2]),float(lines[3])
+            sipmsize, hex1, hex2, hex3 = float(lines[4]), lines[5], lines[6], lines[7]
+            hex4, scitype = lines[8], lines[9]
+            hexcomb = str(bin(int(hex1,16))[2:].zfill(8)) + str(bin(int(hex2,16))[2:].zfill(8)) + str(bin(int(hex3,16))[2:].zfill(8)) + str(bin(int(hex4,16))[2:].zfill(8))
+            # To convert to cm from mm input values
+            rmax /= 10.0
+            rmin /= 10.0
+            iseg = 0
+            if int(sc_layer)==lay :
+                icassette = 0
+                #print(lines, hexcomb, rmin, rmax)
+                for isect in range(0,3):
+                    for iphi in range(0,len(hexcomb)):
+                        #print("isect %i, iphi : %i, icassette %i"%(isect,iphi,icassette))
+                        phimin = isect*120. + iphi*1.25
+                        phimax = isect*120. + (iphi+1)*1.25
+                        nrmin, nrmax = rmin, rmax
+                        
+                        if iseg%24==0 :
+                            icassette += 1
 
+                        # ToDo : For the moment interpreting shift values of flat files in mm for overlay plot of scintillator.
+                        xshift, yshift = float(cassette_shift[2*(icassette-1)]), float(cassette_shift[2*(icassette-1)+1])
+
+                        
+                        x1, y1 = GetCartesian(rmin, phimin)
+                        x2, y2 = GetCartesian(rmin, phimax)
+                        x3, y3 = GetCartesian(rmax, phimin)
+                        x4, y4 = GetCartesian(rmax, phimax)
+
+                        x1, y1 = x1+xshift, y1+yshift
+                        x2, y2 = x2+xshift, y2+yshift
+                        x3, y3 = x3+xshift, y3+yshift
+                        x4, y4 = x4+xshift, y4+yshift
+                                                
+                        nrmin, phimin = GetPolar(x1, y1)
+                        nrmax, phimax = GetPolar(x4, y4)
+                        
+                        if int(hexcomb[iphi])==1:
+                          #print("Arc1 : ",offsetX, offsetY, nrmax, phimin,phimax)
+                          arc1 = rt.TArc(0.0, 0.0, nrmax, phimin,phimax)
+                          arc1.SetFillStyle(0)
+                          arc1.SetNoEdges()
+                          arc1.SetLineWidth(1)
+                          graphs.append(arc1)
+                          graphs[-1].Draw('l, SAME')
+                          
+                          l1 = rt.TLine(x1,y1,x3,y3)
+                          l1.SetLineWidth(1)
+                          graphs.append(l1)
+                          graphs[-1].Draw('l, SAME')
+
+                          arc2 = rt.TArc(0.0, 0.0, nrmin, phimin,phimax)
+                          arc2.SetFillStyle(0)
+                          arc2.SetNoEdges()
+                          arc2.SetLineWidth(1)
+                          graphs.append(arc2)
+                          graphs[-1].Draw('l, SAME')
+
+                          l2 = rt.TLine(x2,y2,x4,y4)
+                          l2.SetLineWidth(1)
+                          graphs.append(l2)
+                          graphs[-1].Draw('l, SAME')
+                          
+                        iseg += 1;
+                        
     # Also add scatter points in hexagon centres
     print('(' + str(u[i]) + ', ' + str(v[i]) + ')\n' + str(wafer_orient[i]))
     c1.Update()
@@ -273,9 +384,10 @@ for lay in range(1,2):
     #if lay == 1:
     #    c1.Print('over_lay' + version + '_' + zside + '.pdf[', 'pdf')
     c1.Print('over_lay_l' + layer_name + '_'  + version + 'old1_' + zside + '.png', 'png')
+    c1.Print('over_lay_l' + layer_name + '_'  + version + 'old1_' + zside + '.pdf', 'pdf')
 #c1.Print('over_lay' + version + '_' + zside + '.pdf]', 'pdf')
 #print(u, v, wafer_orient, wafer_type, wafer_thick)
 
-input()
+#input()
 #print(r, R, dy)
 

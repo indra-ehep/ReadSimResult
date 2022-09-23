@@ -16,6 +16,8 @@ int GetCartesian(double r, double theta, double& x, double& y){
 int GetPolar(double x, double y, double& r, double& theta){
   r = TMath::Sqrt(x*x + y*y);
   theta =  180.0*TMath::ATan2(y, x)/TMath::Pi();
+  if(theta<0.0)
+    theta = (180. - TMath::Abs(theta))  + 180.;
   return true;
 }
 
@@ -56,8 +58,8 @@ int plotRings(int refLayer=47)
   hXYhits->SetMarkerSize(0.1);
   hXYhits->Draw("AP");
 
-  float xshift = 60.0, yshift = 60.0;
-  int tcassette = 1;
+  float xshift = -60.0, yshift = -20.0;
+  int tcassette = 12;
   for(int ilir=0;ilir<SciLayouts.size();ilir++){
     int layer, ring;
     float rmin, rmax, sipmsize;
@@ -119,7 +121,7 @@ int plotRings(int refLayer=47)
 	  bool isDraw = (hexcomb[iphi]=='1') ? true : false;
 	  if(isDraw){
 	    
-	    TArc *arc1 = new TArc(0.0, 0.0, nrmax, phimin,phimax);
+	    TArc *arc1 = new TArc(offsetX, offsetY, nrmax, phimin,phimax);
 	    arc1->SetFillStyle(0);
 	    arc1->SetNoEdges();
 	    arc1->SetLineWidth(1);
@@ -130,6 +132,8 @@ int plotRings(int refLayer=47)
 	    // printf("x1,y1 : %f,%f\n",x1,y1);
 	    GetCartesian(nrmin, phimin, x2, y2);
 	    // printf("x2,y2 : %f,%f\n",x2,y2);
+	    x1 += offsetX; y1 += offsetY;
+	    x2 += offsetX; y2 += offsetY; 
 	    TLine *l1 = new TLine(x1,y1,x2,y2);
 	    //l1->SetLineColor(kBlue);
 	    //l1->SetLineWidth(2);
@@ -140,13 +144,15 @@ int plotRings(int refLayer=47)
 	    // printf("x1,y1 : %f,%f\n",x1,y1);
 	    GetCartesian(nrmin, phimax, x2, y2);
 	    // printf("x2,y2 : %f,%f\n",x2,y2);
+	    x1 += offsetX; y1 += offsetY;
+	    x2 += offsetX; y2 += offsetY; 
 	    TLine *l2 = new TLine(x1,y1,x2,y2);
 	    //l1->SetLineColor(kBlue);
 	    //l1->SetLineWidth(2);
 	    l2->SetLineWidth(1);
 	    l2->Draw("sames");
 
-	    TArc *arc2 = new TArc(0.0, 0.0, nrmin, phimin,phimax);
+	    TArc *arc2 = new TArc(offsetX, offsetY, nrmin, phimin,phimax);
 	    arc2->SetFillStyle(0);
 	    arc2->SetNoEdges();
 	    arc2->SetLineWidth(1);
@@ -162,6 +168,8 @@ int plotRings(int refLayer=47)
   SciLayouts.clear();
   c1->SetTickx();
   c1->SetTicky();
+  c1->SetGridx();
+  c1->SetGridy();
   hXYhits->GetXaxis()->SetTitle("x (cm)");
   hXYhits->GetYaxis()->SetTitleOffset(1.4);
   hXYhits->GetYaxis()->SetTitle("y (cm)");
