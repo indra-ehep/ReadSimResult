@@ -1010,7 +1010,7 @@ CellHitSum::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
       //===============================================================================
       hRHTXYhits->Fill(global2.x(),global2.y());	    	    
-
+      
       hXYhits[rhtools_.getLayerWithOffset(id1)]->Fill(global2.x(),global2.y());
       
       if(rhtools_.isSilicon(id1)){

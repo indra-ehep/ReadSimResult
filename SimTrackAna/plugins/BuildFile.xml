@@ -23,5 +23,6 @@
 <use name="MagneticField/Engine"/>
 <use name="MagneticField/Records"/>
 <use name="RecoLocalCalo/HGCalRecAlgos"/>
+<use name="DataFormats/HGCRecHit"/>
 <use name="CoralBase"/>
 <flags EDM_PLUGIN="1"/>
