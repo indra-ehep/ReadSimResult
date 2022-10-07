@@ -115,6 +115,10 @@ private:
   //TH1D *hPt;
   //TH2D *hXYhits;
   // For rechittool z positions. The 0 and 1 are for -ve and +ve, respectively.
+  TH1D *hEF;
+  TH1D *hECN;
+  TH1D *hECK;
+  TH1D *hESc;
   TGraph **grXYhitsF0;
   TGraph **grXYhitsCN0;
   TGraph **grXYhitsCK0;
@@ -163,6 +167,11 @@ ReadHGCalRecoResults::ReadHGCalRecoResults(const edm::ParameterSet& iConfig)
   
   //hPt = fs->make<TH1D>("hPt" , "hPt" , 1000 , 0. , 1000. );
   //hXYhits = fs->make<TH2D>("hXYhits","Hits in XY", 600, -300., 300., 600, -300., 300.);
+
+  hEF = fs->make<TH1D>("hEF" , "hEF" , 1000 , 0. , 1000. );
+  hECN = fs->make<TH1D>("hECN" , "hECN" , 1000 , 0. , 1000. );
+  hECK = fs->make<TH1D>("hECK" , "hECK" , 1000 , 0. , 1000. );
+  hESc = fs->make<TH1D>("hESc" , "hESc" , 1000 , 0. , 1000. );
   
   grXYhitsF0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grXYhitsCN0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
@@ -280,7 +289,7 @@ ReadHGCalRecoResults::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       //recHitValidation(detId, layer, geom0, &it);
       //GlobalPoint global = geom0->getPosition(detId);
       GlobalPoint global1 = rhtools_.getPosition(detId);
-      //double energy = it->energy();
+      double energy = it.energy()*1.0e3;
       
       // float globalx = global.x();
       // float globaly = global.y();
@@ -297,6 +306,7 @@ ReadHGCalRecoResults::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	  int il = rhtools_.getLayerWithOffset(detId);
 	  if(id.type()==HGCSiliconDetId::HGCalFine){
 	    //hXYhitsF[il]->Fill(global2.x(),global2.y());
+	    hEF->Fill(energy);
 
 	    if(global1.z()<0.0)
 	      grXYhitsF0[il]->SetPoint(ixyF0[il-1]++,global1.x(),global1.y());
@@ -314,6 +324,7 @@ ReadHGCalRecoResults::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	  }
 	  if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
 	    //hXYhitsCN[il]->Fill(global2.x(),global2.y());
+	    hECN->Fill(energy);
 
 	    if(global1.z()<0.0)
 	      grXYhitsCN0[il]->SetPoint(ixyCN0[il-1]++,global1.x(),global1.y());
@@ -331,6 +342,7 @@ ReadHGCalRecoResults::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	  }
 	  if(id.type()==HGCSiliconDetId::HGCalCoarseThick){ //case 2 : 
 	    //hXYhitsCK[il]->Fill(global2.x(),global2.y());
+	    hECK->Fill(energy);
 
 	    if(global1.z()<0.0)
 	      grXYhitsCK0[il]->SetPoint(ixyCK0[il-1]++,global1.x(),global1.y());
@@ -360,6 +372,7 @@ ReadHGCalRecoResults::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	
 	  // if (global1.z() < 0.0)
 	  //   hXYhitsB[il]->Fill(global1.x(),global1.y());
+	  hESc->Fill(energy);
 
 	  if (global1.z() < 0.0)
 	    grXYhitsB0[il]->SetPoint(ixyB0[il]++, global1.x(), global1.y());

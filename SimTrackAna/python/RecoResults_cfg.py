@@ -11,28 +11,38 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 
 ####################################################################
 ### SETUP OPTIONS
-# options = VarParsing.VarParsing('standard')
-# options.register('geometry',
-#                  "D93",
-#                   VarParsing.VarParsing.multiplicity.singleton,
-#                   VarParsing.VarParsing.varType.string,
-#                   "geometry of operations: D88, D92, D93")
+options = VarParsing.VarParsing('standard')
+options.register('geometry',
+                 "D92",
+                  VarParsing.VarParsing.multiplicity.singleton,
+                  VarParsing.VarParsing.varType.string,
+                  "geometry of operations: D88, D92, D93")
 
-# ### get and parse the command line arguments
+### get and parse the command line arguments
 # options.parseArguments()
 
 # print(options)
+
+# options = VarParsing.VarParsing('standard')
+options.register('iter',
+                 "1",
+                  VarParsing.VarParsing.multiplicity.singleton,
+                  VarParsing.VarParsing.varType.string,
+                  "iterations 0 1 2 ....")
+
+### get and parse the command line arguments
+options.parseArguments()
+
+print(options)
 
 ####################################################################
 # Use the options
 from Configuration.Eras.Era_Phase2C11M9_cff import Phase2C11M9
 process = cms.Process('ReadHGCalReco',Phase2C11M9)
 
-geomFile = "Configuration.Geometry.GeometryExtended2026D92Reco_cff"
-# fileInput = "file:step3" + options.geometry + "tt.root"
-# fileName = "hgcRecHit" + options.geometry + "tt.root"
-fileInput = "root://se01.indiacms.res.in//cms/store/user/idas/SimOut/geomval/etaphi_debug_reeval/CMSSW_12_6_X_2022-09-27-2300/Extended2026D88/step3_9.root"
-fileName = "hgcRecHit.root"
+geomFile = "Configuration.Geometry.GeometryExtended2026"+ options.geometry +"Reco_cff"
+fileInput = "root://se01.indiacms.res.in//cms/store/user/idas/SimOut/geomval/etaphi_debug_reeval/CMSSW_12_6_X_2022-09-27-2300/Extended2026" + options.geometry + "/step3_" + options.iter + ".root"
+fileName = "hgcRecHit"+ options.geometry +"_"+ options.iter +".root"
 
 print("Geometry file: ", geomFile)
 print("Input file:    ", fileInput)
@@ -53,7 +63,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(fileInput) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5000) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 #process.load('Validation.HGCalValidation.hgcalRecHitStudy_cff')
 

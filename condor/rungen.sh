@@ -6,7 +6,7 @@ myArray=( "$@" )
 
 printf "Start Running Histogramming at ";/bin/date
 printf "Worker node hostname ";/bin/hostname
-CMSVER=CMSSW_12_5_0_pre5
+CMSVER=CMSSW_12_6_X_2022-09-27-2300
 export HOME="/afs/cern.ch/user/i/idas"
 echo "Home set as :"
 echo ${HOME}
@@ -44,7 +44,7 @@ echo "All arguements: "$@
 echo "Number of arguements: "$#
 geom=$1
 index=$2
-nevent=10000
+nevent=50000
 
 # cmsDriver.py SingleMuPt100_hgcal_cfi -s GEN,SIM -n 100000 --conditions auto:phase2_realistic_T21 --beamspot HGCALCloseBy --datatier GEN-SIM --eventcontent FEVTDEBUG --geometry $geom --era Phase2C11I13M9 --relval 9000,100 --fileout file:step1_${index}.root  --customise_commands process.RandomNumberGeneratorService.generator.initialSeed="cms.untracked.uint32($RANDOM)" --no_exec  --nThreads 4
 # grep -n "process.RandomNumberGeneratorService.generator.initialSeed" SingleMuPt100_hgcal_cfi_GEN_SIM.py
@@ -67,9 +67,9 @@ printf "Simulation completed at ";/bin/date
 #---------------------------------------------
 #Copy the ouput root files
 #---------------------------------------------
-#condorOutDir1=/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/etaphi_debug/$geom
-condorOutDir1=/eos/user/i/idas/SimOut/geomval/etaphi_debug/$geom
-condorOutDir=/cms/store/user/idas/SimOut/geomval/etaphi_debug/$geom
+condorOutDir1=/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/etaphi_debug_reeval/CMSSW_12_6_X_2022-09-27-2300/$geom
+#condorOutDir1=/eos/user/i/idas/SimOut/geomval/etaphi_debug/$geom
+condorOutDir=/cms/store/user/idas/SimOut/geomval/etaphi_debug_reeval/CMSSW_12_6_X_2022-09-27-2300/$geom
 if [ -z ${_CONDOR_SCRATCH_DIR} ] ; then
     echo "Running Interactively" ;
 else
