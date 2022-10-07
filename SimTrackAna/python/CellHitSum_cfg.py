@@ -1,55 +1,63 @@
+####################################################################
 import FWCore.ParameterSet.Config as cms
+import os, sys, imp, re
+import FWCore.ParameterSet.VarParsing as VarParsing
 
 
-# from Configuration.Eras.Era_Phase2C11_cff import Phase2C11
-# process = cms.Process('PROD',Phase2C11)
+####################################################################
+### SETUP OPTIONS
+options = VarParsing.VarParsing('standard')
+options.register('geometry',
+                 "D92",
+                  VarParsing.VarParsing.multiplicity.singleton,
+                  VarParsing.VarParsing.varType.string,
+                  "geometry of operations: D88, D92, D93")
 
-#process.load("SimGeneral.HepPDTESSource.pdt_cfi")
-#process.load("Configuration.Geometry.GeometryExtended2026D76Reco_cff")
+### get and parse the command line arguments
+# options.parseArguments()
 
-#from Configuration.Eras.Modifier_phase2_hgcalV12_cff import phase2_hgcalV12
-#process = cms.Process('PROD',phase2_hgcalV12)
+# print(options)
 
-# from Configuration.Eras.Era_Phase2C9_cff import Phase2C9
-# process = cms.Process('PROD',Phase2C9)
+# options = VarParsing.VarParsing('standard')
+options.register('iter',
+                 "1",
+                  VarParsing.VarParsing.multiplicity.singleton,
+                  VarParsing.VarParsing.varType.string,
+                  "iterations 0 1 2 ....")
+
+### get and parse the command line arguments
+options.parseArguments()
+
+print(options)
+
+####################################################################
+
+geomFile = "Configuration.Geometry.GeometryExtended2026"+ options.geometry +"Reco_cff"
+fileInput = "root://se01.indiacms.res.in//cms/store/user/idas/SimOut/geomval/etaphi_debug_reeval/CMSSW_12_6_X_2022-09-27-2300/Extended2026" + options.geometry + "/step1_" + options.iter + ".root"
+fileName = "geantoutput"+ options.geometry +"_"+ options.iter +".root"
+
+print("Geometry file: ", geomFile)
+print("Input file:    ", fileInput)
+print("Output file:   ", fileName)
 
 from Configuration.Eras.Era_Phase2C11I13M9_cff import Phase2C11I13M9
 process = cms.Process('PROD',Phase2C11I13M9)
 
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
-#process.load('Configuration.Geometry.GeometryExtended2026D83Reco_cff')
-process.load('Configuration.Geometry.GeometryExtended2026D86Reco_cff')
+process.load(geomFile)
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 process.load("IOMC.RandomEngine.IOMC_cff")
 process.RandomNumberGeneratorService.generator.initialSeed = 456789
 
 process.source = cms.Source("PoolSource",
-    #fileNames = cms.untracked.vstring('file:SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D83_higheta.root')
-    #fileNames = cms.untracked.vstring('file:SingleMuFlatPt2To100_cfi_py_GEN_geo_default_Phase2C11_Extended2026D86_higheta.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/step1_D86.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/MuFlatPt/D83/SingleMuFlatPt2To100_D83_step1.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/MuFlatPt/D86/SingleMuFlatPt2To100_D86_step1.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/CloseByPhoton_Official/38693.D83/step1.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/CloseByPhoton_Official/38693.D86/step1.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/MuDeltaPt/D83/step1.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/MuDeltaPt/D86/step1.root')
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D83/step1.root')
-                                      #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D83/step1_0.root'
-                                      #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D83/step1_1.root',
-                                      #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D83/step1_2.root',
-                                      #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D83/step1_3.root',
-                                      #'file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D83/step1_4.root'
-    #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/HGCAL_Geometry/SimOut/DeltaPt/Extended2026D86/step1.root')
-    #fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_1_X_2021-10-24-2300/src/step1_D86.root')
-    #fileNames = cms.untracked.vstring('file:/eos/user/i/idas/SimOut/DeltaPt/Extended2026D86/step1.root')
-    fileNames = cms.untracked.vstring('file:/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_1_X_2021-11-09-2300/src/step1.root')
+    fileNames = cms.untracked.vstring(fileInput)
 
 )
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
-
 
 process.prodEE = cms.EDAnalyzer('CellHitSum',
                              simtrack = cms.untracked.InputTag("g4SimHits"),
@@ -59,19 +67,19 @@ process.prodEE = cms.EDAnalyzer('CellHitSum',
 
 
 process.prodHEF = process.prodEE.clone(
-    simhits = cms.untracked.InputTag("g4SimHits","HGCHitsHEfront", "SIM"),
+    simhits = cms.untracked.InputTag("g4SimHits","HGCHitsHEfront"),
     Detector   = cms.string("HGCalHESiliconSensitive"),
 )
 
 process.prodHEB = process.prodHEF.clone(
-    simhits = cms.untracked.InputTag("g4SimHits","HGCHitsHEback", "SIM"),
+    simhits = cms.untracked.InputTag("g4SimHits","HGCHitsHEback"),
     Detector   = cms.string("HGCalHEScintillatorSensitive"),
 )
 
 #process.Tracer = cms.Service("Tracer")
 
 process.TFileService = cms.Service("TFileService",
-     fileName = cms.string('geantoutput.root')
+     fileName = cms.string(fileName)
  )
 
 process.p = cms.Path(process.prodEE*process.prodHEF*process.prodHEB)

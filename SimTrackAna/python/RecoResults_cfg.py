@@ -10,6 +10,9 @@ import os, sys, imp, re
 import FWCore.ParameterSet.VarParsing as VarParsing
 
 ####################################################################
+### Run as
+## $cmsRun RecoResults_cfg.py geometry=D88 iter=$i
+
 ### SETUP OPTIONS
 options = VarParsing.VarParsing('standard')
 options.register('geometry',

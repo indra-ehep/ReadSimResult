@@ -168,10 +168,10 @@ ReadHGCalRecoResults::ReadHGCalRecoResults(const edm::ParameterSet& iConfig)
   //hPt = fs->make<TH1D>("hPt" , "hPt" , 1000 , 0. , 1000. );
   //hXYhits = fs->make<TH2D>("hXYhits","Hits in XY", 600, -300., 300., 600, -300., 300.);
 
-  hEF = fs->make<TH1D>("hEF" , "hEF" , 1000 , 0. , 1000. );
-  hECN = fs->make<TH1D>("hECN" , "hECN" , 1000 , 0. , 1000. );
-  hECK = fs->make<TH1D>("hECK" , "hECK" , 1000 , 0. , 1000. );
-  hESc = fs->make<TH1D>("hESc" , "hESc" , 1000 , 0. , 1000. );
+  hEF = fs->make<TH1D>("hEF" , "hEF" , 1000 , 0. , 50. );
+  hECN = fs->make<TH1D>("hECN" , "hECN" , 1000 , 0. , 50. );
+  hECK = fs->make<TH1D>("hECK" , "hECK" , 1000 , 0. , 50. );
+  hESc = fs->make<TH1D>("hESc" , "hESc" , 1000 , 0. , 50. );
   
   grXYhitsF0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grXYhitsCN0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
@@ -289,7 +289,7 @@ ReadHGCalRecoResults::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       //recHitValidation(detId, layer, geom0, &it);
       //GlobalPoint global = geom0->getPosition(detId);
       GlobalPoint global1 = rhtools_.getPosition(detId);
-      double energy = it.energy()*1.0e3;
+      double energy = it.energy();
       
       // float globalx = global.x();
       // float globaly = global.y();
@@ -299,7 +299,7 @@ ReadHGCalRecoResults::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       
       if (geom0->topology().valid(detId)) {
 	//hXYhits->Fill(global1.x(),global1.y());
-      
+
 	if(rhtools_.isSilicon(detId)){
 	  HGCSiliconDetId id(it.id());
 	  HGCalDetId hid(it.id());
@@ -390,9 +390,11 @@ ReadHGCalRecoResults::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
 	  
 	}//Silicon or scintillator
+      
+	///.................
+      }else{//valid topology
 
       }//valid topology
-
     }//loop over iterator
   }//is Valid container
   
