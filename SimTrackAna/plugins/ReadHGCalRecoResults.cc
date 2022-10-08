@@ -119,6 +119,32 @@ private:
   TH1D *hECN;
   TH1D *hECK;
   TH1D *hESc;
+
+  TH1D **hELossLayer0;
+  TH1D **hELossLayer1;
+  TH1D **hNCellsLayer0;
+  TH1D **hNCellsLayer1;
+
+  TH2D **hXYhitsF0;
+  TH2D **hXYhitsCN0;
+  TH2D **hXYhitsCK0;
+  TH2D **hXYhitsB0;
+
+  TH2D **hXYhitsF1;
+  TH2D **hXYhitsCN1;
+  TH2D **hXYhitsCK1;
+  TH2D **hXYhitsB1;
+
+  TH1D **hELossLayerF0;
+  TH1D **hELossLayerCN0;
+  TH1D **hELossLayerCK0;
+  TH1D **hELossLayerB0;
+
+  TH1D **hELossLayerF1;
+  TH1D **hELossLayerCN1;
+  TH1D **hELossLayerCK1;
+  TH1D **hELossLayerB1;
+
   TGraph **grXYhitsF0;
   TGraph **grXYhitsCN0;
   TGraph **grXYhitsCK0;
@@ -172,7 +198,30 @@ ReadHGCalRecoResults::ReadHGCalRecoResults(const edm::ParameterSet& iConfig)
   hECN = fs->make<TH1D>("hECN" , "hECN" , 1000 , 0. , 50. );
   hECK = fs->make<TH1D>("hECK" , "hECK" , 1000 , 0. , 50. );
   hESc = fs->make<TH1D>("hESc" , "hESc" , 1000 , 0. , 50. );
-  
+
+  hELossLayer0 = new TH1D*[50]; // for 50 layers in earch -z-direction
+  hELossLayer1 = new TH1D*[50]; // for 50 layers in earch +z-direction
+  hNCellsLayer0 = new TH1D*[50]; // for 50 layers in earch -z-direction
+  hNCellsLayer1 = new TH1D*[50]; // for 50 layers in earch +z-direction
+
+  hXYhitsF0 =  new TH2D*[50]; // for 50 layers in earch - z-direction
+  hXYhitsCN0 =  new TH2D*[50]; // for 50 layers in earch - z-direction
+  hXYhitsCK0 =  new TH2D*[50]; // for 50 layers in earch - z-direction
+  hXYhitsB0 =  new TH2D*[50]; // for 50 layers in earch - z-direction
+  hXYhitsF1 =  new TH2D*[50]; // for 50 layers in earch + z-direction
+  hXYhitsCN1 =  new TH2D*[50]; // for 50 layers in earch + z-direction
+  hXYhitsCK1 =  new TH2D*[50]; // for 50 layers in earch + z-direction
+  hXYhitsB1 =  new TH2D*[50]; // for 50 layers in earch + z-direction
+
+  hELossLayerF0 = new TH1D*[50]; // for 50 layers in earch -z-direction
+  hELossLayerCN0 = new TH1D*[50]; // for 50 layers in earch -z-direction
+  hELossLayerCK0 = new TH1D*[50]; // for 50 layers in earch -z-direction
+  hELossLayerB0 = new TH1D*[50]; // for 50 layers in earch -z-direction
+  hELossLayerF1 = new TH1D*[50]; // for 50 layers in earch +z-direction
+  hELossLayerCN1 = new TH1D*[50]; // for 50 layers in earch +z-direction
+  hELossLayerCK1 = new TH1D*[50]; // for 50 layers in earch +z-direction
+  hELossLayerB1 = new TH1D*[50]; // for 50 layers in earch +z-direction
+
   grXYhitsF0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grXYhitsCN0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grXYhitsCK0 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
@@ -192,6 +241,48 @@ ReadHGCalRecoResults::ReadHGCalRecoResults(const edm::ParameterSet& iConfig)
   grEtaPhihitsCN1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grEtaPhihitsCK1 =  new TGraph*[50]; // for 50 layers in earch +/- z-direction
   grEtaPhihitsB1 =  new TGraph*[50];
+
+  for(int i=1;i<=50;i++)
+    hELossLayer0[i] = fs->make<TH1D>(Form("hELossLayer0_%02d",i),Form("hELossLayer0_%02d",i), 500, 0., 500.);
+  for(int i=1;i<=50;i++)
+    hELossLayer1[i] = fs->make<TH1D>(Form("hELossLayer1_%02d",i),Form("hELossLayer1_%02d",i), 500, 0., 500.);
+  for(int i=1;i<=50;i++)
+    hNCellsLayer0[i] = fs->make<TH1D>(Form("hNCellsLayer0_%02d",i),Form("hNCellsLayer0_%02d",i), 20, -0.5, 19.5);
+  for(int i=1;i<=50;i++)
+    hNCellsLayer1[i] = fs->make<TH1D>(Form("hNCellsLayer1_%02d",i),Form("hNCellsLayer1_%02d",i), 20, -0.5, 19.5);
+  for(int i=1;i<=50;i++)
+    hXYhitsF0[i] = fs->make<TH2D>(Form("hXYhitsF0_layer_%02d",i),Form("HitsF0 in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hXYhitsCN0[i] = fs->make<TH2D>(Form("hXYhitsCN0_layer_%02d",i),Form("HitsCN0 in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hXYhitsCK0[i] = fs->make<TH2D>(Form("hXYhitsCK0_layer_%02d",i),Form("HitsCK0 in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hXYhitsB0[i] = fs->make<TH2D>(Form("hXYhitsB0_layer_%02d",i),Form("HitsB0 in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hXYhitsF1[i] = fs->make<TH2D>(Form("hXYhitsF1_layer_%02d",i),Form("HitsF1 in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hXYhitsCN1[i] = fs->make<TH2D>(Form("hXYhitsCN1_layer_%02d",i),Form("HitsCN1 in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hXYhitsCK1[i] = fs->make<TH2D>(Form("hXYhitsCK1_layer_%02d",i),Form("HitsCK1 in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  for(int i=1;i<=50;i++)
+    hXYhitsB1[i] = fs->make<TH2D>(Form("hXYhitsB1_layer_%02d",i),Form("HitsB1 in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+
+  for(int i=1;i<=50;i++)
+    hELossLayerF0[i] = fs->make<TH1D>(Form("hELossLayerF0_%02d",i),Form("hELossLayerF0_%02d",i), 500, 0., 500.);
+  for(int i=1;i<=50;i++)
+    hELossLayerCN0[i] = fs->make<TH1D>(Form("hELossLayerCN0_%02d",i),Form("hELossLayerCN0_%02d",i), 500, 0., 500.);
+  for(int i=1;i<=50;i++)
+    hELossLayerCK0[i] = fs->make<TH1D>(Form("hELossLayerCK0_%02d",i),Form("hELossLayerCK0_%02d",i), 500, 0., 500.);
+  for(int i=1;i<=50;i++)
+    hELossLayerB0[i] = fs->make<TH1D>(Form("hELossLayerB0_%02d",i),Form("hELossLayerB0_%02d",i), 500, 0., 500.);
+  for(int i=1;i<=50;i++)
+    hELossLayerF1[i] = fs->make<TH1D>(Form("hELossLayerF1_%02d",i),Form("hELossLayerF1_%02d",i), 500, 0., 500.);
+  for(int i=1;i<=50;i++)
+    hELossLayerCN1[i] = fs->make<TH1D>(Form("hELossLayerCN1_%02d",i),Form("hELossLayerCN1_%02d",i), 500, 0., 500.);
+  for(int i=1;i<=50;i++)
+    hELossLayerCK1[i] = fs->make<TH1D>(Form("hELossLayerCK1_%02d",i),Form("hELossLayerCK1_%02d",i), 500, 0., 500.);
+  for(int i=1;i<=50;i++)
+    hELossLayerB1[i] = fs->make<TH1D>(Form("hELossLayerB1_%02d",i),Form("hELossLayerB1_%02d",i), 500, 0., 500.);
 
   for(int i=1;i<=50;i++){
     grXYhitsF0[i] = fs->make<TGraph>(0);
@@ -268,7 +359,13 @@ ReadHGCalRecoResults::analyze(const edm::Event& iEvent, const edm::EventSetup& i
   // bool ifNose_(false);
   // unsigned int ntot(0), nused(0);
   int verbosity_ = 0;
-
+  double ElossLayer0[51],ElossLayer1[51];
+  int nCellsLayer0[51],nCellsLayer1[51];
+  for(int ilayer=0;ilayer<=50;ilayer++){
+    ElossLayer0[ilayer] = ElossLayer1[ilayer] = 0.0;
+    nCellsLayer0[ilayer] = nCellsLayer1[ilayer] = 0;
+  }
+  
   const edm::ESHandle<HGCalGeometry>& geom = iSetup.getHandle(tok_hgcGeom_);
   if (!geom.isValid())
     edm::LogWarning("HGCalValidation") << "Cannot get valid HGCalGeometry Object for " << nameDetector_;
@@ -289,7 +386,7 @@ ReadHGCalRecoResults::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       //recHitValidation(detId, layer, geom0, &it);
       //GlobalPoint global = geom0->getPosition(detId);
       GlobalPoint global1 = rhtools_.getPosition(detId);
-      double energy = it.energy();
+      double energy = it.energy()*1.e3;
       
       // float globalx = global.x();
       // float globaly = global.y();
@@ -298,65 +395,70 @@ ReadHGCalRecoResults::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       //hXYhits->Fill(global.x(),global.y());
       
       if (geom0->topology().valid(detId)) {
-	//hXYhits->Fill(global1.x(),global1.y());
 
 	if(rhtools_.isSilicon(detId)){
 	  HGCSiliconDetId id(it.id());
 	  HGCalDetId hid(it.id());
 	  int il = rhtools_.getLayerWithOffset(detId);
 	  if(id.type()==HGCSiliconDetId::HGCalFine){
-	    //hXYhitsF[il]->Fill(global2.x(),global2.y());
 	    hEF->Fill(energy);
 
-	    if(global1.z()<0.0)
+	    if(global1.z()<0.0){
 	      grXYhitsF0[il]->SetPoint(ixyF0[il-1]++,global1.x(),global1.y());
-	    else
-	      grXYhitsF1[il]->SetPoint(ixyF1[il-1]++,global1.x(),global1.y());
-	    //if(id.zside() == -1)
-	    //  gXYhitsF0[il]->SetPoint(ixydF0[il-1]++,global2.x(),global2.y());
-	    //else
-	    //  gXYhitsF1[il]->SetPoint(ixydF1[il-1]++,global2.x(),global2.y());
-	    if(global1.z()<0.0)
 	      grEtaPhihitsF0[il]->SetPoint(iepF0[il-1]++,global1.eta(), global1.phi());
-	    else
+	      hXYhitsF0[il]->Fill(global1.x(),global1.y());
+	      hELossLayerF0[il]->Fill(energy);
+	      ElossLayer0[il] += energy;
+	      nCellsLayer0[il]++;
+	    }else{
+	      grXYhitsF1[il]->SetPoint(ixyF1[il-1]++,global1.x(),global1.y());
 	      grEtaPhihitsF1[il]->SetPoint(iepF1[il-1]++,global1.eta(), global1.phi());
+	      hXYhitsF1[il]->Fill(global1.x(),global1.y());
+	      hELossLayerF1[il]->Fill(energy);
+	      ElossLayer1[il] += energy;
+	      nCellsLayer1[il]++;
+	    }
 
 	  }
 	  if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
-	    //hXYhitsCN[il]->Fill(global2.x(),global2.y());
 	    hECN->Fill(energy);
 
-	    if(global1.z()<0.0)
+	    if(global1.z()<0.0){
 	      grXYhitsCN0[il]->SetPoint(ixyCN0[il-1]++,global1.x(),global1.y());
-	    else
-	      grXYhitsCN1[il]->SetPoint(ixyCN1[il-1]++,global1.x(),global1.y());
-	    //if(id.zside() == -1)
-	    //  gXYhitsCN0[il]->SetPoint(ixydCN0[il-1]++,global2.x(),global2.y());
-	    //else
-	    //  gXYhitsCN1[il]->SetPoint(ixydCN1[il-1]++,global2.x(),global2.y());
-	    if(global1.z()<0.0)
 	      grEtaPhihitsCN0[il]->SetPoint(iepCN0[il-1]++,global1.eta(), global1.phi());
-	    else
+	      hXYhitsCN0[il]->Fill(global1.x(),global1.y());
+	      hELossLayerCN0[il]->Fill(energy);
+	      ElossLayer0[il] += energy;
+	      nCellsLayer0[il]++;
+	    }else{
+	      grXYhitsCN1[il]->SetPoint(ixyCN1[il-1]++,global1.x(),global1.y());
 	      grEtaPhihitsCN1[il]->SetPoint(iepCN1[il-1]++,global1.eta(), global1.phi());
+	      hXYhitsCN1[il]->Fill(global1.x(),global1.y());
+	      hELossLayerCN1[il]->Fill(energy);
+	      ElossLayer1[il] += energy;
+	      nCellsLayer1[il]++;
+	    }
 
 	  }
 	  if(id.type()==HGCSiliconDetId::HGCalCoarseThick){ //case 2 : 
-	    //hXYhitsCK[il]->Fill(global2.x(),global2.y());
 	    hECK->Fill(energy);
-
-	    if(global1.z()<0.0)
+	    
+	    if(global1.z()<0.0){
 	      grXYhitsCK0[il]->SetPoint(ixyCK0[il-1]++,global1.x(),global1.y());
-	    else
-	      grXYhitsCK1[il]->SetPoint(ixyCK1[il-1]++,global1.x(),global1.y());
-	    //if(id.zside() == -1)
-	    //  gXYhitsCK0[il]->SetPoint(ixydCK0[il-1]++,global2.x(),global2.y());
-	    //else
-	    //  gXYhitsCK1[il]->SetPoint(ixydCK1[il-1]++,global2.x(),global2.y());
-	    if(global1.z()<0.0)
 	      grEtaPhihitsCK0[il]->SetPoint(iepCK0[il-1]++,global1.eta(), global1.phi());
-	    else
+	      hXYhitsCK0[il]->Fill(global1.x(),global1.y());
+	      hELossLayerCK0[il]->Fill(energy);
+	      ElossLayer0[il] += energy;
+	      nCellsLayer0[il]++;
+	    }else{
+	      grXYhitsCK1[il]->SetPoint(ixyCK1[il-1]++,global1.x(),global1.y());
 	      grEtaPhihitsCK1[il]->SetPoint(iepCK1[il-1]++,global1.eta(), global1.phi());
-
+	      hXYhitsCK1[il]->Fill(global1.x(),global1.y());
+	      hELossLayerCK1[il]->Fill(energy);
+	      ElossLayer1[il] += energy;
+	      nCellsLayer1[il]++;
+	    }
+	    
 	  }
 	  //The following line by Pruthvi to number the cells with id0 and detId
 	  if(rhtools_.getCell(detId).first + rhtools_.getCell(detId).second <= 2){
@@ -369,25 +471,23 @@ ReadHGCalRecoResults::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	
 	  //HGCScintillatorDetId id(itHit->id());
 	  int il = rhtools_.getLayerWithOffset(detId);
-	
-	  // if (global1.z() < 0.0)
-	  //   hXYhitsB[il]->Fill(global1.x(),global1.y());
 	  hESc->Fill(energy);
 
-	  if (global1.z() < 0.0)
+	  if (global1.z() < 0.0){
 	    grXYhitsB0[il]->SetPoint(ixyB0[il]++, global1.x(), global1.y());
-	  else
-	    grXYhitsB1[il]->SetPoint(ixyB1[il]++, global1.x(), global1.y());
-
-	  // if (id.zside() == -1)
-	  //   gXYhitsB0[il]->SetPoint(ixydB0[il]++, global2.x(), global2.y());
-	  // else
-	  //   gXYhitsB1[il]->SetPoint(ixydB1[il]++, global2.x(), global2.y());
-	  if (global1.z() < 0.0)
 	    grEtaPhihitsB0[il]->SetPoint(iepB0[il]++, global1.eta(), global1.phi());
-	  else
+	    hXYhitsB0[il]->Fill(global1.x(),global1.y());
+	    hELossLayerB0[il]->Fill(energy);
+	    ElossLayer0[il] += energy;
+	    nCellsLayer0[il]++;
+	  }else{
+	    grXYhitsB1[il]->SetPoint(ixyB1[il]++, global1.x(), global1.y());
 	    grEtaPhihitsB1[il]->SetPoint(iepB1[il]++, global1.eta(), global1.phi());
-
+	    hXYhitsB1[il]->Fill(global1.x(),global1.y());
+	    hELossLayerB1[il]->Fill(energy);
+	    ElossLayer1[il] += energy;
+	    nCellsLayer1[il]++;
+	  }
 	  
 	}//Silicon or scintillator
       
@@ -397,7 +497,18 @@ ReadHGCalRecoResults::analyze(const edm::Event& iEvent, const edm::EventSetup& i
       }//valid topology
     }//loop over iterator
   }//is Valid container
-  
+
+  for(int i=1;i<=50;i++){
+    if(ElossLayer0[i]>0.0)
+      hELossLayer0[i]->Fill(ElossLayer0[i]);
+    if(nCellsLayer0[i]>0)
+      hNCellsLayer0[i]->Fill(nCellsLayer0[i]);
+ 
+    if(ElossLayer1[i]>0.0)
+      hELossLayer1[i]->Fill(ElossLayer1[i]);
+    if(nCellsLayer1[i]>0)
+      hNCellsLayer1[i]->Fill(nCellsLayer1[i]);
+  }
 
 }
 
