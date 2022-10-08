@@ -7,18 +7,18 @@ import time
 #IMPORT MODULES FROM OTHER DIR
 
 #Geom_1 = ["Extended2026D88", "Extended2026D92", "Extended2026D93"]
-Geom_1 = ["Extended2026D88", "Extended2026D92"]
+Geom_1 = ["Extended2026D88"]
 #D86 = ["Extended2026D83"]
 
 
-if not os.path.exists("tmpSub1/log"):
-    os.makedirs("tmpSub1/log")
+if not os.path.exists("tmpSub3/log"):
+    os.makedirs("tmpSub3/log")
 condorLogDir = "log"
-tarFile = "tmpSub1/generator.tar.gz"
+tarFile = "tmpSub3/generator.tar.gz"
 if os.path.exists(tarFile):
     os.system("rm %s"%tarFile)
 os.system("tar -zcvf %s ../../ReadSimResult --exclude condor"%tarFile)
-os.system("cp rungen.sh tmpSub1/")
+os.system("cp rungen.sh tmpSub3/")
 common_command = \
 'Universe   = vanilla\n\
 should_transfer_files = YES\n\
@@ -41,17 +41,17 @@ Log    = %s/log_$(cluster)_$(process).condor\n\n'%(condorLogDir, condorLogDir, c
 geom_par = 1
 sampleList = eval("Geom_%i"%(geom_par))
 jdlName = 'submitJobs_%s.jdl'%(geom_par)
-jdlFile = open('tmpSub1/%s'%jdlName,'w')
+jdlFile = open('tmpSub3/%s'%jdlName,'w')
 jdlFile.write('Executable =  rungen.sh \n')
 jdlFile.write(common_command)
 jdlFile.write("X=$(step)\n")
 for sample in sampleList:
     #condorOutDir1="/eos/user/i/idas/SimOut/geomval/etaphi_debug"
-    condorOutDir1="/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/etaphi_debug_reeval/CMSSW_12_6_X_2022-09-27-2300"
+    condorOutDir1="/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/etaphi_debug_reeval/CMSSW_12_5_0_pre5"
     os.system("eos root://eosuser.cern.ch mkdir -p %s/%s"%(condorOutDir1, sample))
-    condorOutDir="/cms/store/user/idas/SimOut/geomval/etaphi_debug_reeval/CMSSW_12_6_X_2022-09-27-2300"
+    condorOutDir="/cms/store/user/idas/SimOut/geomval/etaphi_debug_reeval/CMSSW_12_5_0_pre5"
     os.system("xrdfs root://se01.indiacms.res.in/ mkdir -p %s/%s"%(condorOutDir, sample))
-    run_command =  'Arguments  = %s $INT(X) \nQueue 10\n\n' %(sample)
+    run_command =  'Arguments  = %s $INT(X) \nQueue 20\n\n' %(sample)
     jdlFile.write(run_command)
     #print "condor_submit jdl/%s"%jdlFile
 jdlFile.close() 

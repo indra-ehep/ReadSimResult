@@ -45,8 +45,8 @@ process = cms.Process('ReadHGCalReco',Phase2C11M9)
 
 geomFile = "Configuration.Geometry.GeometryExtended2026"+ options.geometry +"Reco_cff"
 #fileInput = "root://se01.indiacms.res.in//cms/store/user/idas/SimOut/geomval/etaphi_debug_reeval/CMSSW_12_6_X_2022-09-27-2300/Extended2026" + options.geometry + "/step3_" + options.iter + ".root"
-fileInput = "file:/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/etaphi_debug_reeval/CMSSW_12_5_0_pre5/Extended2026" + options.geometry + "/step3_" + options.iter + ".root"
-#fileInput = "file:/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/etaphi_debug_reeval/CMSSW_12_4_0_pre4/Extended2026" + options.geometry + "/step3_" + options.iter + ".root"
+#fileInput = "file:/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/etaphi_debug_reeval/CMSSW_12_5_0_pre5/Extended2026" + options.geometry + "/step3_" + options.iter + ".root"
+fileInput = "file:/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/etaphi_debug_reeval/CMSSW_12_4_0_pre4/Extended2026" + options.geometry + "/step3_" + options.iter + ".root"
 fileName = "hgcRecHit"+ options.geometry +"_"+ options.iter +".root"
 
 print("Geometry file: ", geomFile)
