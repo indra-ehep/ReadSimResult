@@ -45,9 +45,13 @@ process = cms.Process('ReadHGCalReco',Phase2C11M9)
 
 geomFile = "Configuration.Geometry.GeometryExtended2026"+ options.geometry +"Reco_cff"
 #fileInput = "root://se01.indiacms.res.in//cms/store/user/idas/SimOut/geomval/etaphi_debug_reeval/CMSSW_12_6_X_2022-09-27-2300/Extended2026" + options.geometry + "/step3_" + options.iter + ".root"
-fileInput = "file:/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/etaphi_debug_reeval/CMSSW_12_5_0_pre5/Extended2026" + options.geometry + "/step3_" + options.iter + ".root"
+#fileInput = "file:/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/etaphi_debug_reeval/CMSSW_12_5_0_pre5/Extended2026" + options.geometry + "/step3_" + options.iter + ".root"
 #fileInput = "file:/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/etaphi_debug_reeval/CMSSW_12_4_0_pre4/Extended2026" + options.geometry + "/step3_" + options.iter + ".root"
-fileName = "hgcRecHit"+ options.geometry +"_"+ options.iter +".root"
+#fileInput = "file:step3_no_adc_no_noise.root"
+#fileInput = "root://se01.indiacms.res.in//cms/store/user/idas/SimOut/geomval/etaphi_debug_reeval/CMSSW_12_5_0_pre5/Extended2026" + options.geometry + "/step3_" + options.iter + ".root"
+#fileInput = "root://se01.indiacms.res.in//cms/store/user/idas/SimOut/geomval/etaphi_debug_reeval/CMSSW_12_4_0_pre4/Extended2026" + options.geometry + "/step3_" + options.iter + ".root"
+fileInput = "file:step3_" + options.iter + ".root"
+fileName = "hgcRecHit" + options.geometry + "_" + options.iter + ".root"
 
 print("Geometry file: ", geomFile)
 print("Input file:    ", fileInput)
@@ -65,8 +69,18 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic_T21', ''
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
+# process.source = cms.Source("PoolSource",
+#                             fileNames = cms.untracked.vstring(fileInput) )
+
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring(fileInput) )
+    dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
+    fileNames = cms.untracked.vstring(fileInput),
+    inputCommands = cms.untracked.vstring(
+        'keep *',
+        'drop l1tTkPrimaryVertexs_L1TkPrimaryVertex__*'
+    ),
+    secondaryFileNames = cms.untracked.vstring()
+)
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
