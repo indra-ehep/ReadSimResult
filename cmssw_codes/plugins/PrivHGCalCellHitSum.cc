@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    HGCalValidation/HGCalCellHitSum
-// Class:      HGCalCellHitSum
+// Package:    HGCalValidation/PrivHGCalCellHitSum
+// Class:      PrivHGCalCellHitSum
 //
-/**\class HGCalCellHitSum HGCalCellHitSum.cc Validation/HGCalValidation/test/HGCalCellHitSum.cc
+/**\class PrivHGCalCellHitSum PrivHGCalCellHitSum.cc Validation/HGCalValidation/test/PrivHGCalCellHitSum.cc
 
  Description: [one line class summary]
 
@@ -66,7 +66,7 @@ using namespace angle_units::operators;
 // class declaration
 //
 
-class HGCalCellHitSum : public edm::one::EDAnalyzer<edm::one::SharedResources> {
+class PrivHGCalCellHitSum : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 public:
   //Implemented following Validation/HGCalValidation/plugins/HGCalSimHitValidation.cc
   struct energysum {
@@ -99,8 +99,8 @@ public:
     bool isMu;
   };
 
-  explicit HGCalCellHitSum(const edm::ParameterSet &);
-  ~HGCalCellHitSum() override = default;
+  explicit PrivHGCalCellHitSum(const edm::ParameterSet &);
+  ~PrivHGCalCellHitSum() override = default;
 
   static void fillDescriptions(edm::ConfigurationDescriptions &descriptions);
 
@@ -355,7 +355,7 @@ private:
 //
 // constructors and destructor
 //
-HGCalCellHitSum::HGCalCellHitSum(const edm::ParameterSet &iConfig)
+PrivHGCalCellHitSum::PrivHGCalCellHitSum(const edm::ParameterSet &iConfig)
     : tSimTrackContainer(consumes<edm::SimTrackContainer>(iConfig.getParameter<edm::InputTag>("simtrack"))),
       tSimCaloHitContainer(consumes<edm::PCaloHitContainer>(iConfig.getParameter<edm::InputTag>("simhits"))),
       name_(iConfig.getParameter<std::string>("detector")),
@@ -366,7 +366,7 @@ HGCalCellHitSum::HGCalCellHitSum(const edm::ParameterSet &iConfig)
       evt(0) {
   //now do what ever initialization is needed
   usesResource(TFileService::kSharedResource);
-  edm::LogVerbatim("ValidHGCal") << "HGCalCellHitSum::Initialize for " << name_ << " using " << geometryFileName_
+  edm::LogVerbatim("ValidHGCal") << "PrivHGCalCellHitSum::Initialize for " << name_ << " using " << geometryFileName_
                                  << " and collections for simTrack:" << iConfig.getParameter<edm::InputTag>("simtrack")
                                  << " and for hits " << iConfig.getParameter<edm::InputTag>("simhits")
                                  << " and for layers " << layers_;
@@ -1038,7 +1038,7 @@ HGCalCellHitSum::HGCalCellHitSum(const edm::ParameterSet &iConfig)
 //
 
 // ------------ method called for each event  ------------
-void HGCalCellHitSum::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup) {
+void PrivHGCalCellHitSum::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup) {
   //================================================================================================================
   //In case of first event read the csv file prepared from sensor/scintillator layout file (aka flatfile)
   //================================================================================================================
@@ -1818,15 +1818,15 @@ void HGCalCellHitSum::analyze(const edm::Event &iEvent, const edm::EventSetup &i
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
-void HGCalCellHitSum::fillDescriptions(edm::ConfigurationDescriptions &descriptions) {
+void PrivHGCalCellHitSum::fillDescriptions(edm::ConfigurationDescriptions &descriptions) {
   edm::ParameterSetDescription desc;
   desc.add<edm::InputTag>("simtrack", edm::InputTag("g4SimHits"));
   desc.add<edm::InputTag>("simhits", edm::InputTag("g4SimHits", "HGCHitsEE"));
   desc.add<std::string>("detector", "HGCalEESensitive");
   desc.add<edm::FileInPath>("geometryFileName", edm::FileInPath("Validation/HGCalValidation/data/wafer_v17.csv"));
   desc.add<std::string>("layerList", "1");
-  descriptions.add("hgcalCellHitSum", desc);
+  descriptions.add("PrivhgcalCellHitSum", desc);
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(HGCalCellHitSum);
+DEFINE_FWK_MODULE(PrivHGCalCellHitSum);

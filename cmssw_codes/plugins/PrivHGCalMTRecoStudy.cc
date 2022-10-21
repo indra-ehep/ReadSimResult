@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    HGCalValidation/HGCalMTRecoStudy
-// Class:      HGCalMTRecoStudy
+// Package:    HGCalValidation/PrivHGCalMTRecoStudy
+// Class:      PrivHGCalMTRecoStudy
 //
-/**\class HGCalMTRecoStudy HGCalMTRecoStudy.cc Validation/HGCalValidation/test/HGCalMTRecoStudy.cc
+/**\class PrivHGCalMTRecoStudy PrivHGCalMTRecoStudy.cc Validation/HGCalValidation/test/PrivHGCalMTRecoStudy.cc
 // Derived from : HGCalRecHitStudy.cc
 
  Description: [one line class summary]
@@ -62,11 +62,11 @@
 // class declaration
 //
 
-class HGCalMTRecoStudy : public edm::one::EDAnalyzer<edm::one::SharedResources> {
+class PrivHGCalMTRecoStudy : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 public:
   //Implemented following Validation/HGCalValidation/test/HGCalRecHitStudy.cc
-  explicit HGCalMTRecoStudy(const edm::ParameterSet &);
-  ~HGCalMTRecoStudy();
+  explicit PrivHGCalMTRecoStudy(const edm::ParameterSet &);
+  ~PrivHGCalMTRecoStudy();
 
   static void fillDescriptions(edm::ConfigurationDescriptions &descriptions);
 
@@ -180,7 +180,7 @@ private:
 //
 // constructors and destructor
 //
-HGCalMTRecoStudy::HGCalMTRecoStudy(const edm::ParameterSet &iConfig)
+PrivHGCalMTRecoStudy::PrivHGCalMTRecoStudy(const edm::ParameterSet &iConfig)
     : nameDetector_(iConfig.getParameter<std::string>("detectorName")),
       recHitSource_(consumes<HGCRecHitCollection>(iConfig.getParameter<edm::InputTag>("source"))),
       tok_hgcaldd_(esConsumes<HGCalDDDConstants, IdealGeometryRecord, edm::Transition::BeginRun>(
@@ -631,14 +631,14 @@ HGCalMTRecoStudy::HGCalMTRecoStudy(const edm::ParameterSet &iConfig)
   caloGeomToken_ = esConsumes<CaloGeometry, CaloGeometryRecord>();
 }
 
-HGCalMTRecoStudy::~HGCalMTRecoStudy() {}
+PrivHGCalMTRecoStudy::~PrivHGCalMTRecoStudy() {}
 
 //
 // member functions
 //
 
 // ------------ method called for each event  ------------
-void HGCalMTRecoStudy::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup) {
+void PrivHGCalMTRecoStudy::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup) {
   using namespace edm;
   const CaloGeometry &geomCalo = iSetup.getData(caloGeomToken_);
   rhtools_.setGeometry(geomCalo);
@@ -852,13 +852,13 @@ void HGCalMTRecoStudy::analyze(const edm::Event &iEvent, const edm::EventSetup &
 }
 
 // ------------ method called once each job just before starting event loop  ------------
-void HGCalMTRecoStudy::beginJob() {}
+void PrivHGCalMTRecoStudy::beginJob() {}
 
 // ------------ method called once each job just after ending the event loop  ------------
-void HGCalMTRecoStudy::endJob() {}
+void PrivHGCalMTRecoStudy::endJob() {}
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
-void HGCalMTRecoStudy::fillDescriptions(edm::ConfigurationDescriptions &descriptions) {
+void PrivHGCalMTRecoStudy::fillDescriptions(edm::ConfigurationDescriptions &descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
 
@@ -870,8 +870,8 @@ void HGCalMTRecoStudy::fillDescriptions(edm::ConfigurationDescriptions &descript
   desc.add<std::string>("detectorName", "HGCalEESensitive");
   desc.add<edm::InputTag>("source", edm::InputTag("HGCalRecHit", "HGCEERecHits"));
   desc.add<std::string>("layerList", "1");
-  descriptions.add("hgcalMTRecoStudy", desc);
+  descriptions.add("PrivhgcalMTRecoStudy", desc);
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(HGCalMTRecoStudy);
+DEFINE_FWK_MODULE(PrivHGCalMTRecoStudy);
