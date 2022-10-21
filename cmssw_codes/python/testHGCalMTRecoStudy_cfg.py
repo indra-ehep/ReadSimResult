@@ -82,7 +82,8 @@ process.source = cms.Source("PoolSource",
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents) )
 
-process.load('Validation.HGCalValidation.hgcalMTRecoStudy_cfi')
+#process.load('Validation.HGCalValidation.hgcalMTRecoStudy_cfi')
+process.load('ReadSimResult.cmssw_codes.PrivhgcalMTRecoStudy_cfi')
 
 process.hgcalMTRecoStudyEE = process.hgcalMTRecoStudy.clone(detectorName = cms.string('HGCalEESensitive'),
                                                             source = cms.InputTag('HGCalRecHit', 'HGCEERecHits'),
