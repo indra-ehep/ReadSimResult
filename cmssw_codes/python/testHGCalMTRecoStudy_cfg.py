@@ -75,6 +75,10 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(fileInput),
     inputCommands = cms.untracked.vstring(
         'keep *',
+        'drop 64stdbitsetss_l1tTTTracksFromExtendedTrackletEmulation_Level1TTTracks_*', 
+        'drop 64stdbitsetss_l1tTTTracksFromTrackletEmulation_Level1TTTracks_*', 
+        'drop Phase2TrackerDigiedmDetSetVectorPhase2TrackerDigiPhase2TrackerDigiedmrefhelperFindForDetSetVectoredmRefTTStubedmNewDetSetVectorPhase2TrackerDigiedmDetSetVectorPhase2TrackerDigiPhase2TrackerDigiedmrefhelperFindForDetSetVectoredmRefTTStubPhase2TrackerDigiedmDetSetVectorPhase2TrackerDigiPhase2TrackerDigiedmrefhelperFindForDetSetVectoredmRefTTStubedmNewDetSetVectorFindForDetSetVectoredmRef64stdbitsetstdpairss_l1tTTTracksFromExtendedTrackletEmulation_Level1TTTracks_*', 
+        'drop Phase2TrackerDigiedmDetSetVectorPhase2TrackerDigiPhase2TrackerDigiedmrefhelperFindForDetSetVectoredmRefTTStubedmNewDetSetVectorPhase2TrackerDigiedmDetSetVectorPhase2TrackerDigiPhase2TrackerDigiedmrefhelperFindForDetSetVectoredmRefTTStubPhase2TrackerDigiedmDetSetVectorPhase2TrackerDigiPhase2TrackerDigiedmrefhelperFindForDetSetVectoredmRefTTStubedmNewDetSetVectorFindForDetSetVectoredmRef64stdbitsetstdpairss_l1tTTTracksFromTrackletEmulation_Level1TTTracks_*', 
         'drop l1tTkPrimaryVertexs_L1TkPrimaryVertex__*' # This is to skip this branch causing issue in D88 reco files with older CMSSW <= 12_4_0-pre4
     ),
     secondaryFileNames = cms.untracked.vstring()
@@ -85,17 +89,17 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxE
 #process.load('Validation.HGCalValidation.hgcalMTRecoStudy_cfi')
 process.load('ReadSimResult.cmssw_codes.PrivhgcalMTRecoStudy_cfi')
 
-process.hgcalMTRecoStudyEE = process.hgcalMTRecoStudy.clone(detectorName = cms.string('HGCalEESensitive'),
+process.hgcalMTRecoStudyEE = process.PrivhgcalMTRecoStudy.clone(detectorName = cms.string('HGCalEESensitive'),
                                                             source = cms.InputTag('HGCalRecHit', 'HGCEERecHits'),
                                                             layerList = options.layers
                                                         )
 
-process.hgcalMTRecoStudyFH = process.hgcalMTRecoStudy.clone(detectorName  = cms.string("HGCalHESiliconSensitive"),
+process.hgcalMTRecoStudyFH = process.PrivhgcalMTRecoStudy.clone(detectorName  = cms.string("HGCalHESiliconSensitive"),
                                                             source        = cms.InputTag("HGCalRecHit", "HGCHEFRecHits"),
                                                             layerList = options.layers
                                                         )
 
-process.hgcalMTRecoStudyBH = process.hgcalMTRecoStudy.clone( detectorName  = cms.string("HGCalHEScintillatorSensitive"),
+process.hgcalMTRecoStudyBH = process.PrivhgcalMTRecoStudy.clone( detectorName  = cms.string("HGCalHEScintillatorSensitive"),
                                                              source        = cms.InputTag("HGCalRecHit", "HGCHEBRecHits"),
                                                              layerList = options.layers
                                                          )

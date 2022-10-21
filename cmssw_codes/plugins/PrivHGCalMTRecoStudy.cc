@@ -91,6 +91,8 @@ private:
   TH1D *hECN;
   TH1D *hECK;
   TH1D *hESc;
+  TH1D *hETot0;
+  TH1D *hETot1;
 
   std::vector<TH1D *> hELossLayer0;
   std::vector<TH1D *> hELossLayer1;
@@ -233,6 +235,8 @@ PrivHGCalMTRecoStudy::PrivHGCalMTRecoStudy(const edm::ParameterSet &iConfig)
   hECN = fs->make<TH1D>("hECN", "hECN", 1000, 0., 50.);
   hECK = fs->make<TH1D>("hECK", "hECK", 1000, 0., 50.);
   hESc = fs->make<TH1D>("hESc", "hESc", 1000, 0., 50.);
+  hETot0 = fs->make<TH1D>("hETot0", "Total Energy in -ve Z", 500, 0., 500.);
+  hETot1 = fs->make<TH1D>("hETot1", "Total Energy in +ve Z", 500, 0., 500.);
 
   for (unsigned int i = 0; i < 47; i++) {
     hELossLayer0.emplace_back(
@@ -646,10 +650,12 @@ void PrivHGCalMTRecoStudy::analyze(const edm::Event &iEvent, const edm::EventSet
   int verbosity_ = 0;
   double ElossLayer0[47], ElossLayer1[47];
   int nCellsLayer0[47], nCellsLayer1[47];
+  double Etot0, Etot1;
   for (int ilayer = 0; ilayer < 47; ilayer++) {
     ElossLayer0[ilayer] = ElossLayer1[ilayer] = 0.0;
     nCellsLayer0[ilayer] = nCellsLayer1[ilayer] = 0;
   }
+  Etot0 = Etot1 = 0.0 ;
 
   const edm::ESHandle<HGCalGeometry> &geom = iSetup.getHandle(tok_hgcGeom_);
   if (!geom.isValid())
@@ -664,7 +670,8 @@ void PrivHGCalMTRecoStudy::analyze(const edm::Event &iEvent, const edm::EventSet
     for (const auto &it : *(theRecHitContainers.product())) {
       DetId detId = it.id();
       GlobalPoint global1 = rhtools_.getPosition(detId);
-      double energy = it.energy() * 1.e3;
+      //double energy = it.energy() * 1.e3;
+      double energy = it.energy() ;
 
       std::vector<int>::iterator ilyr =
           std::find(layerList.begin(), layerList.end(), rhtools_.getLayerWithOffset(detId));
@@ -771,9 +778,11 @@ void PrivHGCalMTRecoStudy::analyze(const edm::Event &iEvent, const edm::EventSet
         if (global1.z() < 0.0) {
           ElossLayer0[ilayer] += energy;
           nCellsLayer0[ilayer]++;
+	  Etot0 += energy;
         } else {
           ElossLayer1[ilayer] += energy;
           nCellsLayer1[ilayer]++;
+	  Etot1 += energy;
         }
 
         ///.................
@@ -849,6 +858,12 @@ void PrivHGCalMTRecoStudy::analyze(const edm::Event &iEvent, const edm::EventSet
     if (nCellsLayer1[i] > 0)
       hNCellsLayer1[i]->Fill(nCellsLayer1[i]);
   }
+  
+  if( Etot0 > 0.0)
+    hETot0->Fill(Etot0);
+  if( Etot1 > 0.0)
+    hETot1->Fill(Etot1);
+  
 }
 
 // ------------ method called once each job just before starting event loop  ------------
