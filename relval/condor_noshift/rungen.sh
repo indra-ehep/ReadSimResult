@@ -42,7 +42,7 @@ else
     echo "Before copy"
     ls -la ../Geometry/HGCalCommonData/src/HGCalDDDConstants.cc
     cp HGCalDDDConstants.cc ../Geometry/HGCalCommonData/src/HGCalDDDConstants.cc
-    echo "Before copy"
+    echo "After copy"
     ls -la ../Geometry/HGCalCommonData/src/HGCalDDDConstants.cc
     scram b 
 fi
@@ -56,7 +56,7 @@ index=$3
 
 echo "Before copy"
 ls -la ../Geometry/HGCalCommonData/data/hgcalHEmix/v17/hgcalHEmix.xml
-cp hgcalHEmix_cs_${cshift}.xml ../Geometry/HGCalCommonData/data/hgcalHEmix/v17/hgcalHEmix.xml
+#cp hgcalHEmix_cs_${cshift}.xml ../Geometry/HGCalCommonData/data/hgcalHEmix/v17/hgcalHEmix.xml
 echo "After copy"
 ls -la ../Geometry/HGCalCommonData/data/hgcalHEmix/v17/hgcalHEmix.xml
 echo "Has changed"
@@ -73,9 +73,9 @@ printf "Simulation completed at ";/bin/date
 #---------------------------------------------
 #Copy the ouput root files
 #---------------------------------------------
-condorOutDir1=/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/cassette_shift_reeval/$geom/$cshift
+condorOutDir1=/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/cassette_noshift_v17_20230103/$geom/$cshift
 #condorOutDir1=/eos/user/i/idas/SimOut/geomval/muontomo_newtrig/$geom
-condorOutDir=/cms/store/user/idas/SimOut/geomval/cassette_shift_reeval/$geom/$cshift
+condorOutDir=/cms/store/user/idas/SimOut/geomval/cassette_noshift_v17_20230103/$geom/$cshift
 
 if [ -z ${_CONDOR_SCRATCH_DIR} ] ; then
     echo "Running Interactively" ;

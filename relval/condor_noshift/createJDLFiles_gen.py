@@ -7,7 +7,7 @@ import time
 #IMPORT MODULES FROM OTHER DIR
 
 Geom_1 = ["D92"]
-Shift = ["1", "2", "3", "4", "5", "6", "7"]
+Shift = ["1"]
 
 if not os.path.exists("tmpSub1/log"):
     os.makedirs("tmpSub1/log")
@@ -46,12 +46,12 @@ jdlFile.write(common_command)
 jdlFile.write("X=$(step)\n")
 for sample in sampleList:
     for shift in shiftList:
-        condorOutDir1="/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/cassette_shift_reeval"
+        condorOutDir1="/eos/cms/store/group/dpg_hgcal/comm_hgcal/geomval/cassette_noshift_v17_20230103"
         #condorOutDir1="/eos/user/i/idas/SimOut/geomval/muontomo_newtrig"
         os.system("eos root://eosuser.cern.ch mkdir -p %s/%s/%s"%(condorOutDir1, sample, shift))
-        condorOutDir="/cms/store/user/idas/SimOut/geomval/cassette_shift_reeval"
+        condorOutDir="/cms/store/user/idas/SimOut/geomval/cassette_noshift_v17_20230103"
         os.system("xrdfs root://se01.indiacms.res.in/ mkdir -p %s/%s/%s"%(condorOutDir, sample, shift))
-        run_command =  'Arguments  = %s %s $INT(X) \nQueue 10\n\n' %(sample, shift)
+        run_command =  'Arguments  = %s %s $INT(X) \nQueue 20\n\n' %(sample, shift)
         jdlFile.write(run_command)
         #print "condor_submit jdl/%s"%jdlFile
 jdlFile.close() 
