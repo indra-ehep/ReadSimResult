@@ -1,7 +1,6 @@
 
 import FWCore.ParameterSet.Config as cms
 
-
 # from Configuration.Eras.Era_Phase2C11_cff import Phase2C11
 # process = cms.Process('PROD',Phase2C11)
 
@@ -14,12 +13,16 @@ import FWCore.ParameterSet.Config as cms
 # from Configuration.Eras.Era_Phase2C9_cff import Phase2C9
 # process = cms.Process('PROD',Phase2C9)
 
-from Configuration.Eras.Era_Phase2C11I13M9_cff import Phase2C11I13M9
-process = cms.Process('PROD',Phase2C11I13M9)
+# from Configuration.Eras.Era_Phase2C11I13M9_cff import Phase2C11I13M9
+# process = cms.Process('PROD',Phase2C11I13M9)
+
+from Configuration.Eras.Era_Phase2C17I13M9_cff import Phase2C17I13M9
+process = cms.Process('PROD',Phase2C17I13M9)
 
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 #process.load('Configuration.Geometry.GeometryExtended2026D83Reco_cff')
-process.load('Configuration.Geometry.GeometryExtended2026D86Reco_cff')
+# process.load('Configuration.Geometry.GeometryExtended2026D86Reco_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D88Reco_cff')
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
 
@@ -32,7 +35,9 @@ process.source = cms.Source("PoolSource",
                             #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/test_Photon/Photon_5K/step2_500.root')
                             #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/test_Photon/Photon_1K/step1.root')
                             #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/test_Photon/Photon_1K/step2_500_local.root')
-                            fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/test_Photon/Photon_1K/step2_500_local_nonoise_unitcce.root')
+                            #fileNames = cms.untracked.vstring('file:/home/idas/t3store3/root_files/test_Photon/Photon_1K/step2_500_local_nonoise_unitcce.root')
+                            fileNames = cms.untracked.vstring('file:/home/indra/Data/store/relval/CMSSW_13_0_0_pre2/23293.0_CloseByParticleGun+2026D88_NoNoise/step2.root')
+                            #fileNames = cms.untracked.vstring('file:/home/indra/Data/store/relval/CMSSW_13_0_0_pre2/Single-Muon-2026D88_NoNoise/step2.root')
                             #fileNames = cms.untracked.vstring('file:/tmp/idas/Muon_10/step2_1.root')
                             #fileNames = cms.untracked.vstring('file:/tmp/idas/Photon_500/step2_1.root')
 )

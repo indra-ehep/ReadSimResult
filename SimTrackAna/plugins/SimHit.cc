@@ -472,7 +472,8 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   using namespace edm;
   
   if(evt == 0){
-    std::ifstream fin("/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_1_X_2021-10-24-2300/src/ReadSimResult/wafertype/wafer.csv");
+    //std::ifstream fin("/afs/cern.ch/work/i/idas/CMSSW/CMSSW_12_1_X_2021-10-24-2300/src/ReadSimResult/wafertype/wafer.csv");
+    std::ifstream fin("/home/indra/CMSSW/econt/CMSSW_13_0_2/src/ReadSimResult/wafertype/wafer.csv");
     std::string s;
     waferinfo wafer;
     //std::cout << "evt : " << evt << std::endl;
@@ -821,7 +822,7 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	hitsinfo hinfo = (*itr_hit).second.first;
 	int ilayer = hinfo.layer;
 	energysum esum = (*itr_hit).second.second;
-	double edep0 = esum.eTime[0] * CLHEP::GeV / CLHEP::keV; 
+	//double edep = esum.eTime[0] * CLHEP::GeV / CLHEP::keV; //TOT does not match with this setting
 	double edep = esum.etotal * CLHEP::GeV / CLHEP::keV; 
 	float kev2fC = 0.044259;
 	
@@ -838,10 +839,15 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      hADCLayer[ilayer]->Fill(float(adc));
 	      hELADCLayer[ilayer]->Fill(edep, float(adc));
 	      hELADCProfLayer[ilayer]->Fill(edep, float(adc));
+	      // string SiThickness = "0";
+	      // int 
+	      // switch(id.type()){
+	      // case HGCSiliconDetId::HGCalFine:
+	      // 	SiThickness = "120";
 
-	      // std::cout<<"eventid : " << iEvent.id().event() <<  "layer : " << ilayer << ", detId " << (*itr_hit).first << ", edep : " << edep*kev2fC 
-	      // 	       << " fC, edep : " << edep << " keV, adc " << adc 
-	      // 	       << ", thresh : " << ainfo.thresh << ", mode : " << ainfo.mode << std::endl;
+	      std::cout<<"Eventid : " << iEvent.id().event() <<  ", layer : " << ilayer << ", detId " << (*itr_hit).first
+		       << ", edep : " << edep << " keV, edep : " << edep*kev2fC << " fC, adc " << adc <<", fC_adc : " << ((ainfo.mode==0)?(0.09765625*float(adc)):(60.0+2.4414*float(adc))) //Only works for silicon
+		       << ", thresh : " << ainfo.thresh << ", mode : " << ainfo.mode << std::endl;
 	      
 	      if(ainfo.mode==1) hELfCSat->Fill(edep*kev2fC);
 	      if(ainfo.mode==0) hELfCnoSat->Fill(edep*kev2fC);
