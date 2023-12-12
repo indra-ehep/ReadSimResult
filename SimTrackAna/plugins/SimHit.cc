@@ -735,11 +735,12 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     energysum esum = (*itr).second.second;
     //double edep = esum.eTime[0] * CLHEP::GeV / CLHEP::keV; //index 0 and 1 corresponds to 25 ns and 1000 ns, respectively. In addititon, chaging energy loss unit to keV.
     double edep = esum.etotal * CLHEP::GeV / CLHEP::keV;
-    float kev2fC = 0.044259;
+    float kev2fC = 0.044259; //Si see https://github.com/hgc-tpg/cmssw/blob/hgc-tpg-devel-CMSSW_13_0_0_pre2/SimCalorimetry/HGCalSimProducers/python/hgcalDigitizer_cfi.py
+    float kev2fC_SC  = 0.000004747 ; //using 1 MIP = 675 keV, 1 MIP = 20 PE = 20 * 1.602e-4 fC; 1 keV = 20*1.602/(675*1e4) fC
     
-    if(TMath::AreEqualAbs(edep,0.0,1.e-5)) continue;
+    //if(TMath::AreEqualAbs(edep,0.0,1.e-5)) continue;
     
-    if(name == "HGCalEESensitive" or name == "HGCalHESiliconSensitive"){
+    if(name == "HGCalEESensitive" or name == "HGCalHESiliconSensitive" or name=="HGCalHEScintillatorSensitive"){
       
       HGCSiliconDetId id((*itr).first);
       //if(hgcons.waferVirtual(id.layer(),id.waferU(),id.waferV())){
@@ -755,10 +756,17 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    hXYLayer[49]->Fill(hinfo.x,hinfo.y);
 	    hELCSLayer[49]->Fill(edep);
 	  }
-	  std::cout<<"Hit :: Eventid : " << iEvent.id().event() <<  ", layer : " << ilayer << ", detId " << (*itr).first
-		   << ", edep : " << edep << " keV, edep : " << edep*kev2fC << " fC "<< std::endl;
 	}//hit at pos z
       }// Fine or CoarseThin or Coarsethick
+      if(hinfo.z>0.0){
+	DetId detId = (*itr).first;
+	if(rhtools_.isSilicon(detId))
+	  std::cout<<"Hit(Si) :: Eventid : " << iEvent.id().event() <<  ", layer : " << ilayer << ", detId " << (*itr).first
+		   << ", edep : " << edep << " keV, edep : " << edep*kev2fC << " fC "<< std::endl;
+	else
+	  std::cout<<"Hit(Sc) :: Eventid : " << iEvent.id().event() <<  ", layer : " << ilayer << ", detId " << (*itr).first
+		   << ", edep : " << edep << " keV, edep : " << 15.*edep/675.0 << " ADC"<< std::endl;
+      }
       //}
     }//EE or HE        
   }//itr
@@ -772,10 +780,12 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   if (digicollection.isValid()) {
     //std::cout<<"valid"<<std::endl;
-    for (const auto& it : *(digicollection.product())) {
+    //for (const auto& it : *(digicollection.product())) {
+    const HGCalDigiCollection& digis = *digicollection;
+    for (const auto& it : digis) {
       DetId detId = it.id();
       //std::cout<<"isSilicon = "<<rhtools_.isSilicon(detId)<<std::endl;
-      if(rhtools_.isSilicon(detId)){
+      if(rhtools_.isSilicon(detId) or rhtools_.isScintillator(detId)){
         //std::cout<<"entered in the condition"<<std::endl;
         uint32_t id_digi = uint32_t(it.id());
 	GlobalPoint global = rhtools_.getPosition(detId);
@@ -790,10 +800,16 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	
         digisinfo dinfo;
         adcinfo ainfo;
-	
-	dinfo.u_cor = HGCSiliconDetId(detId).cellU() ;
-	dinfo.v_cor = HGCSiliconDetId(detId).cellV() ;
-	dinfo.type =  HGCSiliconDetId(detId).type();
+
+	if(rhtools_.isSilicon(detId)){
+	  dinfo.u_cor = HGCSiliconDetId(detId).cellU() ;
+	  dinfo.v_cor = HGCSiliconDetId(detId).cellV() ;
+	  dinfo.type =  HGCSiliconDetId(detId).type();
+	}else{
+	  dinfo.u_cor = 0;//HGCScintillatorDetId(detId).cellU() ;
+	  dinfo.v_cor = 0;//HGCScintillatorDetId(detId).cellV() ;
+	  dinfo.type =  HGCScintillatorDetId(detId).type();
+	}
 	//dinfo.layer = HGCSiliconDetId(detId).layer();
 	dinfo.layer = rhtools_.getLayerWithOffset(detId);;
 	ainfo.adc = adc_;
@@ -809,10 +825,16 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         //digiValidation(detId, geom0, layer, waferType, adc, charge, totmode, zerothreshold);
 
 	if(global.z()>0.0){
-	  std::cout<<"Digi :: Eventid : " << iEvent.id().event() <<  ", layer : " << dinfo.layer << ", detId " << id_digi
-		   <<", adc " << ainfo.adc <<", fC_adc : " << ((ainfo.mode==0)?(0.09765625*float(ainfo.adc)):(60.0+2.4414*float(ainfo.adc))) //Only works for silicon
-		   << ", thresh : " << ainfo.thresh << ", mode : " << ainfo.mode << std::endl;
-	}
+	  if(rhtools_.isSilicon(detId)){
+	    std::cout<<"Digi(Si) :: Eventid : " << iEvent.id().event() <<" , size : " << it.size() <<  ", layer : " << dinfo.layer << ", detId " << id_digi
+		     <<", adc " << ainfo.adc <<", fC_adc : " << ((ainfo.mode==0)?(0.09765625*float(ainfo.adc)):(60.0+2.4414*float(ainfo.adc))) //Only works for silicon
+		     << ", thresh : " << ainfo.thresh << ", mode : " << ainfo.mode << std::endl;
+	  }else{
+	    std::cout<<"Digi(Sc) :: Eventid : " << iEvent.id().event() <<  ", layer : " << dinfo.layer << ", detId " << id_digi
+		     <<", adc " << ainfo.adc <<", fC_adc : " << ((ainfo.mode==0)?(0.067138672*float(ainfo.adc)):(55.0+0.24414*float(ainfo.adc))) 
+		     << ", thresh : " << ainfo.thresh << ", mode : " << ainfo.mode << std::endl;
+	  }
+	}//Z condn
 
       }
     }
@@ -833,17 +855,18 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	hitsinfo hinfo = (*itr_hit).second.first;
 	int ilayer = hinfo.layer;
 	energysum esum = (*itr_hit).second.second;
-	//double edep = esum.eTime[0] * CLHEP::GeV / CLHEP::keV; //TOT does not match with this setting
+	//double edep1 = esum.eTime[0] * CLHEP::GeV / CLHEP::keV; //TOT does not match with this setting
 	double edep = esum.etotal * CLHEP::GeV / CLHEP::keV; 
-	float kev2fC = 0.044259;
-	
-	if(TMath::AreEqualAbs(edep,0.0,1.e-5)) continue;
+	float kev2fC = 0.044259; //Si see https://github.com/hgc-tpg/cmssw/blob/hgc-tpg-devel-CMSSW_13_0_0_pre2/SimCalorimetry/HGCalSimProducers/python/hgcalDigitizer_cfi.py
+	//float kev2fC_SC  = 0.000004747 ; //using 1 MIP = 675 keV, 1 MIP = 20 PE = 20 * 1.602e-4 fC; 1 keV = 20*1.602/(675*1e4) fC
+	DetId detId = (*itr_hit).first;
+	//if(TMath::AreEqualAbs(edep,0.0,1.e-5)) continue;
     
-	if(name == "HGCalEESensitive" or name == "HGCalHESiliconSensitive"){
+	if(name == "HGCalEESensitive" or name == "HGCalHESiliconSensitive" or name=="HGCalHEScintillatorSensitive"){
       
-	  HGCSiliconDetId id((*itr_hit).first);
+	  //HGCSiliconDetId id((*itr_hit).first);
 	  //if(hgcons.waferVirtual(id.layer(),id.waferU(),id.waferV())){
-	  if(id.type()==HGCSiliconDetId::HGCalFine or id.type()==HGCSiliconDetId::HGCalCoarseThin or id.type()==HGCSiliconDetId::HGCalCoarseThick){
+	  //if(id.type()==HGCSiliconDetId::HGCalFine or id.type()==HGCSiliconDetId::HGCalCoarseThin or id.type()==HGCSiliconDetId::HGCalCoarseThick){
 	    if(hinfo.z>0.0){
 	      hXYLayer[ilayer]->Fill(hinfo.x,hinfo.y);
 	      hELCSLayer[ilayer]->Fill(edep);
@@ -855,37 +878,43 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      // switch(id.type()){
 	      // case HGCSiliconDetId::HGCalFine:
 	      // 	SiThickness = "120";
+	      if(rhtools_.isSilicon(detId))
+		std::cout<<"HitDigi(Si) :: Eventid : " << iEvent.id().event() <<  ", layer : " << ilayer << ", detId " << (*itr_hit).first
+			 << ", edep : " << edep << " keV, edep : " << edep*kev2fC << " fC, adc " << adc <<", fC_adc : " << ((ainfo.mode==0)?(0.09765625*float(adc)):(60.0+2.4414*float(adc))) //Only works for silicon
+			 << ", thresh : " << ainfo.thresh << ", mode : " << ainfo.mode << std::endl;
+	      else
+		std::cout<<"HitDigi(Sc) :: Eventid : " << iEvent.id().event() <<  ", layer : " << ilayer << ", detId " << (*itr_hit).first
+			 << ", edep : " << edep << " keV, edep : " << 15.*edep/675.0 << " ADC, adc " << adc <<", fC_adc : " << ((ainfo.mode==0)?(0.067138672*float(adc)):(55.0+0.24414*float(adc))) 
+			 << ", thresh : " << ainfo.thresh << ", mode : " << ainfo.mode << std::endl;
 
-	      std::cout<<"HitDigi :: Eventid : " << iEvent.id().event() <<  ", layer : " << ilayer << ", detId " << (*itr_hit).first
-		       << ", edep : " << edep << " keV, edep : " << edep*kev2fC << " fC, adc " << adc <<", fC_adc : " << ((ainfo.mode==0)?(0.09765625*float(adc)):(60.0+2.4414*float(adc))) //Only works for silicon
-		       << ", thresh : " << ainfo.thresh << ", mode : " << ainfo.mode << std::endl;
+		
 	      
 	      if(ainfo.mode==1) hELfCSat->Fill(edep*kev2fC);
 	      if(ainfo.mode==0) hELfCnoSat->Fill(edep*kev2fC);
 
-	      if(id.type()==HGCSiliconDetId::HGCalFine) {
-		hXYLayer[48]->Fill(hinfo.x,hinfo.y);
-		hELCSLayer[48]->Fill(edep);
-		hADCLayer[48]->Fill(float(adc));
-		hELADCLayer[48]->Fill(edep, float(adc));
-		hELADCProfLayer[48]->Fill(edep, float(adc));
-		if(ainfo.mode==1){
-		  hXYLayer[50]->Fill(hinfo.x,hinfo.y);
-		  hELCSLayer[50]->Fill(edep);
-		  hADCLayer[50]->Fill(float(adc));
-		  hELADCLayer[50]->Fill(edep, float(adc));
-		  hELADCProfLayer[50]->Fill(edep, float(adc));
-		}
-	      }
-	      if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
-		hXYLayer[49]->Fill(hinfo.x,hinfo.y);
-		hELCSLayer[49]->Fill(edep);
-		hADCLayer[49]->Fill(float(adc));
-		hELADCLayer[49]->Fill(edep, float(adc));
-		hELADCProfLayer[49]->Fill(edep, float(adc));
-	      }
+	      // if(id.type()==HGCSiliconDetId::HGCalFine) {
+	      // 	hXYLayer[48]->Fill(hinfo.x,hinfo.y);
+	      // 	hELCSLayer[48]->Fill(edep);
+	      // 	hADCLayer[48]->Fill(float(adc));
+	      // 	hELADCLayer[48]->Fill(edep, float(adc));
+	      // 	hELADCProfLayer[48]->Fill(edep, float(adc));
+	      // 	if(ainfo.mode==1){
+	      // 	  hXYLayer[50]->Fill(hinfo.x,hinfo.y);
+	      // 	  hELCSLayer[50]->Fill(edep);
+	      // 	  hADCLayer[50]->Fill(float(adc));
+	      // 	  hELADCLayer[50]->Fill(edep, float(adc));
+	      // 	  hELADCProfLayer[50]->Fill(edep, float(adc));
+	      // 	}
+	      // }
+	      // if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
+	      // 	hXYLayer[49]->Fill(hinfo.x,hinfo.y);
+	      // 	hELCSLayer[49]->Fill(edep);
+	      // 	hADCLayer[49]->Fill(float(adc));
+	      // 	hELADCLayer[49]->Fill(edep, float(adc));
+	      // 	hELADCProfLayer[49]->Fill(edep, float(adc));
+	      // }
 	    }//hit at pos z
-	  }// Fine or CoarseThin or Coarsethick
+	    //}// Fine or CoarseThin or Coarsethick
 	  //}
 	}//EE or HE        
 
