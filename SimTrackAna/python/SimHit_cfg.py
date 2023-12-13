@@ -33,7 +33,8 @@ process.source = cms.Source("PoolSource",
                             dropDescendantsOfDroppedBranches = cms.untracked.bool(False),
                             #fileNames = cms.untracked.vstring('file:/home/indra/Data/store/relval/CMSSW_13_0_0_pre2/23293.0_CloseByParticleGun+2026D88_NoNoise/step2.root'),
                             #fileNames = cms.untracked.vstring('file:/home/indra/Data/store/relval/CMSSW_13_0_0_pre2/Single-Muon-2026D88_NoNoise_noise_MIP_sdPixels/step2.root'),
-                            fileNames = cms.untracked.vstring('file:/home/indra/Data/store/relval/CMSSW_13_0_0_pre2/Single-Muon-2026D88_NoNoise_noise_MIP/step2.root'),
+                            #fileNames = cms.untracked.vstring('file:/home/indra/Data/store/relval/CMSSW_13_0_0_pre2/Single-Muon-2026D88_NoNoise_noise_MIP/step2.root'),
+                            fileNames = cms.untracked.vstring('file:/home/indra/Data/store/relval/CMSSW_13_0_0_pre2/Single-Muon-2026D88_NoNoise_noise_MIP_n10000/step2.root'),
                             #fileNames = cms.untracked.vstring('file:/home/indra/Data/store/relval/CMSSW_13_0_0_pre2/Single-Muon-2026D88_NoNoise_sdPixels/step2.root'),
                             inputCommands = cms.untracked.vstring(
                                 # 'keep *',
@@ -78,6 +79,6 @@ process.TFileService = cms.Service("TFileService",
      fileName = cms.string('geantoutput.root')
  )
 
-#process.p = cms.Path(process.prodEE*process.prodHEF*process.prodHEB)
+process.p = cms.Path(process.prodEE*process.prodHEF*process.prodHEB)
 #process.p = cms.Path(process.prodEE*process.prodHEF)
-process.p = cms.Path(process.prodEE*process.prodHEB)
+#process.p = cms.Path(process.prodEE*process.prodHEB)

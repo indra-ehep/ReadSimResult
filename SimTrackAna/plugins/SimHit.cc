@@ -189,13 +189,13 @@ private:
   // TH1D **hELCSPWCN ;
   // TH1D **hELCSPWCK ;
 
-  TH1D **hELCSLayer ;
-  TH2D **hXYLayer;
-  TH1D **hADCLayer ;
-  TH2D **hELADCLayer;
-  TProfile **hELADCProfLayer;
-  TH1D *hELfCnoSat ;
-  TH1D *hELfCSat ;
+  // TH1D **hELCSLayer ;
+  // TH2D **hXYLayer;
+  // TH1D **hADCLayer ;
+  // TH2D **hELADCLayer;
+  // TProfile **hELADCProfLayer;
+  // TH1D *hELfCnoSat ;
+  // TH1D *hELfCSat ;
 
   // //FW = Full Wafer
   // TH2D **hXYhitsFWF;
@@ -295,49 +295,49 @@ SimHit::SimHit(const edm::ParameterSet& iConfig)
   // for(int i=1;i<=50;i++)
   //   hELCSPWCK[i] = fs->make<TH1D>(Form("hELCSPWCK_layer_%02d",i),Form("Energy for layer %d",i), 500, 0., 500.);
 
-  hELCSLayer =  new TH1D*[50]; 
-  for(int i=1;i<=50;i++){
-    hELCSLayer[i] = fs->make<TH1D>(Form("hELCSLayer_layer_%02d",i),Form("Energy loss for layer %d",i), 25000, 0., 25.e3);
-    hELCSLayer[i]->GetXaxis()->SetTitle("ELoss (keV)");
-    hELCSLayer[i]->GetYaxis()->SetTitle("Entries");
-  }
+  // hELCSLayer =  new TH1D*[50]; 
+  // for(int i=1;i<=50;i++){
+  //   hELCSLayer[i] = fs->make<TH1D>(Form("hELCSLayer_layer_%02d",i),Form("Energy loss for layer %d",i), 25000, 0., 25.e3);
+  //   hELCSLayer[i]->GetXaxis()->SetTitle("ELoss (keV)");
+  //   hELCSLayer[i]->GetYaxis()->SetTitle("Entries");
+  // }
   
-  hXYLayer =  new TH2D*[50]; 
-  for(int i=1;i<=50;i++){
-    hXYLayer[i] = fs->make<TH2D>(Form("hXYLayer_layer_%02d",i),Form("Hits in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
-    hXYLayer[i]->GetXaxis()->SetTitle("x (cm)");
-    hXYLayer[i]->GetYaxis()->SetTitle("y (cm)");
-  }
+  // hXYLayer =  new TH2D*[50]; 
+  // for(int i=1;i<=50;i++){
+  //   hXYLayer[i] = fs->make<TH2D>(Form("hXYLayer_layer_%02d",i),Form("Hits in XY for layer %d",i), 600, -300., 300., 600, -300., 300.);
+  //   hXYLayer[i]->GetXaxis()->SetTitle("x (cm)");
+  //   hXYLayer[i]->GetYaxis()->SetTitle("y (cm)");
+  // }
 
   
-  hADCLayer =  new TH1D*[50]; 
-  for(int i=1;i<=50;i++){
-    hADCLayer[i] = fs->make<TH1D>(Form("hADCLayer_layer_%02d",i),Form("ADC for layer %d",i), 25000, 0., 10000.);
-    hADCLayer[i]->GetXaxis()->SetTitle("ADC");
-    hADCLayer[i]->GetYaxis()->SetTitle("Entries");
-  }
+  // hADCLayer =  new TH1D*[50]; 
+  // for(int i=1;i<=50;i++){
+  //   hADCLayer[i] = fs->make<TH1D>(Form("hADCLayer_layer_%02d",i),Form("ADC for layer %d",i), 25000, 0., 10000.);
+  //   hADCLayer[i]->GetXaxis()->SetTitle("ADC");
+  //   hADCLayer[i]->GetYaxis()->SetTitle("Entries");
+  // }
   
-  hELADCLayer =  new TH2D*[50]; 
-  for(int i=1;i<=50;i++){
-    hELADCLayer[i] = fs->make<TH2D>(Form("hELADCLayer_layer_%02d",i),Form("Eloss vs ADC for layer %d",i), 25000, 0., 25.e3, 1000, 0., 1000.);
-    hELADCLayer[i]->GetXaxis()->SetTitle("ELoss (keV)");
-    hELADCLayer[i]->GetYaxis()->SetTitle("ADC ");
-  }
+  // hELADCLayer =  new TH2D*[50]; 
+  // for(int i=1;i<=50;i++){
+  //   hELADCLayer[i] = fs->make<TH2D>(Form("hELADCLayer_layer_%02d",i),Form("Eloss vs ADC for layer %d",i), 25000, 0., 25.e3, 1000, 0., 1000.);
+  //   hELADCLayer[i]->GetXaxis()->SetTitle("ELoss (keV)");
+  //   hELADCLayer[i]->GetYaxis()->SetTitle("ADC ");
+  // }
 
-  hELADCProfLayer =  new TProfile*[50]; 
-  for(int i=1;i<=50;i++){
-    hELADCProfLayer[i] = fs->make<TProfile>(Form("hELADCProfLayer_layer_%02d",i),Form("Eloss vs ADC for layer %d",i), 25000, 0., 25.e3, 0., 10000.);
-    hELADCProfLayer[i]->GetXaxis()->SetTitle("ELoss (keV)");
-    hELADCProfLayer[i]->GetYaxis()->SetTitle("ADC ");
-  }
+  // hELADCProfLayer =  new TProfile*[50]; 
+  // for(int i=1;i<=50;i++){
+  //   hELADCProfLayer[i] = fs->make<TProfile>(Form("hELADCProfLayer_layer_%02d",i),Form("Eloss vs ADC for layer %d",i), 25000, 0., 25.e3, 0., 10000.);
+  //   hELADCProfLayer[i]->GetXaxis()->SetTitle("ELoss (keV)");
+  //   hELADCProfLayer[i]->GetYaxis()->SetTitle("ADC ");
+  // }
 
-  hELfCnoSat = fs->make<TH1D>(Form("hELfCnoSat"),Form("Eloss in fC below the saturation"), 200, 0., 200.);
-  hELfCnoSat->GetXaxis()->SetTitle("ELoss (fC)");
-  hELfCnoSat->GetYaxis()->SetTitle("Entries");
+  // hELfCnoSat = fs->make<TH1D>(Form("hELfCnoSat"),Form("Eloss in fC below the saturation"), 200, 0., 200.);
+  // hELfCnoSat->GetXaxis()->SetTitle("ELoss (fC)");
+  // hELfCnoSat->GetYaxis()->SetTitle("Entries");
 
-  hELfCSat = fs->make<TH1D>(Form("hELfCSat"),Form("Eloss in fC above the saturation"), 200, 0., 200.);
-  hELfCSat->GetXaxis()->SetTitle("ELoss (fC)");
-  hELfCSat->GetYaxis()->SetTitle("Entries");
+  // hELfCSat = fs->make<TH1D>(Form("hELfCSat"),Form("Eloss in fC above the saturation"), 200, 0., 200.);
+  // hELfCSat->GetXaxis()->SetTitle("ELoss (fC)");
+  // hELfCSat->GetYaxis()->SetTitle("Entries");
 
   // // for 50 layers in earch +/- z-direction
   // hXYhitsFWF =  new TH2D*[50]; 
@@ -501,12 +501,12 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       hEta->Fill(itTrack->momentum().eta());
       hPhi->Fill(itTrack->momentum().phi());
       hPDG->Fill(itTrack->type());
-      // printf("Genpart :: index : %d, (id,PDGID,charge) : (%06u, %3d, %04.1f), (pt,eta,phi,e) : (%3.2lf, %3.2lf, %3.2lf,%3.2lf), Surface (x,y,z) : (%3.2lf,%3.2lf,%3.2lf)\n",
-      // 	     itrk,
-      // 	     itTrack->trackId(), itTrack->type(), itTrack->charge(),
-      // 	     itTrack->momentum().pt(),itTrack->momentum().eta(),itTrack->momentum().phi(),itTrack->momentum().e(),
-      // 	     itTrack->trackerSurfacePosition().x(),itTrack->trackerSurfacePosition().y(),itTrack->trackerSurfacePosition().z()
-      // 	     );
+      printf("Genpart :: Eventid : %llu, index : %d, (id,PDGID,charge) : (%06u, %3d, %04.1f), (pt,eta,phi,e) : (%3.2lf, %3.2lf, %3.2lf,%3.2lf), Surface (x,y,z) : (%3.2lf,%3.2lf,%3.2lf)\n",
+	     iEvent.id().event(), itrk,
+	     itTrack->trackId(), itTrack->type(), itTrack->charge(),
+	     itTrack->momentum().pt(),itTrack->momentum().eta(),itTrack->momentum().phi(),itTrack->momentum().e(),
+	     itTrack->trackerSurfacePosition().x(),itTrack->trackerSurfacePosition().y(),itTrack->trackerSurfacePosition().z()
+	     );
 
     }//if Genpart and not from detector
     
@@ -612,120 +612,6 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //std::cout << "simhit size : " << simhit->size() << ", nof hits in Si : " << nofSiHits << ", map size : " << map_hits.size() << std::endl;
   
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // bool isPWafer = false;
-  // bool isFWafer = false;
-  // int partialType = -1;
-  
-  // std::map<uint32_t, std::pair<hitsinfo, energysum> >::iterator itr;
-  // for (itr = map_hits.begin(); itr != map_hits.end(); ++itr) {
-    
-  //   hitsinfo hinfo = (*itr).second.first;
-  //   int ilayer = hinfo.layer;
-  //   energysum esum = (*itr).second.second;
-  //   double edep = esum.eTime[0] * CLHEP::GeV / CLHEP::keV; //index 0 and 1 corresponds to 25 ns and 1000 ns, respectively. In addititon, chaging energy loss unit to keV.
-
-  //   if(TMath::AreEqualAbs(edep,0.0,1.e-5)) continue;
-
-  //   DetId id1 = static_cast<DetId>((*itr).first);
-    
-  //   isPWafer = false;
-  //   isFWafer = false;
-  //   //partialType = -1;
-  //   if(rhtools_.isSilicon(id1)){
-  //     for(unsigned int iw = 0 ; iw < winfo.size() ; iw++){
-  //   	if(hinfo.layer == winfo[iw].layer and rhtools_.getWafer(id1).first == winfo[iw].u and rhtools_.getWafer(id1).second == winfo[iw].v){
-  //   	  if(winfo[iw].type == 0)
-  //   	    isPWafer = true;
-  //   	  if(winfo[iw].type == 1)
-  //   	    isFWafer = true;
-  //   	}
-  //     }
-      
-  //     int type, part, orient;
-  //     HGCSiliconDetId detId = HGCSiliconDetId((*itr).first);
-  //     std::tie(type, part, orient) = hgcons.waferType(detId) ;
-  //     //partialType = part ;
-  //   }
-
-  //   if(name == "HGCalEESensitive" or name == "HGCalHESiliconSensitive"){
-  //     HGCSiliconDetId id((*itr).first);
-  //     //if(partialType==0){
-  //     if(hgcons.waferVirtual(id.layer(),id.waferU(),id.waferV())){
-  //   	if(id.type()==HGCSiliconDetId::HGCalFine){
-  //   	  hELCSFWF[ilayer]->Fill(edep);
-  //   	  if(hinfo.z<0.0)
-  //   	    grXYhitsFWF0[ilayer]->SetPoint(ixyFWF0[ilayer-1]++,hinfo.x,hinfo.y);
-  //   	  else
-  //   	    grXYhitsFWF1[ilayer]->SetPoint(ixyFWF1[ilayer-1]++,hinfo.x,hinfo.y);
-  //   	}
-  //   	if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
-  //   	  hELCSFWCN[ilayer]->Fill(edep);
-  //   	  if(hinfo.z<0.0)
-  //   	    grXYhitsFWCN0[ilayer]->SetPoint(ixyFWCN0[ilayer-1]++,hinfo.x,hinfo.y);
-  //   	  else
-  //   	    grXYhitsFWCN1[ilayer]->SetPoint(ixyFWCN1[ilayer-1]++,hinfo.x,hinfo.y);
-  //   	}
-  //   	if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
-  //   	  hELCSFWCK[ilayer]->Fill(edep);
-  //   	  if(hinfo.z<0.0)
-  //   	    grXYhitsFWCK0[ilayer]->SetPoint(ixyFWCK0[ilayer-1]++,hinfo.x,hinfo.y);
-  //   	  else
-  //   	    grXYhitsFWCK1[ilayer]->SetPoint(ixyFWCK1[ilayer-1]++,hinfo.x,hinfo.y);
-  //   	}
-  //     }//partialType == 0
-    
-  //     if(isFWafer){
-  //   	if(hinfo.z>0.0){
-  //   	  if(id.type()==HGCSiliconDetId::HGCalFine) hXYhitsFWF[ilayer]->Fill(hinfo.x,hinfo.y);
-  //   	  if(id.type()==HGCSiliconDetId::HGCalCoarseThin) hXYhitsFWCN[ilayer]->Fill(hinfo.x,hinfo.y);
-  //   	  if(id.type()==HGCSiliconDetId::HGCalCoarseThick) hXYhitsFWCK[ilayer]->Fill(hinfo.x,hinfo.y);
-  //   	}
-  //     }//isFWafer
-      
-  //     //if(partialType > 0){
-  //     if(!hgcons.waferVirtual(id.layer(),id.waferU(),id.waferV())){
-  //   	if(id.type()==HGCSiliconDetId::HGCalFine){
-  //   	  hELCSPWF[ilayer]->Fill(edep);
-  //   	  if(hinfo.z<0.0)
-  //   	    grXYhitsPWF0[ilayer]->SetPoint(ixyPWF0[ilayer-1]++,hinfo.x,hinfo.y);
-  //   	  else
-  //   	    grXYhitsPWF1[ilayer]->SetPoint(ixyPWF1[ilayer-1]++,hinfo.x,hinfo.y);
-  //   	}
-  //   	if(id.type()==HGCSiliconDetId::HGCalCoarseThin){
-  //   	  hELCSPWCN[ilayer]->Fill(edep);
-  //   	  if(hinfo.z<0.0)
-  //   	    grXYhitsPWCN0[ilayer]->SetPoint(ixyPWCN0[ilayer-1]++,hinfo.x,hinfo.y);
-  //   	  else
-  //   	    grXYhitsPWCN1[ilayer]->SetPoint(ixyPWCN1[ilayer-1]++,hinfo.x,hinfo.y);
-  //   	}
-  //   	if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
-  //   	  hELCSPWCK[ilayer]->Fill(edep);
-  //   	  if(hinfo.z<0.0)
-  //   	    grXYhitsPWCK0[ilayer]->SetPoint(ixyPWCK0[ilayer-1]++,hinfo.x,hinfo.y);
-  //   	  else
-  //   	    grXYhitsPWCK1[ilayer]->SetPoint(ixyPWCK1[ilayer-1]++,hinfo.x,hinfo.y);
-  //   	}
-  //     }//partialType > 0
-
-  //     if(isPWafer){
-  //   	if(hinfo.z>0.0){
-  //   	  if(id.type()==HGCSiliconDetId::HGCalFine) hXYhitsPWF[ilayer]->Fill(hinfo.x,hinfo.y);
-  //   	  if(id.type()==HGCSiliconDetId::HGCalCoarseThin) hXYhitsPWCN[ilayer]->Fill(hinfo.x,hinfo.y);
-  //   	  if(id.type()==HGCSiliconDetId::HGCalCoarseThick) hXYhitsPWCK[ilayer]->Fill(hinfo.x,hinfo.y);
-  //   	}      
-  //     }
-  //   }else{//scintillator
-      
-  //     if(hinfo.z<0.0){
-  //   	grXYhitsB0[ilayer]->SetPoint(ixyB0[ilayer-1]++,hinfo.x,hinfo.y);
-  //   	hXYhitsB[ilayer]->Fill(hinfo.x,hinfo.y);
-  //     }else
-  //   	grXYhitsB1[ilayer]->SetPoint(ixyB1[ilayer-1]++,hinfo.x,hinfo.y);
-      
-  //   }
-    
-  // }
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   std::map<uint32_t, std::pair<hitsinfo, energysum> >::iterator itr;
   for (itr = map_hits.begin(); itr != map_hits.end(); ++itr) {
@@ -736,7 +622,6 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     //double edep = esum.eTime[0] * CLHEP::GeV / CLHEP::keV; //index 0 and 1 corresponds to 25 ns and 1000 ns, respectively. In addititon, chaging energy loss unit to keV.
     double edep = esum.etotal * CLHEP::GeV / CLHEP::keV;
     float kev2fC = 0.044259; //Si see https://github.com/hgc-tpg/cmssw/blob/hgc-tpg-devel-CMSSW_13_0_0_pre2/SimCalorimetry/HGCalSimProducers/python/hgcalDigitizer_cfi.py
-    float kev2fC_SC  = 0.000004747 ; //using 1 MIP = 675 keV, 1 MIP = 20 PE = 20 * 1.602e-4 fC; 1 keV = 20*1.602/(675*1e4) fC
     
     //if(TMath::AreEqualAbs(edep,0.0,1.e-5)) continue;
     
@@ -746,16 +631,16 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       //if(hgcons.waferVirtual(id.layer(),id.waferU(),id.waferV())){
       if(id.type()==HGCSiliconDetId::HGCalFine or id.type()==HGCSiliconDetId::HGCalCoarseThin or id.type()==HGCSiliconDetId::HGCalCoarseThick){
 	if(hinfo.z>0.0){
-	  hXYLayer[ilayer]->Fill(hinfo.x,hinfo.y);
-	  hELCSLayer[ilayer]->Fill(edep);
-	  if(id.type()==HGCSiliconDetId::HGCalFine) {
-	    hXYLayer[48]->Fill(hinfo.x,hinfo.y);
-	    hELCSLayer[48]->Fill(edep);
-	  }
-	  if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
-	    hXYLayer[49]->Fill(hinfo.x,hinfo.y);
-	    hELCSLayer[49]->Fill(edep);
-	  }
+	  // hXYLayer[ilayer]->Fill(hinfo.x,hinfo.y);
+	  // hELCSLayer[ilayer]->Fill(edep);
+	  // if(id.type()==HGCSiliconDetId::HGCalFine) {
+	  //   hXYLayer[48]->Fill(hinfo.x,hinfo.y);
+	  //   hELCSLayer[48]->Fill(edep);
+	  // }
+	  // if(id.type()==HGCSiliconDetId::HGCalCoarseThick){
+	  //   hXYLayer[49]->Fill(hinfo.x,hinfo.y);
+	  //   hELCSLayer[49]->Fill(edep);
+	  // }
 	}//hit at pos z
       }// Fine or CoarseThin or Coarsethick
       if(hinfo.z>0.0){
@@ -771,7 +656,7 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }//EE or HE        
   }//itr
   
-  //////////////////////////////////////////////////////------------ Digi Handle ------------------////////////
+  ///////////////////////////////////////////////------------ Digi Handle ------------------////////////
   std::map<uint32_t, std::pair<digisinfo,adcinfo > > map_digis;
   map_digis.clear();
 
@@ -828,7 +713,7 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  if(rhtools_.isSilicon(detId)){
 	    std::cout<<"Digi(Si) :: Eventid : " << iEvent.id().event() <<" , size : " << it.size() <<  ", layer : " << dinfo.layer << ", detId " << id_digi
 		     <<", adc " << ainfo.adc <<", fC_adc : " << ((ainfo.mode==0)?(0.09765625*float(ainfo.adc)):(60.0+2.4414*float(ainfo.adc))) //Only works for silicon
-		     << ", thresh : " << ainfo.thresh << ", mode : " << ainfo.mode << std::endl;
+		     << ", thresh : " << ainfo.thresh << ", mode : " << ainfo.mode<< std::endl;
 	  }else{
 	    std::cout<<"Digi(Sc) :: Eventid : " << iEvent.id().event() <<  ", layer : " << dinfo.layer << ", detId " << id_digi
 		     <<", adc " << ainfo.adc <<", fC_adc : " << ((ainfo.mode==0)?(0.067138672*float(ainfo.adc)):(55.0+0.24414*float(ainfo.adc))) 
@@ -868,29 +753,34 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  //if(hgcons.waferVirtual(id.layer(),id.waferU(),id.waferV())){
 	  //if(id.type()==HGCSiliconDetId::HGCalFine or id.type()==HGCSiliconDetId::HGCalCoarseThin or id.type()==HGCSiliconDetId::HGCalCoarseThick){
 	    if(hinfo.z>0.0){
-	      hXYLayer[ilayer]->Fill(hinfo.x,hinfo.y);
-	      hELCSLayer[ilayer]->Fill(edep);
-	      hADCLayer[ilayer]->Fill(float(adc));
-	      hELADCLayer[ilayer]->Fill(edep, float(adc));
-	      hELADCProfLayer[ilayer]->Fill(edep, float(adc));
+	      // hXYLayer[ilayer]->Fill(hinfo.x,hinfo.y);
+	      // hELCSLayer[ilayer]->Fill(edep);
+	      // hADCLayer[ilayer]->Fill(float(adc));
+	      // hELADCLayer[ilayer]->Fill(edep, float(adc));
+	      // hELADCProfLayer[ilayer]->Fill(edep, float(adc));
+	      double R = TMath::Sqrt(hinfo.x*hinfo.x + hinfo.y*hinfo.y);
 	      // string SiThickness = "0";
 	      // int 
 	      // switch(id.type()){
 	      // case HGCSiliconDetId::HGCalFine:
 	      // 	SiThickness = "120";
 	      if(rhtools_.isSilicon(detId))
-		std::cout<<"HitDigi(Si) :: Eventid : " << iEvent.id().event() <<  ", layer : " << ilayer << ", detId " << (*itr_hit).first
+		std::cout<<"HitDigi(Si) :: Eventid : " << iEvent.id().event() <<  ", layer : " << ilayer << " , detId " << (*itr_hit).first
 			 << ", edep : " << edep << " keV, edep : " << edep*kev2fC << " fC, adc " << adc <<", fC_adc : " << ((ainfo.mode==0)?(0.09765625*float(adc)):(60.0+2.4414*float(adc))) //Only works for silicon
-			 << ", thresh : " << ainfo.thresh << ", mode : " << ainfo.mode << std::endl;
+			 << ", thresh : " << ainfo.thresh << ", mode : " << ainfo.mode
+			 << ", (x,y,z,R_{xy}) : ("<<hinfo.x<<", "<<hinfo.y<<", "<<hinfo.z<<", "<<R<<")"
+			 << std::endl;
 	      else
-		std::cout<<"HitDigi(Sc) :: Eventid : " << iEvent.id().event() <<  ", layer : " << ilayer << ", detId " << (*itr_hit).first
+		std::cout<<"HitDigi(Sc) :: Eventid : " << iEvent.id().event() <<  ", layer : " << ilayer << " , detId " << (*itr_hit).first
 			 << ", edep : " << edep << " keV, edep : " << 15.*edep/675.0 << " ADC, adc " << adc <<", fC_adc : " << ((ainfo.mode==0)?(0.067138672*float(adc)):(55.0+0.24414*float(adc))) 
-			 << ", thresh : " << ainfo.thresh << ", mode : " << ainfo.mode << std::endl;
+			 << ", thresh : " << ainfo.thresh << ", mode : " << ainfo.mode
+			 << ", (x,y,z,R_{xy}) : ("<<hinfo.x<<", "<<hinfo.y<<", "<<hinfo.z<<", "<<R<<")"
+			 << std::endl;
 
 		
 	      
-	      if(ainfo.mode==1) hELfCSat->Fill(edep*kev2fC);
-	      if(ainfo.mode==0) hELfCnoSat->Fill(edep*kev2fC);
+	      // if(ainfo.mode==1) hELfCSat->Fill(edep*kev2fC);
+	      // if(ainfo.mode==0) hELfCnoSat->Fill(edep*kev2fC);
 
 	      // if(id.type()==HGCSiliconDetId::HGCalFine) {
 	      // 	hXYLayer[48]->Fill(hinfo.x,hinfo.y);
@@ -926,23 +816,6 @@ SimHit::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   map_hits.clear();
   map_digis.clear();
-
-  // #ifdef THIS_IS_AN_EVENT_EXAMPLE
-  //    Handle<ExampleData> pIn;
-  //    iEvent.getByLabel("example",pIn);
-  // #endif
-
-  // #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
-  //    ESHandle<SetupData> pSetup;
-  //    iSetup.get<SetupRecord>().get(pSetup);
-  // #endif
-
-  // for (const auto& track : iEvent.get(tracksToken_)) {
-  //   // do something with track parameters, e.g, plot the charge.
-  //   int charge = track.charge();
-  //   histo->Fill( charge );
-  //   hPt->Fill(track.pt());
-  // }
 
 #ifdef THIS_IS_AN_EVENTSETUP_EXAMPLE
   // if the SetupData is always needed
